@@ -1,0 +1,44 @@
+package com.example.apppolera_ecommerce_grupo4.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenMedium() {
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Polera Store - Tablet") })
+        }
+    ) { innerPadding ->
+        Row(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+                .fillMaxSize(),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Catálogo destacado")
+                Button(onClick = { /* Acción */ }) {
+                    Text("Explorar")
+                }
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Ofertas especiales")
+                Button(onClick = { /* Acción */ }) {
+                    Text("Ver más")
+                }
+            }
+        }
+    }
+}
+
+@Preview(name = "Medium", widthDp = 600, heightDp = 1024, showBackground = true)
+@Composable
+fun PreviewMedium() {
+    HomeScreenMedium()
+}
