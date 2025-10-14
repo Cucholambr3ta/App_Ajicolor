@@ -14,4 +14,3 @@ data class UsuarioErrores(
     val hayErrores: Boolean
         get() = listOf(nombre, correo, clave, direccion, aceptaTerminos).any { !it.isNullOrBlank() }
 }
-

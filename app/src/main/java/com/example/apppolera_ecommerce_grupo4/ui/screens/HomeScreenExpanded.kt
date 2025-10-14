@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenExpanded() {
+fun HomeScreenExpandedPreviewContent() {
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Polera Store - Desktop") })
@@ -36,5 +36,5 @@ fun HomeScreenExpanded() {
 @Preview(name = "Expanded", widthDp = 1280, heightDp = 800, showBackground = true)
 @Composable
 fun PreviewExpanded() {
-    HomeScreenExpanded()
+    HomeScreenExpandedPreviewContent()
 }

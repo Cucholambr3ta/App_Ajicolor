@@ -28,11 +28,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -44,35 +44,30 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    // Activity Compose (para setContent en MainActivity)
-    implementation("androidx.activity:activity-compose:1.9.3")
-
-    // Compose BOM (maneja versiones consistentes)
+    // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
-    // Jetpack Compose core
-    implementation("androidx.compose.ui:ui:1.7.5")
-    implementation("androidx.compose.foundation:foundation:1.7.5")
-    implementation("androidx.compose.ui:ui-graphics:1.7.5")
-    implementation("androidx.compose.material3:material3:1.3.0")
+    // Activity Compose
+    implementation(libs.androidx.activity.compose)
 
-    // Tooling y previews
-    implementation("androidx.compose.ui:ui-tooling-preview:1.7.5")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.7.5")
+    // Navigation Compose (estable)
+    implementation("androidx.navigation:navigation-compose:2.8.5")
 
-    // Navigation Compose
-    implementation("androidx.navigation:navigation-compose:2.9.5")
+    // Lifecycle + ViewModel en Compose (alineadas)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
-    // Lifecycle ViewModel para Compose (función viewModel())
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6-rc02")
-
-    // API de WindowSizeClass para responsive
+    // Responsive
     implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
-
-    // Dependencia para layouts adaptativos (opcional)
     implementation("androidx.compose.material3.adaptive:adaptive:1.0.0-alpha06")
 
-    // Coroutines para StateFlow en ViewModel
+    // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     // Testing

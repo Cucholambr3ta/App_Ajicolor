@@ -27,7 +27,7 @@ fun HomeScreenCompact() { // Implementación de la pantalla de inicio para panta
     Scaffold(
         topBar = {// Usamos TopAppBar (ExperimentalMaterial3Api) → requiere @OptIn / requiere @OptIn(ExperimentalMaterial3Api) porque aún no es estable en Material3
 
-            TopAppBar(title = { Text(text = "Aji Color") }
+            TopAppBar(title = { Text(text = "AJI DE COLOR") }
             )
         }
     ) { innerPadding ->
@@ -40,7 +40,7 @@ fun HomeScreenCompact() { // Implementación de la pantalla de inicio para panta
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Text(
-                text = "Bienvenido a Poleras E-commerce",
+                text = "Bienvenido a Poleras AJI DE COLOR",
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleLarge
             )
@@ -62,5 +62,43 @@ fun HomeScreenCompact() { // Implementación de la pantalla de inicio para panta
 @Preview(name ="Compact", widthDp = 360, heightDp = 800)
 @Composable
 fun PreviewCompact(){
-    HomeScreenCompact()
+    HomeScreenCompactPreviewContent()
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreenCompactPreviewContent() { // Implementación de la pantalla de inicio para pantallas compactas (solo preview)
+    Scaffold(
+        topBar = {// Usamos TopAppBar (ExperimentalMaterial3Api) → requiere @OptIn / requiere @OptIn(ExperimentalMaterial3Api) porque aún no es estable en Material3
+
+            TopAppBar(title = { Text(text = "AJI DE COLOR") }
+            )
+        }
+    ) { innerPadding ->
+        // Contenido de la pantalla de inicio
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            Text(
+                text = "Bienvenido a Poleras AJI DE COLOR",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.titleLarge
+            )
+            Button(onClick = { /* acción futura */ }) {
+                Text(text = "Explorar Nuestros Productos")
+            }
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "Logo App",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
 }

@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenMedium() {
+fun HomeScreenMediumPreviewContent() {
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("Polera Store - Tablet") })
@@ -40,5 +40,5 @@ fun HomeScreenMedium() {
 @Preview(name = "Medium", widthDp = 600, heightDp = 1024, showBackground = true)
 @Composable
 fun PreviewMedium() {
-    HomeScreenMedium()
+    HomeScreenMediumPreviewContent()
 }
