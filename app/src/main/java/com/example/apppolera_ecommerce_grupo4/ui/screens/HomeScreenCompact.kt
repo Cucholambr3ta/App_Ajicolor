@@ -1,104 +1,79 @@
 package com.example.apppolera_ecommerce_grupo4.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.apppolera_ecommerce_grupo4.R
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.tooling.preview.Preview
+import com.example.apppolera_ecommerce_grupo4.ui.theme.AppPolera_ecommerce_Grupo4Theme
 
+/**
+ * Diseño para pantallas compactas (teléfonos en vertical).
+ * Utiliza una disposición vertical simple dentro de una Card para agrupar el contenido.
+ *
+ * @param onExploreClicked Acción a ejecutar cuando el usuario presiona el botón.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenCompact() { // Implementación de la pantalla de inicio para pantallas compactas
+fun HomeScreenCompacta(
+    onExploreClicked: () -> Unit
+) {
     Scaffold(
-        topBar = {// Usamos TopAppBar (ExperimentalMaterial3Api) → requiere @OptIn / requiere @OptIn(ExperimentalMaterial3Api) porque aún no es estable en Material3
-
-            TopAppBar(title = { Text(text = "AJI DE COLOR") }
-            )
+        topBar = {
+            TopAppBar(title = { Text(text = stringResource(id = R.string.app_name_styled)) })
         }
     ) { innerPadding ->
-        // Contenido de la pantalla de inicio
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(innerPadding)
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .fillMaxSize()
+                .padding(all = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = "Bienvenido a Poleras AJI DE COLOR",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Button(onClick = { /* acción futura */ }) {
-                Text(text = "Explorar Nuestros Productos")
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.welcome_message),
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.headlineSmall,
+                        textAlign = TextAlign.Center
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = stringResource(id = R.string.logo_content_description),
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(150.dp)
+                    )
+                    Button(onClick = onExploreClicked) {
+                        Text(text = stringResource(id = R.string.explore_products_button))
+                    }
+                }
             }
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo App",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentScale = ContentScale.Fit
-            )
         }
     }
 }
 
-@Preview(name ="Compact", widthDp = 360, heightDp = 800)
+@Preview(showBackground = true, name = "Compact Mode", widthDp = 360, heightDp = 800)
 @Composable
-fun PreviewCompact(){
-    HomeScreenCompactPreviewContent()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeScreenCompactPreviewContent() { // Implementación de la pantalla de inicio para pantallas compactas (solo preview)
-    Scaffold(
-        topBar = {// Usamos TopAppBar (ExperimentalMaterial3Api) → requiere @OptIn / requiere @OptIn(ExperimentalMaterial3Api) porque aún no es estable en Material3
-
-            TopAppBar(title = { Text(text = "AJI DE COLOR") }
-            )
-        }
-    ) { innerPadding ->
-        // Contenido de la pantalla de inicio
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Text(
-                text = "Bienvenido a Poleras AJI DE COLOR",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Button(onClick = { /* acción futura */ }) {
-                Text(text = "Explorar Nuestros Productos")
-            }
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = "Logo App",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(150.dp),
-                contentScale = ContentScale.Fit
-            )
-        }
+fun HomeScreenCompactaPreview() {
+    AppPolera_ecommerce_Grupo4Theme {
+        HomeScreenCompacta(onExploreClicked = {})
     }
 }
+

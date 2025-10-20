@@ -1,66 +1,60 @@
 package com.example.apppolera_ecommerce_grupo4.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.apppolera_ecommerce_grupo4.navigation.Screen
 import com.example.apppolera_ecommerce_grupo4.viewmodel.MainViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    navController: NavController,
     viewModel: MainViewModel
 ) {
+    // Estructura de la pantalla con una barra de navegación inferior.
     Scaffold(
-        topBar = { CenterAlignedTopAppBar(title = { Text("Perfil") }) },
         bottomBar = {
+            // Barra de navegación inferior (BottomBar).
             NavigationBar {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { /* Ya estamos en Perfil */ },
-                    icon = { Icon(imageVector = Icons.Filled.Person, contentDescription = "Perfil") },
-                    label = { Text("Perfil") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { viewModel.navigateTo(Screen.Home) },
-                    icon = { Icon(imageVector = Icons.Filled.Home, contentDescription = "Inicio") },
-                    label = { Text("Inicio") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { viewModel.navigateTo(Screen.Settings) },
-                    icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Ajustes") },
-                    label = { Text("Ajustes") }
-                )
+                // Estado para recordar qué ítem está seleccionado.
+                var selectedItem by remember { mutableStateOf(1) }
+                val items = listOf("Inicio", "Perfil", "Ajustes")
+                val icons = listOf(Icons.Filled.Home, Icons.Filled.Person, Icons.Filled.Settings)
+
+                items.forEachIndexed { index, item ->
+                    NavigationBarItem(
+                        icon = { Icon(icons[index], contentDescription = item) },
+                        label = { Text(item) },
+                        selected = selectedItem == index,
+                        onClick = {
+                            selectedItem = index
+                            // Emite el evento de navegación correspondiente al ViewModel.
+                            when (index) {
+                                0 -> viewModel.navigateTo(Screen.Home)
+                                1 -> viewModel.navigateTo(Screen.Profile)
+                                2 -> viewModel.navigateTo(Screen.Settings)
+                            }
+                        }
+                    )
+                }
             }
         }
     ) { innerPadding ->
+        // Contenido principal de la pantalla.
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Bienvenido al Perfil")
+            Text("Bienvenido al Perfil")
         }
     }
 }

@@ -1,92 +1,160 @@
 package com.example.apppolera_ecommerce_grupo4.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+// SOLUCIÓN: Se añade la importación para @Preview
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import com.example.apppolera_ecommerce_grupo4.R
+// SOLUCIÓN: Se añade la importación del Tema para el Preview
+import com.example.apppolera_ecommerce_grupo4.ui.theme.AppPolera_ecommerce_Grupo4Theme
 import com.example.apppolera_ecommerce_grupo4.viewmodel.UsuarioViewModel
-import com.example.apppolera_ecommerce_grupo4.navigation.Routes
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroScreen(
-    navController: NavController,
-    viewModel: UsuarioViewModel
+    viewModel: UsuarioViewModel,
+    onRegistroExitoso: () -> Unit
 ) {
     val estado by viewModel.estado.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Campo Nombre
-        OutlinedTextField(
-            value = estado.nombre,
-            onValueChange = viewModel::actualizaNombre,
-            label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth(),
-            isError = estado.errores.nombre != null,
-            supportingText = { estado.errores.nombre?.let { Text(it, color = Color.Red) } }
-        )
-
-        // Campo Correo
-        OutlinedTextField(
-            value = estado.correo,
-            onValueChange = viewModel::actualizaCorreo,
-            label = { Text("Correo electrónico") },
-            modifier = Modifier.fillMaxWidth(),
-            isError = estado.errores.correo != null,
-            supportingText = { estado.errores.correo?.let { Text(it, color = Color.Red) } }
-        )
-
-        // Campo Clave
-        OutlinedTextField(
-            value = estado.clave,
-            onValueChange = viewModel::actualizaClave,
-            label = { Text("Clave") },
-            modifier = Modifier.fillMaxWidth(),
-            visualTransformation = PasswordVisualTransformation(),
-            isError = estado.errores.clave != null,
-            supportingText = { estado.errores.clave?.let { Text(it, color = Color.Red) } }
-        )
-
-        // Campo Dirección
-        OutlinedTextField(
-            value = estado.direccion,
-            onValueChange = viewModel::actualizaDireccion,
-            label = { Text("Dirección") },
-            modifier = Modifier.fillMaxWidth(),
-            isError = estado.errores.direccion != null,
-            supportingText = { estado.errores.direccion?.let { Text(it, color = Color.Red) } }
-        )
-
-        // Checkbox términos
-        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-            Checkbox(
-                checked = estado.aceptaTerminos,
-                onCheckedChange = viewModel::actualizaAceptaTerminos
-            )
-            Text("Acepto los términos y condiciones")
+    LaunchedEffect(key1 = estado.registroExitoso) {
+        if (estado.registroExitoso) {
+            onRegistroExitoso()
+            viewModel.resetearEstadoRegistro()
         }
-        if (estado.errores.aceptaTerminos != null) {
-            Text(estado.errores.aceptaTerminos!!, color = Color.Red)
-        }
+    }
 
-        // Botón registrar
-        Button(
-            onClick = {
-                if (viewModel.validarFormulario()) {
-                    navController.navigate(Routes.RESUMEN)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+    Scaffold(
+        topBar = { CenterAlignedTopAppBar(title = { Text(stringResource(id = R.string.register_title)) }) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text("Registrarse")
+            ValidatedTextField(
+                value = estado.nombre,
+                onValueChange = viewModel::actualizaNombre,
+                labelResId = R.string.name_label,
+                error = estado.errores.nombre
+            )
+            ValidatedTextField(
+                value = estado.correo,
+                onValueChange = viewModel::actualizaCorreo,
+                labelResId = R.string.email_label,
+                error = estado.errores.correo
+            )
+            ValidatedTextField(
+                value = estado.clave,
+                onValueChange = viewModel::actualizaClave,
+                labelResId = R.string.password_label,
+                error = estado.errores.clave,
+                visualTransformation = PasswordVisualTransformation()
+            )
+            ValidatedTextField(
+                value = estado.direccion,
+                onValueChange = viewModel::actualizaDireccion,
+                labelResId = R.string.address_label,
+                error = estado.errores.direccion
+            )
+            TermsAndConditionsRow(
+                checked = estado.aceptaTerminos,
+                onCheckedChange = viewModel::actualizaAceptaTerminos,
+                error = estado.errores.aceptaTerminos
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = viewModel::registrarUsuario,
+                enabled = !estado.estaCargando,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(id = R.string.register_button))
+            }
         }
     }
 }
+
+// --- Componentes Reutilizables ---
+
+@Composable
+fun ValidatedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    labelResId: Int,
+    error: String?,
+    modifier: Modifier = Modifier,
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
+    Column(modifier = modifier.padding(bottom = 8.dp)) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(stringResource(id = labelResId)) },
+            isError = error != null,
+            visualTransformation = visualTransformation,
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (error != null) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun TermsAndConditionsRow(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    error: String?,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable { onCheckedChange(!checked) }
+                .padding(vertical = 4.dp)
+        ) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(id = R.string.terms_and_conditions))
+        }
+        if (error != null) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 16.dp)
+            )
+        }
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun RegistroScreenPreview() {
+    AppPolera_ecommerce_Grupo4Theme {
+        // En la vista previa, el ViewModel se crea al momento y la acción de navegación no hace nada.
+        RegistroScreen(
+            viewModel = UsuarioViewModel(),
+            onRegistroExitoso = {}
+        )
+    }
+}
+

@@ -1,59 +1,63 @@
 package com.example.apppolera_ecommerce_grupo4.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.apppolera_ecommerce_grupo4.navigation.NavigationEvent
 import com.example.apppolera_ecommerce_grupo4.navigation.Screen
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel central para la navegación.
- *
- * Expone funciones que emiten eventos de tipo [NavigationEvent],
- * representando intenciones de navegación.
- * Las pantallas (UI) llaman a estas funciones en lugar de usar directamente NavController.
- * La MainActivity observa estos eventos y los traduce en acciones reales sobre NavController.
- * De esta forma se logra:
- *  - Separación de responsabilidades.
- *  - Navegación desacoplada y coherente con el patrón MVVM.
+ * ViewModel principal para manejar la lógica de negocio y los eventos de navegación
+ * de forma centralizada.
  */
 class MainViewModel : ViewModel() {
 
-    // Flujo interno mutable de eventos de navegación
+    // Se usa un SharedFlow para emitir eventos de navegación que deben ser consumidos una sola vez.
+    // Es 'private' para que solo el ViewModel pueda emitir eventos.
     private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
 
-    // Flujo expuesto de solo lectura para que la UI observe
-    val navigationEvents: SharedFlow<NavigationEvent> = _navigationEvents.asSharedFlow()
+    /**
+     * Expone el flujo de eventos como un SharedFlow de solo lectura para que la UI
+     * pueda observarlo de forma segura.
+     */
+    val navigationEvents = _navigationEvents.asSharedFlow()
 
     /**
-     * Navegar a una ruta específica.
-     * @param screen Ruta tipada definida en [Screen].
+     * Función que emite un evento de navegación hacia la ruta deseada.
+     * @param event El evento de navegación a emitir.
      */
-    fun navigateTo(screen: Screen) {
-        CoroutineScope(Dispatchers.Main).launch {
-            _navigationEvents.emit(NavigationEvent.NavigateTo(route = screen))
+    fun navigate(event: NavigationEvent) {
+        viewModelScope.launch {
+            _navigationEvents.emit(event)
         }
     }
 
     /**
-     * Volver a la pantalla anterior en la pila de navegación.
+     * Función de conveniencia para navegar a una ruta simple.
+     * @param screen La pantalla (Screen) a la que se desea navegar.
+     */
+    fun navigateTo(screen: Screen) {
+        viewModelScope.launch {
+            _navigationEvents.emit(NavigationEvent.NavigateTo(screen))
+        }
+    }
+
+    /**
+     * Función para emitir el evento de volver atrás en la pila de navegación.
      */
     fun navigateBack() {
-        CoroutineScope(Dispatchers.Main).launch {
+        viewModelScope.launch {
             _navigationEvents.emit(NavigationEvent.PopBackStack)
         }
     }
 
     /**
-     * Navegar hacia arriba en la jerarquía de navegación.
-     * Similar a back, pero pensado para grafos anidados.
+     * Función para emitir el evento de navegar hacia arriba en la jerarquía.
      */
     fun navigateUp() {
-        CoroutineScope(Dispatchers.Main).launch {
+        viewModelScope.launch {
             _navigationEvents.emit(NavigationEvent.NavigateUp)
         }
     }

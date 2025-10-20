@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AppPolera_ecommerce_Grupo4"
+rootProject.name = "apppolera_ecommerce_grupo4"
 include(":app")

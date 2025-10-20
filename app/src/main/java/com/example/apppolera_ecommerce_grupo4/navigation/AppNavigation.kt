@@ -1,34 +1,43 @@
-package com.example.apppolera_ecommerce_grupo4.navigation
+package com.example.apppolera_ecommerce_grupo4.navigation.graphs
 
-import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+// CORRECCIÓN: Se importa la clase correcta 'Screen'
+import com.example.apppolera_ecommerce_grupo4.navigation.Screen
 import com.example.apppolera_ecommerce_grupo4.ui.screens.RegistroScreen
 import com.example.apppolera_ecommerce_grupo4.ui.screens.ResumenScreen
 import com.example.apppolera_ecommerce_grupo4.viewmodel.UsuarioViewModel
 
-object Routes {
-    const val REGISTRO = "registro"
-    const val RESUMEN = "resumen"
-}
-@Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
+//Esta es una función de extensión para NavGraphBuilder
+fun NavGraphBuilder.NavGraphUsuario(
+    navController: NavHostController,
+    usuarioViewModel: UsuarioViewModel
+) {
+    //Define la ruta para la pantalla de Registro
+    // CORRECCIÓN: Se usa 'Screen' en lugar de 'Screen1'
+    composable(route = Screen.Registro.route) {
+        RegistroScreen(
+            viewModel = usuarioViewModel,
+            onRegistroExitoso = {
+                // Aquí se ejecuta la lógica de navegación que se desacopla de la pantalla
+                navController.navigate(Screen.Resumen.route)
+            }
+        )
+    }
 
-    // ViewModel compartido entre pantallas y se crea una sola vez
-    val usuarioViewModel: UsuarioViewModel = viewModel()
-
-    NavHost(
-        navController = navController,
-        startDestination = Routes.REGISTRO
-    ) {
-        composable(Routes.REGISTRO) {
-            RegistroScreen(navController, usuarioViewModel)
-        }
-        composable(Routes.RESUMEN) {
-            ResumenScreen(navController, usuarioViewModel)
-        }
+    //Se define la ruta para la pantalla de Resumen
+    // CORRECCIÓN: Se usa 'Screen' en lugar de 'Screen1'
+    composable(route = Screen.Resumen.route) {
+        ResumenScreen(
+            viewModel = usuarioViewModel,
+            onContinuarClicked = {
+                //Esra es la lógica de navegación para volver al inicio y limpiar el historial
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Registro.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+            }
+        )
     }
 }

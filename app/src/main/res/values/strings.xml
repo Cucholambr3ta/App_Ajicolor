@@ -1,3 +1,32 @@
 <resources>
-     <string name="app_name">AppPolera_ecommerce_Grupo4</string>
+     <!-- Strings Generales de la App -->
+     <string name="app_name">Poleras Aji de Color</string>
+     <string name="app_name_styled">AJI DE COLOR</string>
+     <string name="logo_content_description">Logo de la aplicación</string>
+
+     <!-- Strings para HomeScreen -->
+     <string name="welcome_message">Bienvenido a Poleras AJI DE COLOR</string>
+     <string name="explore_products_button">Explorar Nuestros Productos</string>
+
+     <!-- Strings para ProfileScreen y Navegación -->
+     <string name="profile_screen_title">Perfil</string>
+     <string name="welcome_to_profile">Bienvenido al Perfil</string>
+     <string name="profile_nav_item">Perfil</string>
+     <string name="home_nav_item">Inicio</string>
+     <string name="settings_nav_item">Ajustes</string>
+
+     <!-- Strings para RegistroScreen -->
+     <string name="register_title">Registro</string>
+     <string name="name_label">Nombre</string>
+     <string name="email_label">Correo</string>
+     <string name="password_label">Contraseña</string>
+     <string name="address_label">Dirección</string>
+     <string name="terms_and_conditions">Acepto los términos y condiciones</string>
+     <string name="register_button">Registrar</string>
+
+     <!-- Strings para ResumenScreen -->
+     <string name="summary_title">Resumen de Registro</string>
+     <string name="summary_header">¡Registro Exitoso!</string>
+     <string name="terms_accepted_label">Términos aceptados</string>
+     <string name="continue_button">Continuar</string>
 </resources>

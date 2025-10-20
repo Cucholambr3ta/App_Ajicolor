@@ -1,86 +1,90 @@
 package com.example.apppolera_ecommerce_grupo4.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
+import com.example.apppolera_ecommerce_grupo4.R
 import com.example.apppolera_ecommerce_grupo4.navigation.Screen
-import com.example.apppolera_ecommerce_grupo4.ui.utils.getWindowSizeClass
+import com.example.apppolera_ecommerce_grupo4.ui.theme.AppPolera_ecommerce_Grupo4Theme
 import com.example.apppolera_ecommerce_grupo4.viewmodel.MainViewModel
-import kotlinx.coroutines.launch
-
-@Composable
-fun HomeScreen(
-    navController: NavController,
-    viewModel: MainViewModel = viewModel()
-) {
-    val windowSizeClass = getWindowSizeClass()
-
-    when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> HomeScreenCompact(navController, viewModel)
-        WindowWidthSizeClass.Medium -> HomeScreenMedium(navController, viewModel)
-        WindowWidthSizeClass.Expanded -> HomeScreenExpanded(navController, viewModel)
-    }
-}
 
 /**
- * Versión Compacta (pantallas pequeñas, móviles)
+ * HomeScreen es la pantalla principal o de bienvenida de la aplicación.
+ * Acepta un MainViewModel para manejar los eventos de navegación.
+ *
+ * @param viewModel El ViewModel que centraliza la lógica de navegación.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenCompact(
-    navController: NavController,
+fun HomeScreen(
+    // CORRECCIÓN: La firma ahora acepta el MainViewModel, igual que en MainActivity.
     viewModel: MainViewModel
 ) {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Text("Menú", modifier = Modifier.padding(16.dp))
-                NavigationDrawerItem(
-                    label = { Text("Ir a Perfil") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        viewModel.navigateTo(Screen.Profile)
-                    }
-                )
-            }
+    // Scaffold proporciona la estructura básica de Material Design (TopAppBar, etc.)
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(id = R.string.app_name_styled)) }
+            )
         }
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Pantalla Home") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menú")
-                        }
-                    }
-                )
-            }
-        ) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+    ) { innerPadding ->
+        // El contenido principal de la pantalla se coloca dentro de una columna.
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp), // Padding exterior para todo el contenido
+            horizontalAlignment = Alignment.CenterHorizontally // Centra todos los hijos horizontalmente
+        ) {
+            // Se agrega un elemento Card como contenedor para una mejor jerarquía visual.
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
-                Text("¡Bienvenido a la Página de Inicio (Compact)!")
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { viewModel.navigateTo(Screen.Settings) }) {
-                    Text("Ir a Configuración")
+                // Columna interna para organizar los elementos dentro de la Card.
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Texto de bienvenida.
+                    Text(
+                        text = stringResource(id = R.string.welcome_message),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        textAlign = TextAlign.Center
+                    )
+
+                    // Botón principal para la acción del usuario.
+                    Button(
+                        // CORRECCIÓN: El onClick ahora emite un evento de navegación a través del ViewModel.
+                        onClick = { viewModel.navigateTo(Screen.Registro) },
+                        modifier = Modifier.fillMaxWidth(0.8f) // El botón ocupa el 80% del ancho
+                    ) {
+                        Text(stringResource(id = R.string.explore_products_button))
+                    }
+
+                    // Imagen del logo de la aplicación.
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = stringResource(id = R.string.logo_content_description),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .padding(top = 16.dp),
+                        contentScale = ContentScale.Fit
+                    )
                 }
             }
         }
@@ -88,41 +92,18 @@ fun HomeScreenCompact(
 }
 
 /**
- * Versión Medium (tablets)
+ * Vista previa para el Composable HomeScreen.
+ * Permite visualizar el diseño en Android Studio sin necesidad de ejecutar la app.
+ * NOTA: El viewModel no se puede previsualizar, por lo que la acción del botón no hará nada aquí.
  */
+@Preview(showBackground = true)
 @Composable
-fun HomeScreenMedium(
-    navController: NavController,
-    viewModel: MainViewModel
-) {
-    // Por ahora puedes reutilizar la compacta
-    HomeScreenCompact(navController, viewModel)
-}
-
-/**
- * Versión Expanded (pantallas grandes, escritorio)
- */
-@Composable
-fun HomeScreenExpanded(
-    navController: NavController,
-    viewModel: MainViewModel
-) {
-    Row(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Bienvenido a la Página de Inicio (Expanded)!")
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { viewModel.navigateTo(Screen.Settings) }) {
-                Text("Ir a Configuración")
-            }
-        }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { viewModel.navigateTo(Screen.Profile) }) {
-                Text("Ir a Perfil")
-            }
-        }
+fun HomeScreenPreview() {
+    AppPolera_ecommerce_Grupo4Theme {
+        // Para la vista previa, no podemos pasar un ViewModel real,
+        // así que creamos una versión "falsa" de la pantalla.
+        // La lógica del botón no funcionará en el preview, pero el diseño sí se verá.
+        HomeScreen(viewModel = MainViewModel())
     }
 }
+

@@ -1,15 +1,32 @@
 package com.example.apppolera_ecommerce_grupo4.ui.state
 
 /**
- * Clase que representa el estado de la interfaz de usuario para un Usuario.
- * Se usa en ViewModels para manejar formularios de registro, login o perfil.
+ * Data class que representa el estado completo de la pantalla de registro.
+ * Contiene todos los datos que la UI necesita para dibujarse.
  */
 data class UsuarioUiState(
-    val nombre: String = "", // Nombre del usuario
-    val apellido: String = "", // Apellido del usuario
-    val correo: String = "", // Correo electrónico del usuario
-    val clave: String = "",  // Clave o contraseña del usuario
-    val direccion: String = "", // Dirección del usuario
-    val aceptaTerminos: Boolean = false,  // Confirmación de términos y condiciones
-    val errores: UsuarioErrores = UsuarioErrores() // Errores de validación del formulario
+    // Datos del formulario
+    val nombre: String = "",
+    val correo: String = "",
+    val clave: String = "",
+    val direccion: String = "",
+    val aceptaTerminos: Boolean = false,
+
+    // Errores de validación
+    val errores: UsuarioErrores = UsuarioErrores(),
+
+    // Propiedades para manejar el estado del proceso de registro
+    val estaCargando: Boolean = false,      // Para mostrar un indicador de carga
+    val registroExitoso: Boolean = false  // Para indicar a la UI que debe navegar
+)
+/**
+ * Data class que representa todos los posibles errores de validación en el formulario.
+ * Un valor nulo significa que no hay error para ese campo.
+ */
+data class UsuarioErrores(
+    val nombre: String? = null,
+    val correo: String? = null,
+    val clave: String? = null,
+    val direccion: String? = null,
+    val aceptaTerminos: String? = null
 )

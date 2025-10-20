@@ -1,43 +1,48 @@
 package com.example.apppolera_ecommerce_grupo4.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.apppolera_ecommerce_grupo4.navigation.Screen
 import com.example.apppolera_ecommerce_grupo4.viewmodel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingScreen(
-    navController: NavController,
+fun SettingsScreen(
     viewModel: MainViewModel
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "Bienvenido a Configuración (Settings)")
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { viewModel.navigateTo(Screen.Home) }) {
-            Text(text = "Ir a Inicio")
+    // Estructura visual de la pantalla de configuración.
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Pantalla de Configuración") })
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { viewModel.navigateTo(Screen.Profile) }) {
-            Text(text = "Ir a Perfil")
+    ) { innerPadding ->
+        // Contenido principal.
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "Opciones de Configuración")
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botón para volver a la pantalla de inicio.
+            Button(onClick = { viewModel.navigateTo(Screen.Home) }) {
+                Text(text = "Volver al Inicio")
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Botón para ir a la pantalla de perfil.
+            Button(onClick = { viewModel.navigateTo(Screen.Profile) }) {
+                Text(text = "Ir a Perfil")
+            }
         }
     }
 }
