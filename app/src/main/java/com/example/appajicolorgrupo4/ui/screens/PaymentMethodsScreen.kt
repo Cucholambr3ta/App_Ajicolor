@@ -1,70 +1,291 @@
-﻿package com.example.appajicolorgrupo4.ui.screens
+package com.example.appajicolorgrupo4.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.appajicolorgrupo4.data.EstadoPedido
+import com.example.appajicolorgrupo4.data.GeneradorNumeroPedido
+import com.example.appajicolorgrupo4.data.MetodoPago
+import com.example.appajicolorgrupo4.data.PedidoCompleto
 import com.example.appajicolorgrupo4.ui.components.AppBackground
+import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
+import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentMethodsScreen(
-    navController: NavController
+    navController: NavController,
+    direccionEnvio: String = "",
+    telefono: String = "",
+    notasAdicionales: String = "",
+    carritoViewModel: CarritoViewModel = viewModel(),
+    pedidosViewModel: PedidosViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = viewModel()
 ) {
+    var metodoSeleccionado by remember { mutableStateOf<MetodoPago?>(null) }
+
+    val productos by carritoViewModel.productos.collectAsState()
+    val subtotal = carritoViewModel.calcularSubtotal()
+    val impuestos = carritoViewModel.calcularImpuestos()
+    val costoEnvio = carritoViewModel.calcularCostoEnvio()
+    val total = carritoViewModel.calcularTotal()
+
+    val currentUser by usuarioViewModel.currentUser.collectAsState()
+    val nombreUsuario = currentUser?.nombre ?: "Usuario"
+
+    val metodosPago = MetodoPago.entries.toList()
+
+    val formatoMoneda = remember {
+        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+            maximumFractionDigits = 0
+        }
+    }
+
     AppBackground {
         Scaffold(
             topBar = {
-                TopAppBar(title = { Text("Métodos de Pago") })
+                TopAppBar(
+                    title = { Text("Método de Pago") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver"
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = androidx.compose.ui.graphics.Color.Transparent
+                    )
+                )
             },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { /* navController.navigate("add_card") */ }
-                ) {
-                    Icon(Icons.Default.Add, "Agregar tarjeta")
-                }
-            }
+            containerColor = androidx.compose.ui.graphics.Color.Transparent
         ) { paddingValues ->
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(16.dp)
             ) {
-                // TODO: Agregar métodos de pago reales
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                // Total a pagar
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Spacer(modifier = Modifier.height(32.dp))
-                        Icon(
-                            imageVector = Icons.Default.AccountCircle,
-                            contentDescription = "Sin métodos de pago",
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.outline
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "No tienes métodos de pago guardados",
-                            style = MaterialTheme.typography.bodyLarge
+                            text = "Total a Pagar:",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Agrega una tarjeta para pagar más rápido",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.outline
+                            text = formatoMoneda.format(total),
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Selecciona tu método de pago:",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Lista de métodos de pago
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(metodosPago) { metodo ->
+                        MetodoPagoItem(
+                            metodo = metodo,
+                            isSelected = metodoSeleccionado == metodo,
+                            onClick = { metodoSeleccionado = metodo }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Información de simulación
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "ℹ️",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = "Esta es una simulación. No se realizará ningún cargo real.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Botón confirmar pago
+                Button(
+                    onClick = {
+                        if (metodoSeleccionado != null) {
+                            // Generar número de pedido
+                            val numeroPedido = GeneradorNumeroPedido.generar(nombreUsuario)
+
+                            // Crear pedido completo
+                            val pedido = PedidoCompleto(
+                                numeroPedido = numeroPedido,
+                                nombreUsuario = nombreUsuario,
+                                productos = productos,
+                                subtotal = subtotal,
+                                impuestos = impuestos,
+                                costoEnvio = costoEnvio,
+                                total = total,
+                                direccionEnvio = direccionEnvio,
+                                telefono = telefono,
+                                notasAdicionales = notasAdicionales,
+                                metodoPago = metodoSeleccionado!!,
+                                estado = EstadoPedido.CREADO,
+                                fechaCreacion = System.currentTimeMillis()
+                            )
+
+                            // Guardar pedido
+                            pedidosViewModel.agregarPedido(pedido)
+
+                            // Limpiar carrito
+                            carritoViewModel.limpiarCarrito()
+
+                            // Navegar a success con el número de pedido
+                            navController.navigate("success/${numeroPedido}") {
+                                popUpTo("cart") { inclusive = true }
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    enabled = metodoSeleccionado != null
+                ) {
+                    Text(
+                        text = if (metodoSeleccionado != null)
+                            "Confirmar Pago con ${metodoSeleccionado!!.displayName}"
+                        else
+                            "Selecciona un Método de Pago",
+                        style = MaterialTheme.typography.titleMedium
+                    )
                 }
             }
         }
     }
 }
+
+@Composable
+private fun MetodoPagoItem(
+    metodo: MetodoPago,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected)
+                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+            else
+                MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+        ),
+        border = if (isSelected)
+            BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+        else
+            null
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icono del método de pago
+            Text(
+                text = metodo.icono,
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            // Nombre del método
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = metodo.displayName,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                )
+                Text(
+                    text = obtenerDescripcionMetodo(metodo),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
+
+            // Indicador de selección
+            if (isSelected) {
+                Text(
+                    text = "✓",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Obtiene la descripción de cada método de pago
+ */
+private fun obtenerDescripcionMetodo(metodo: MetodoPago): String {
+    return when (metodo) {
+        MetodoPago.TARJETA_CREDITO -> "Visa, Mastercard, American Express"
+        MetodoPago.TARJETA_DEBITO -> "Tarjetas de débito bancarias"
+        MetodoPago.YAPE -> "Pago mediante billetera digital Yape"
+        MetodoPago.PLIN -> "Pago mediante billetera digital Plin"
+        MetodoPago.TRANSFERENCIA -> "Transferencia a cuenta bancaria"
+        MetodoPago.EFECTIVO -> "Paga al recibir tu pedido"
+    }
+}
+

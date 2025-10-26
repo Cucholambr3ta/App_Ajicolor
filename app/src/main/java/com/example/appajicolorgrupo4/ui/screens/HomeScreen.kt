@@ -12,6 +12,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
+import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
+import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -37,21 +39,10 @@ fun HomeScreenCompact(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Text("Menú", modifier = Modifier.padding(16.dp))
-                NavigationDrawerItem(
-                    label = { Text("Ir a Perfil") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        viewModel.navigateTo(Screen.Profile)
-                    }
-                )
-            }
-        }
+    AppNavigationDrawer(
+        navController = navController,
+        currentRoute = Screen.Home.route,
+        drawerState = drawerState
     ) {
         Scaffold(
             topBar = {
@@ -61,9 +52,19 @@ fun HomeScreenCompact(
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menú")
                         }
-                    }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = androidx.compose.ui.graphics.Color.Transparent
+                    )
                 )
-            }
+            },
+            bottomBar = {
+                BottomNavigationBar(
+                    navController = navController,
+                    currentRoute = Screen.Home.route
+                )
+            },
+            containerColor = androidx.compose.ui.graphics.Color.Transparent
         ) { innerPadding ->
             Column(
                 modifier = Modifier
@@ -97,26 +98,67 @@ fun HomeScreenMedium(
 /**
  * Versión Expanded (pantallas grandes, escritorio)
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenExpanded(
     navController: NavController,
     viewModel: MainViewModel
 ) {
-    Row(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Bienvenido a la Página de Inicio (Expanded)!")
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { viewModel.navigateTo(Screen.Settings) }) {
-                Text("Ir a Configuración")
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Text("Menú", modifier = Modifier.padding(16.dp))
+                NavigationDrawerItem(
+                    label = { Text("Ir a Perfil") },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        viewModel.navigateTo(Screen.Profile)
+                    }
+                )
             }
         }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { viewModel.navigateTo(Screen.Profile) }) {
-                Text("Ir a Perfil")
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Pantalla Home") },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Menú")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = androidx.compose.ui.graphics.Color.Transparent
+                    )
+                )
+            },
+            containerColor = androidx.compose.ui.graphics.Color.Transparent
+        ) { innerPadding ->
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(32.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Bienvenido a la Página de Inicio (Expanded)!")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(onClick = { viewModel.navigateTo(Screen.Settings) }) {
+                        Text("Ir a Configuración")
+                    }
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Button(onClick = { viewModel.navigateTo(Screen.Profile) }) {
+                        Text("Ir a Perfil")
+                    }
+                }
             }
         }
     }

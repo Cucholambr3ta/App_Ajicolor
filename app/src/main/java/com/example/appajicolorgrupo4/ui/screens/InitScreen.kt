@@ -12,8 +12,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
-import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
+import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 
 @Composable
 fun InitScreen(
@@ -28,10 +28,11 @@ fun InitScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Bienvenido a Aji Color",
+                text = "Bienvenido Aji Color",
                 style = MaterialTheme.typography.headlineLarge.copy(
                     fontWeight = FontWeight.Bold
-                )
+                ),
+                color = AmarilloAji
             )
 
             Spacer(modifier = Modifier.height(48.dp))
@@ -56,7 +57,7 @@ fun InitScreen(
                 modifier = Modifier
                     .size(200.dp)
                     .clickable {
-                        navController.navigate(Screen.Home.route)
+                        navController.navigate("login")
                     }
             )
         }

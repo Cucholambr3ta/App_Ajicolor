@@ -17,17 +17,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.appajicolorgrupo4.R
+import com.example.appajicolorgrupo4.navigation.Screen
+import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenCompact() { // Implementación de la pantalla de inicio para pantallas compactas
+    val navController = rememberNavController()
+
     Scaffold(
         topBar = {// Usamos TopAppBar (ExperimentalMaterial3Api) → requiere @OptIn / requiere @OptIn(ExperimentalMaterial3Api) porque aún no es estable en Material3
 
             TopAppBar(title = { Text(text = "AJI DE COLOR") }
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(
+                navController = navController,
+                currentRoute = Screen.Home.route
             )
         }
     ) { innerPadding ->

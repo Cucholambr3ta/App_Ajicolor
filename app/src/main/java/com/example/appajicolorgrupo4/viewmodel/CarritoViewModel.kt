@@ -1,0 +1,145 @@
+package com.example.appajicolorgrupo4.viewmodel
+
+import androidx.lifecycle.ViewModel
+import com.example.appajicolorgrupo4.data.ProductoCarrito
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+/**
+ * ViewModel para gestionar el carrito de compras
+ */
+class CarritoViewModel : ViewModel() {
+
+    private val _productos = MutableStateFlow<List<ProductoCarrito>>(emptyList())
+    val productos: StateFlow<List<ProductoCarrito>> = _productos.asStateFlow()
+
+    // Constantes para cálculos
+    companion object {
+        const val COSTO_ENVIO_NORMAL = 5000.0
+        const val MONTO_ENVIO_GRATIS = 20000.0
+    }
+
+    /**
+     * Calcula el subtotal de todos los productos
+     */
+    fun calcularSubtotal(): Double {
+        return _productos.value.sumOf { it.subtotal() }
+    }
+
+    /**
+     * Calcula el costo de envío según el monto de compra
+     * Envío gratis para compras >= $20.000
+     */
+    fun calcularCostoEnvio(): Double {
+        val subtotal = calcularSubtotal()
+        return if (subtotal >= MONTO_ENVIO_GRATIS) 0.0 else COSTO_ENVIO_NORMAL
+    }
+
+    /**
+     * Verifica si califica para envío gratis
+     */
+    fun calificaEnvioGratis(): Boolean {
+        return calcularSubtotal() >= MONTO_ENVIO_GRATIS
+    }
+
+    /**
+     * Calcula cuánto falta para envío gratis
+     */
+    fun montoFaltanteEnvioGratis(): Double {
+        val subtotal = calcularSubtotal()
+        return if (subtotal < MONTO_ENVIO_GRATIS) {
+            MONTO_ENVIO_GRATIS - subtotal
+        } else {
+            0.0
+        }
+    }
+
+    /**
+     * Calcula impuestos (19% IVA)
+     */
+    fun calcularImpuestos(): Double {
+        return calcularSubtotal() * 0.19
+    }
+
+    /**
+     * Calcula el total incluyendo impuestos y envío
+     */
+    fun calcularTotal(): Double {
+        return calcularSubtotal() + calcularImpuestos() + calcularCostoEnvio()
+    }
+
+    /**
+     * Agrega un producto al carrito
+     */
+    fun agregarProducto(producto: ProductoCarrito) {
+        val productosActuales = _productos.value.toMutableList()
+
+        // Buscar si el producto ya existe (mismo id, talla y color)
+        val productoExistente = productosActuales.find {
+            it.id == producto.id &&
+            it.talla == producto.talla &&
+            it.color.nombre == producto.color.nombre
+        }
+
+        if (productoExistente != null) {
+            // Incrementar cantidad
+            val index = productosActuales.indexOf(productoExistente)
+            productosActuales[index] = productoExistente.copy(
+                cantidad = productoExistente.cantidad + producto.cantidad
+            )
+        } else {
+            // Agregar nuevo producto
+            productosActuales.add(producto)
+        }
+
+        _productos.value = productosActuales
+    }
+
+    /**
+     * Elimina un producto del carrito
+     */
+    fun eliminarProducto(producto: ProductoCarrito) {
+        _productos.value = _productos.value.filter { it != producto }
+    }
+
+    /**
+     * Actualiza la cantidad de un producto
+     */
+    fun actualizarCantidad(producto: ProductoCarrito, nuevaCantidad: Int) {
+        if (nuevaCantidad <= 0) {
+            eliminarProducto(producto)
+            return
+        }
+
+        _productos.value = _productos.value.map {
+            if (it == producto) {
+                it.copy(cantidad = nuevaCantidad)
+            } else {
+                it
+            }
+        }
+    }
+
+    /**
+     * Limpia el carrito
+     */
+    fun limpiarCarrito() {
+        _productos.value = emptyList()
+    }
+
+    /**
+     * Verifica si el carrito está vacío
+     */
+    fun carritoVacio(): Boolean {
+        return _productos.value.isEmpty()
+    }
+
+    /**
+     * Obtiene la cantidad total de items en el carrito
+     */
+    fun cantidadTotal(): Int {
+        return _productos.value.sumOf { it.cantidad }
+    }
+}
+
