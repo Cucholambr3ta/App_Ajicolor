@@ -1,8 +1,6 @@
-﻿package com.example.appajicolorgrupo4.ui.screens
+package com.example.appajicolorgrupo4.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,8 +12,8 @@ import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
@@ -46,16 +44,11 @@ fun HomeScreenCompact(
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text("Pantalla Home") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menú")
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color.Transparent
-                    )
+                TopBarWithCart(
+                    title = "Inicio",
+                    navController = navController,
+                    drawerState = drawerState,
+                    scope = scope
                 )
             },
             bottomBar = {
@@ -73,10 +66,10 @@ fun HomeScreenCompact(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text("¡Bienvenido a la Página de Inicio (Compact)!")
+                Text("¡Bienvenido a la Página de Inicio!")
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { viewModel.navigateTo(Screen.Settings) }) {
-                    Text("Ir a Configuración")
+                Button(onClick = { navController.navigate(Screen.Catalogo.route) }) {
+                    Text("Ver Catálogo")
                 }
             }
         }
@@ -107,34 +100,24 @@ fun HomeScreenExpanded(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                Text("Menú", modifier = Modifier.padding(16.dp))
-                NavigationDrawerItem(
-                    label = { Text("Ir a Perfil") },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        viewModel.navigateTo(Screen.Profile)
-                    }
-                )
-            }
-        }
+    AppNavigationDrawer(
+        navController = navController,
+        currentRoute = Screen.Home.route,
+        drawerState = drawerState
     ) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text("Pantalla Home") },
-                    navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menú")
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color.Transparent
-                    )
+                TopBarWithCart(
+                    title = "Inicio",
+                    navController = navController,
+                    drawerState = drawerState,
+                    scope = scope
+                )
+            },
+            bottomBar = {
+                BottomNavigationBar(
+                    navController = navController,
+                    currentRoute = Screen.Home.route
                 )
             },
             containerColor = androidx.compose.ui.graphics.Color.Transparent
@@ -148,14 +131,14 @@ fun HomeScreenExpanded(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Bienvenido a la Página de Inicio (Expanded)!")
+                    Text("¡Bienvenido a la Página de Inicio!")
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { viewModel.navigateTo(Screen.Settings) }) {
-                        Text("Ir a Configuración")
+                    Button(onClick = { navController.navigate(Screen.Catalogo.route) }) {
+                        Text("Ver Catálogo")
                     }
                 }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Button(onClick = { viewModel.navigateTo(Screen.Profile) }) {
+                    Button(onClick = { navController.navigate(Screen.Profile.route) }) {
                         Text("Ir a Perfil")
                     }
                 }
@@ -163,3 +146,4 @@ fun HomeScreenExpanded(
         }
     }
 }
+

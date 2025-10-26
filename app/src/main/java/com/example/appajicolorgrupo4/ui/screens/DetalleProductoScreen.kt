@@ -28,9 +28,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.data.*
+import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.*
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
 import com.example.appajicolorgrupo4.viewmodel.ProductoViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +62,11 @@ fun DetalleProductoScreen(
     // Mensaje de confirmación
     var mostrarMensajeAgregado by remember { mutableStateOf(false) }
 
+    // Estados para drawer y navigation
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
+
     // Reset al cambiar tipo (solo para DTF)
     LaunchedEffect(tipoSeleccionado) {
         if (producto.permiteSeleccionTipo()) {
@@ -69,36 +76,47 @@ fun DetalleProductoScreen(
     }
 
     AppBackground {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(producto.nombre) },
-                    navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color.Transparent
-                    )
-                )
-            },
-            containerColor = androidx.compose.ui.graphics.Color.Transparent,
-            snackbarHost = {
-                if (mostrarMensajeAgregado) {
-                    Snackbar(
-                        modifier = Modifier.padding(16.dp),
-                        action = {
-                            TextButton(onClick = {
-                                mostrarMensajeAgregado = false
-                                navController.navigate("cart")
-                            }) {
-                                Text("Ver Carrito")
+        AppNavigationDrawer(
+            navController = navController,
+            drawerState = drawerState,
+            currentRoute = currentRoute
+        ) {
+            Scaffold(
+                topBar = {
+                    TopBarWithCart(
+                        title = producto.nombre,
+                        navController = navController,
+                        drawerState = drawerState,
+                        scope = scope,
+                        additionalActions = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
                             }
                         }
-                    ) {
-                        Text("✓ Producto agregado al carrito")
-                    }
+                    )
+                },
+                bottomBar = {
+                    BottomNavigationBar(
+                        navController = navController,
+                        currentRoute = currentRoute
+                    )
+                },
+                containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                snackbarHost = {
+                    if (mostrarMensajeAgregado) {
+                        Snackbar(
+                            modifier = Modifier.padding(16.dp),
+                            action = {
+                                TextButton(onClick = {
+                                    mostrarMensajeAgregado = false
+                                    navController.navigate(Screen.Cart.route)
+                                }) {
+                                    Text("Ver Carrito")
+                                }
+                            }
+                        ) {
+                            Text("✓ Producto agregado al carrito")
+                        }
                 }
             }
         ) { paddingValues ->
@@ -400,6 +418,7 @@ fun DetalleProductoScreen(
                     Spacer(modifier = Modifier.height(32.dp))
                 }
             }
+        }
         }
     }
 

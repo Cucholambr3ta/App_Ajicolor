@@ -27,6 +27,7 @@ import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
@@ -99,16 +100,11 @@ fun ProfileScreen(
         ) {
             Scaffold(
                 topBar = {
-                    CenterAlignedTopAppBar(
-                        title = { Text("Mi Perfil") },
-                        navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Menú")
-                            }
-                        },
-                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                            containerColor = androidx.compose.ui.graphics.Color.Transparent
-                        )
+                    TopBarWithCart(
+                        title = "Mi Perfil",
+                        navController = navController,
+                        drawerState = drawerState,
+                        scope = scope
                     )
                 },
                 bottomBar = {

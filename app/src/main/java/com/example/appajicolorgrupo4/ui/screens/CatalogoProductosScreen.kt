@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,7 +29,12 @@ import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.data.CatalogoProductos
 import com.example.appajicolorgrupo4.data.CategoriaProducto
 import com.example.appajicolorgrupo4.data.Producto
+import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
+import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
+import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +45,10 @@ fun CatalogoProductosScreen(
     var categoriaFiltro by remember { mutableStateOf<CategoriaProducto?>(null) }
     var searchQuery by remember { mutableStateOf("") }
     var isSearchActive by remember { mutableStateOf(false) }
+
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
 
     // Filtrar productos por búsqueda y categoría
     val productosFiltrados = remember(categoriaFiltro, searchQuery) {
@@ -62,43 +72,63 @@ fun CatalogoProductosScreen(
     }
 
     AppBackground {
-        Scaffold(
-            topBar = {
-                if (isSearchActive) {
-                    // SearchBar cuando está activo
-                    SearchBar(
-                        query = searchQuery,
-                        onQueryChange = { searchQuery = it },
-                        onSearch = { isSearchActive = false },
-                        active = true,
-                        onActiveChange = {
-                            isSearchActive = it
-                            if (!it) searchQuery = ""
-                        },
-                        placeholder = { Text("Buscar productos...") },
-                        leadingIcon = {
-                            IconButton(onClick = {
-                                isSearchActive = false
-                                searchQuery = ""
-                            }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Volver"
-                                )
-                            }
-                        },
-                        trailingIcon = {
-                            if (searchQuery.isNotEmpty()) {
-                                IconButton(onClick = { searchQuery = "" }) {
+        AppNavigationDrawer(
+            navController = navController,
+            drawerState = drawerState,
+            currentRoute = currentRoute
+        ) {
+            Scaffold(
+                topBar = {
+                    if (isSearchActive) {
+                        // SearchBar cuando está activo
+                        SearchBar(
+                            query = searchQuery,
+                            onQueryChange = { searchQuery = it },
+                            onSearch = { isSearchActive = false },
+                            active = true,
+                            onActiveChange = {
+                                isSearchActive = it
+                                if (!it) searchQuery = ""
+                            },
+                            placeholder = { Text("Buscar productos...") },
+                            leadingIcon = {
+                                IconButton(onClick = {
+                                    isSearchActive = false
+                                    searchQuery = ""
+                                }) {
                                     Icon(
-                                        imageVector = Icons.Default.Close,
-                                        contentDescription = "Limpiar búsqueda"
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Volver"
                                     )
                                 }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
+                            },
+                            trailingIcon = {
+                                Row {
+                                    if (searchQuery.isNotEmpty()) {
+                                        IconButton(onClick = { searchQuery = "" }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Close,
+                                                contentDescription = "Limpiar búsqueda"
+                                            )
+                                        }
+                                    }
+                                    // Ícono del carrito también en el SearchBar
+                                    IconButton(
+                                        onClick = {
+                                            navController.navigate(Screen.Cart.route) {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.ShoppingCart,
+                                            contentDescription = "Carrito de compras"
+                                        )
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                         // Sugerencias de búsqueda
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
@@ -142,22 +172,29 @@ fun CatalogoProductosScreen(
                         }
                     }
                 } else {
-                    // TopBar normal con botón de búsqueda
-                    TopAppBar(
-                        title = { Text("Catálogo de Productos") },
-                        actions = {
+                    // TopBar normal con botón de búsqueda y carrito
+                    TopBarWithCart(
+                        title = "Catálogo de Productos",
+                        navController = navController,
+                        drawerState = drawerState,
+                        scope = scope,
+                        additionalActions = {
+                            // Botón de búsqueda
                             IconButton(onClick = { isSearchActive = true }) {
                                 Icon(
                                     imageVector = Icons.Default.Search,
                                     contentDescription = "Buscar productos"
                                 )
                             }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = androidx.compose.ui.graphics.Color.Transparent
-                        )
+                        }
                     )
                 }
+            },
+            bottomBar = {
+                BottomNavigationBar(
+                    navController = navController,
+                    currentRoute = currentRoute
+                )
             },
             containerColor = androidx.compose.ui.graphics.Color.Transparent
         ) { paddingValues ->
@@ -233,6 +270,7 @@ fun CatalogoProductosScreen(
                     }
                 }
             }
+        }
         }
     }
 }

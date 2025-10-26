@@ -1,8 +1,5 @@
 package com.example.appajicolorgrupo4.data
 
-import com.example.appajicolorgrupo4.data.ColorInfo
-import com.example.appajicolorgrupo4.data.Talla
-
 /**
  * Representa un producto en el carrito de compras
  */
@@ -51,7 +48,7 @@ data class Pedido(
     val total: Double,
     val direccionEnvio: String,
     val metodoPago: MetodoPago,
-    val estado: EstadoPedido = EstadoPedido.PENDIENTE,
+    val estado: EstadoPedido = EstadoPedido.CREADO,
     val fechaPedido: Long = System.currentTimeMillis()
 )
 

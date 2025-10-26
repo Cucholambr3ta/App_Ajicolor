@@ -23,8 +23,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
 import com.example.appajicolorgrupo4.data.ProductoCarrito
+import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
+import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
+import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -41,6 +46,10 @@ fun CartScreen(
     val calificaEnvioGratis = carritoViewModel.calificaEnvioGratis()
     val montoFaltante = carritoViewModel.montoFaltanteEnvioGratis()
 
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
+
     val formatoMoneda = remember {
         NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
             maximumFractionDigits = 0
@@ -48,17 +57,28 @@ fun CartScreen(
     }
 
     AppBackground {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Carrito de Compras") },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color.Transparent
+        AppNavigationDrawer(
+            navController = navController,
+            drawerState = drawerState,
+            currentRoute = currentRoute
+        ) {
+            Scaffold(
+                topBar = {
+                    TopBarWithCart(
+                        title = "Carrito de Compras",
+                        navController = navController,
+                        drawerState = drawerState,
+                        scope = scope
                     )
-                )
-            },
-            containerColor = androidx.compose.ui.graphics.Color.Transparent
-        ) { paddingValues ->
+                },
+                bottomBar = {
+                    BottomNavigationBar(
+                        navController = navController,
+                        currentRoute = currentRoute
+                    )
+                },
+                containerColor = androidx.compose.ui.graphics.Color.Transparent
+            ) { paddingValues ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -94,7 +114,7 @@ fun CartScreen(
                         Spacer(modifier = Modifier.height(32.dp))
 
                         Button(
-                            onClick = { navController.navigate("catalogo") },
+                            onClick = { navController.navigate(Screen.Catalogo.route) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 32.dp)
@@ -250,6 +270,7 @@ fun CartScreen(
                     }
                 }
             }
+        }
         }
     }
 }

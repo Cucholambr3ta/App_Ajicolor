@@ -5,30 +5,46 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.appajicolorgrupo4.ui.screens.StartScreen
+import com.example.appajicolorgrupo4.ui.screens.InitScreen
+import com.example.appajicolorgrupo4.ui.screens.LoginScreen
 import com.example.appajicolorgrupo4.ui.screens.RegistroScreen
-import com.example.appajicolorgrupo4.ui.screens.ResumenScreen
+import com.example.appajicolorgrupo4.ui.screens.HomeScreen
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 
 object Routes {
+    const val START = "start"
+    const val INIT = "init"
+    const val LOGIN = "login"
     const val REGISTRO = "registro"
-    const val RESUMEN = "resumen"
+    const val HOME = "home"
 }
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // ViewModel compartido entre pantallas y se crea una sola vez
+    // ViewModel para la pantalla de registro
     val usuarioViewModel: UsuarioViewModel = viewModel()
 
     NavHost(
         navController = navController,
-        startDestination = Routes.REGISTRO
+        startDestination = Routes.START
     ) {
+        composable(Routes.START) {
+            StartScreen(navController)
+        }
+        composable(Routes.INIT) {
+            InitScreen(navController)
+        }
+        composable(Routes.LOGIN) {
+            LoginScreen(navController)
+        }
         composable(Routes.REGISTRO) {
             RegistroScreen(navController, usuarioViewModel)
         }
-        composable(Routes.RESUMEN) {
-            ResumenScreen(navController, usuarioViewModel)
+        composable(Routes.HOME) {
+            HomeScreen(navController)
         }
     }
 }

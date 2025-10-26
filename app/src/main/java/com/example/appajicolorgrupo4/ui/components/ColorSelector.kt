@@ -200,8 +200,8 @@ fun ColorSelectorDialog(
     colorSeleccionado: ColorInfo?,
     onColorSelected: (ColorInfo) -> Unit,
     titulo: String = "Seleccionar Color",
-    modifier: Modifier = Modifier,
-    titulo: String = "Seleccionar Color"
+    modifier: Modifier = Modifier
+) {
     var showDialog by remember { mutableStateOf(false) }
 
     // Botón que muestra el color seleccionado

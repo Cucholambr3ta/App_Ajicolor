@@ -21,7 +21,11 @@ import com.example.appajicolorgrupo4.data.AccionNotificacion
 import com.example.appajicolorgrupo4.data.Notificacion
 import com.example.appajicolorgrupo4.data.TipoNotificacion
 import com.example.appajicolorgrupo4.ui.components.AppBackground
+import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
+import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.viewmodel.NotificacionesViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,36 +38,51 @@ fun NotificationScreen(
     val notificaciones by notificacionesViewModel.notificaciones.collectAsState()
     val formatoFecha = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
 
-    AppBackground {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text("Notificaciones") },
-                    actions = {
-                        if (notificaciones.isNotEmpty()) {
-                            // Botón para marcar todas como leídas
-                            IconButton(onClick = { notificacionesViewModel.marcarTodasComoLeidas() }) {
-                                Icon(
-                                    imageVector = Icons.Default.DoneAll,
-                                    contentDescription = "Marcar todas como leídas"
-                                )
-                            }
-                            // Botón para eliminar todas las leídas
-                            IconButton(onClick = { notificacionesViewModel.eliminarNotificacionesLeidas() }) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Eliminar leídas"
-                                )
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
+
+    AppNavigationDrawer(
+        navController = navController,
+        drawerState = drawerState,
+        currentRoute = currentRoute
+    ) {
+        AppBackground {
+            Scaffold(
+                topBar = {
+                    TopBarWithCart(
+                        title = "Notificaciones",
+                        navController = navController,
+                        drawerState = drawerState,
+                        scope = scope,
+                        additionalActions = {
+                            if (notificaciones.isNotEmpty()) {
+                                // Botón para marcar todas como leídas
+                                IconButton(onClick = { notificacionesViewModel.marcarTodasComoLeidas() }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Done,
+                                        contentDescription = "Marcar todas como leídas"
+                                    )
+                                }
+                                // Botón para eliminar todas las leídas
+                                IconButton(onClick = { notificacionesViewModel.eliminarNotificacionesLeidas() }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Eliminar leídas"
+                                    )
+                                }
                             }
                         }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color.Transparent
                     )
-                )
-            },
-            containerColor = androidx.compose.ui.graphics.Color.Transparent
-        ) { paddingValues ->
+                },
+                bottomBar = {
+                    BottomNavigationBar(
+                        navController = navController,
+                        currentRoute = currentRoute
+                    )
+                },
+                containerColor = androidx.compose.ui.graphics.Color.Transparent
+            ) { paddingValues ->
             if (notificaciones.isEmpty()) {
                 // Estado vacío
                 Column(
@@ -139,6 +158,7 @@ fun NotificationScreen(
             }
         }
     }
+    }
 }
 
 @Composable
@@ -170,9 +190,9 @@ private fun NotificacionCard(
                 imageVector = when (notificacion.tipo) {
                     TipoNotificacion.COMPRA_EXITOSA -> Icons.Default.CheckCircle
                     TipoNotificacion.PEDIDO_CONFIRMADO -> Icons.Default.Check
-                    TipoNotificacion.PEDIDO_ENVIADO -> Icons.Default.LocalShipping
+                    TipoNotificacion.PEDIDO_ENVIADO -> Icons.Default.ShoppingCart
                     TipoNotificacion.PEDIDO_ENTREGADO -> Icons.Default.Done
-                    TipoNotificacion.PROMOCION -> Icons.Default.LocalOffer
+                    TipoNotificacion.PROMOCION -> Icons.Default.Star
                     TipoNotificacion.GENERAL -> Icons.Default.Info
                 },
                 contentDescription = null,

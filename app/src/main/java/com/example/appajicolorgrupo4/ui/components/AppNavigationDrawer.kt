@@ -4,12 +4,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -142,7 +142,7 @@ fun AppNavigationDrawer(
                 NavigationDrawerItem(
                     label = { Text("Historial de Pedidos") },
                     selected = currentRoute == Screen.OrderHistory.route,
-                    icon = { Icon(Icons.Default.Receipt, contentDescription = "Compras") },
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Compras") },
                     onClick = {
                         scope.launch { drawerState.close() }
                         if (currentRoute != Screen.OrderHistory.route) {
