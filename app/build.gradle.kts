@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.apppolera_ecommerce_grupo4"
+    namespace = "com.example.appajicolorgrupo4"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.apppolera_ecommerce_grupo4"
+        applicationId = "com.example.appajicolorgrupo4"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
