@@ -48,7 +48,7 @@ fun HomeScreenCompact() { // Implementación de la pantalla de inicio para panta
                 Text(text = "Explorar Nuestros Productos")
             }
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.logo_principal),
                 contentDescription = "Logo App",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -92,7 +92,7 @@ fun HomeScreenCompactPreviewContent() { // Implementación de la pantalla de ini
                 Text(text = "Explorar Nuestros Productos")
             }
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.logo_principal),
                 contentDescription = "Logo App",
                 modifier = Modifier
                     .fillMaxWidth()

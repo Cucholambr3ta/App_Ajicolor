@@ -51,18 +51,19 @@ fun ProfileScreen(
                         onClick = { viewModel.navigateTo(Screen.Settings) },
                         icon = { Icon(imageVector = Icons.Filled.Settings, contentDescription = "Ajustes") },
                         label = { Text("Ajustes") }
-                )
+                    )
+                }
             }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Bienvenido al Perfil")
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Bienvenido al Perfil")
+            }
         }
     }
 }

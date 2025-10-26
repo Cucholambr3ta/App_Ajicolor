@@ -2,12 +2,11 @@
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.ui.components.AppBackground
@@ -25,7 +24,7 @@ fun FailScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = Icons.Default.Error,
+                imageVector = Icons.Default.Close,
                 contentDescription = "Error",
                 modifier = Modifier.size(120.dp),
                 tint = MaterialTheme.colorScheme.error

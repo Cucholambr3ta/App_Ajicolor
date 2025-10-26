@@ -3,8 +3,8 @@
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CreditCard
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,7 +27,7 @@ fun PaymentMethodsScreen(
                 FloatingActionButton(
                     onClick = { /* navController.navigate("add_card") */ }
                 ) {
-                    Icon(Icons.Default.CreditCard, "Agregar tarjeta")
+                    Icon(Icons.Default.Add, "Agregar tarjeta")
                 }
             }
         ) { paddingValues ->
@@ -46,7 +46,7 @@ fun PaymentMethodsScreen(
                     ) {
                         Spacer(modifier = Modifier.height(32.dp))
                         Icon(
-                            imageVector = Icons.Default.CreditCard,
+                            imageVector = Icons.Default.AccountCircle,
                             contentDescription = "Sin métodos de pago",
                             modifier = Modifier.size(64.dp),
                             tint = MaterialTheme.colorScheme.outline

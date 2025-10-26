@@ -5,6 +5,7 @@ package com.example.appajicolorgrupo4.navigation
 // Si se requieren argumentos, se usa data class.
 sealed class Screen(val route: String) {
     // Rutas simples (sin argumentos)
+    data object Init : Screen(route = "init_page")
     data object Start : Screen(route = "start_page")
     data object Home : Screen(route = "home_page")
     data object Profile : Screen(route = "profile_page")

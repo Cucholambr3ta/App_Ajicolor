@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AppPolera_ecommerce_Grupo4"
+rootProject.name = "AppAjiColorGrupo4"
 include(":app")

@@ -14,7 +14,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.appajicolorgrupo4.navigation.NavigationEvent
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.screens.HomeScreen
+import com.example.appajicolorgrupo4.ui.screens.InitScreen
 import com.example.appajicolorgrupo4.ui.screens.ProfileScreen
+import com.example.appajicolorgrupo4.ui.screens.RegistroScreen
 import com.example.appajicolorgrupo4.ui.screens.SettingScreen
 import com.example.appajicolorgrupo4.ui.screens.StartScreen
 import com.example.appajicolorgrupo4.ui.theme.AppAjiColorGrupo4Theme
@@ -67,6 +69,15 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(Screen.Start.route) {
                             StartScreen(navController = navController)
+                        }
+                        composable(Screen.Init.route) {
+                            InitScreen(navController = navController)
+                        }
+                        composable("registro") {
+                            RegistroScreen(
+                                navController = navController,
+                                viewModel = viewModel()
+                            )
                         }
                         composable(Screen.Home.route) {
                             HomeScreen(navController = navController, viewModel = viewModel)

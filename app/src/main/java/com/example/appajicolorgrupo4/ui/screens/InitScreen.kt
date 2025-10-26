@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
@@ -15,7 +16,7 @@ import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 
 @Composable
-fun StartScreen(
+fun InitScreen(
     navController: NavController
 ) {
     AppBackground {
@@ -27,24 +28,37 @@ fun StartScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Bienvenido",
-                style = MaterialTheme.typography.headlineLarge
+                text = "Bienvenido a Aji Color",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold
+                )
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Botón con imagen del logo
+            // Botón Crear Cuenta
             Image(
-                painter = painterResource(id = R.drawable.logo_principal),
-                contentDescription = "Logo Aji Color",
+                painter = painterResource(id = R.drawable.crear_cuenta),
+                contentDescription = "Crear Cuenta",
                 modifier = Modifier
-                    .size(300.dp)
+                    .size(200.dp)
                     .clickable {
-                        navController.navigate(Screen.Init.route)
+                        navController.navigate("registro")
+                    }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botón Inicio Sesión
+            Image(
+                painter = painterResource(id = R.drawable.inicio_sesion),
+                contentDescription = "Inicio Sesión",
+                modifier = Modifier
+                    .size(200.dp)
+                    .clickable {
+                        navController.navigate(Screen.Home.route)
                     }
             )
         }
     }
 }
-
-
