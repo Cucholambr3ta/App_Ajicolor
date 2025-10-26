@@ -28,7 +28,7 @@ import com.example.uinavegacion.ui.viewmodel.AuthViewModel
 @Composable // Gráfico de navegación + Drawer + Scaffold
 fun AppNavGraph(navController: NavHostController,
                 authViewModel: AuthViewModel        // <-- 1.- NUEVO: recibimos el VM inyectado desde MainActivity
-     ) { // Recibe el controlador
+) { // Recibe el controlador
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed) // Estado del drawer
     val scope = rememberCoroutineScope() // Necesario para abrir/cerrar drawer
@@ -88,6 +88,7 @@ fun AppNavGraph(navController: NavHostController,
                         onGoCategories = goCategories // Botón para ir a Categorías
                     )
                 }
+
                 composable(Route.Login.path) { // Destino Login
                     //1 modificamos el acceso a la pagina
                     // Usamos la versión con ViewModel (LoginScreenVm) para formularios/validación en tiempo real
@@ -95,8 +96,10 @@ fun AppNavGraph(navController: NavHostController,
                         vm = authViewModel,            // <-- NUEVO: pasamos VM inyectado
                         onLoginOkNavigateHome = goHome,            // Si el VM marca success=true, navegamos a Home
                         onGoRegister = goRegister,                  // Enlace para ir a la pantalla de Registro
-                        onGoPasswordReset = goPasswordReset                    )
+                        onGoPasswordReset = goPasswordReset
+                    )
                 }
+
                 composable(Route.Register.path) { // Destino Registro
                     //2 modificamos el acceso a la pagina
                     // Usamos la versión con ViewModel (RegisterScreenVm) para formularios/validación en tiempo real
