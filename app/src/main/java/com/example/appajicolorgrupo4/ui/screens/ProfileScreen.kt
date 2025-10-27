@@ -28,6 +28,7 @@ import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.ProfileImageSelector
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
@@ -53,8 +54,8 @@ fun ProfileScreen(
     val isEditMode by usuarioViewModel.isEditMode.collectAsState()
     val updateResultado by usuarioViewModel.updateResultado.collectAsState()
 
-    // Estado para mostrar el diálogo de selección de foto
-    var showPhotoDialog by remember { mutableStateOf(false) }
+    // Estado para almacenar la URI de la foto de perfil
+    var profileImageUri by remember { mutableStateOf<String?>(null) }
 
     // Estado para el drawer
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -68,30 +69,6 @@ fun ProfileScreen(
         }
     }
 
-    // Diálogo para seleccionar origen de foto
-    if (showPhotoDialog) {
-        AlertDialog(
-            onDismissRequest = { showPhotoDialog = false },
-            title = { Text("Seleccionar foto de perfil") },
-            text = { Text("¿De dónde deseas obtener la foto?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    // TODO: Implementar selección desde galería
-                    showPhotoDialog = false
-                }) {
-                    Text("Galería")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    // TODO: Implementar captura desde cámara
-                    showPhotoDialog = false
-                }) {
-                    Text("Cámara")
-                }
-            }
-        )
-    }
 
     AppBackground {
         AppNavigationDrawer(
@@ -131,42 +108,15 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.bodyLarge
                         )
                     } else {
-                        // Foto de perfil
-                        Box(
-                            modifier = Modifier
-                                .size(120.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable { showPhotoDialog = true },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.profile),
-                                contentDescription = "Foto de perfil",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-
-                            // Overlay con icono de cámara
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f),
-                                        CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = "Cambiar foto",
-                                tint = androidx.compose.ui.graphics.Color.White,
-                                modifier = Modifier.size(32.dp)
-                            )
-                            }
-                        }
+                        // Foto de perfil con selector
+                        ProfileImageSelector(
+                            defaultImageRes = R.drawable.profile,
+                            onImageSelected = { uri ->
+                                profileImageUri = uri
+                                // Aquí puedes guardar la URI en el ViewModel si lo necesitas
+                            },
+                            currentImageUri = profileImageUri
+                        )
 
                         Spacer(Modifier.height(8.dp))
 

@@ -1,4 +1,4 @@
-﻿package com.example.appajicolorgrupo4.ui.screens
+package com.example.appajicolorgrupo4.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.navigation.Screen
@@ -56,7 +58,7 @@ fun SettingScreen(
                             }
                         },
                         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                            containerColor = androidx.compose.ui.graphics.Color.Transparent
+                            containerColor = Color.Transparent
                         )
                     )
                 },
@@ -66,7 +68,7 @@ fun SettingScreen(
                         currentRoute = Screen.Settings.route
                     )
                 },
-                containerColor = androidx.compose.ui.graphics.Color.Transparent
+                containerColor = Color.Transparent
             ) { innerPadding ->
                 Column(
                     modifier = Modifier
@@ -85,10 +87,21 @@ fun SettingScreen(
                     Button(onClick = { viewModel.navigateTo(Screen.Profile) }) {
                         Text(text = "Ir a Perfil")
                     }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Botón de depuración (solo para desarrollo)
+                    Button(
+                        onClick = { navController.navigate(Screen.Debug.route) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red
+                        )
+                    ) {
+                        Text(text = "🛠️ Modo Depuración")
+                    }
                 }
             }
         }
     }
 }
-
 

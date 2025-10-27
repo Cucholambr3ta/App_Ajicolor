@@ -30,6 +30,7 @@ import com.example.appajicolorgrupo4.ui.screens.SuccessScreen
 import com.example.appajicolorgrupo4.ui.screens.CatalogoProductosScreen
 import com.example.appajicolorgrupo4.ui.screens.DetalleProductoScreen
 import com.example.appajicolorgrupo4.ui.screens.DetallePedidoScreen
+import com.example.appajicolorgrupo4.ui.screens.DebugScreen
 import com.example.appajicolorgrupo4.ui.theme.AppAjiColorGrupo4Theme
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -164,6 +165,9 @@ class MainActivity : ComponentActivity() {
                                 numeroPedido = numeroPedido,
                                 navController = navController
                             )
+                        }
+                        composable(Screen.Debug.route) {
+                            DebugScreen(navController = navController)
                         }
                     }
                 }

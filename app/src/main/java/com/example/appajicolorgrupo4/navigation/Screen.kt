@@ -26,6 +26,9 @@ sealed class Screen(val route: String) {
     // Rutas de pedidos
     data object OrderHistory : Screen(route = "order_history_page")
 
+    // Rutas de depuración (solo desarrollo)
+    data object Debug : Screen(route = "debug_page")
+
     // Rutas con argumentos
     data class Success(val numeroPedido: String?) : Screen(route = "success/{numeroPedido}") {
         companion object {

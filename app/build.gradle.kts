@@ -79,6 +79,9 @@ dependencies {
     // DataStore Preferences
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
+    // Coil para cargar imágenes desde URI
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
