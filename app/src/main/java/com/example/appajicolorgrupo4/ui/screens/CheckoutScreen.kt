@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -188,7 +189,11 @@ fun CheckoutScreen(
                                 label = { Text("Dirección de Envío *") },
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 2,
-                                placeholder = { Text("Calle, número, distrito, ciudad") }
+                                placeholder = { Text("Calle, número, distrito, ciudad") },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                    unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
+                                )
                             )
 
                             OutlinedTextField(
@@ -197,7 +202,11 @@ fun CheckoutScreen(
                                 label = { Text("Teléfono de Contacto *") },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
-                                placeholder = { Text("999 999 999") }
+                                placeholder = { Text("999 999 999") },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                    unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
+                                )
                             )
 
                             OutlinedTextField(
@@ -206,7 +215,11 @@ fun CheckoutScreen(
                                 label = { Text("Notas Adicionales (Opcional)") },
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 2,
-                                placeholder = { Text("Referencias, indicaciones especiales, etc.") }
+                                placeholder = { Text("Referencias, indicaciones especiales, etc.") },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                    unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
+                                )
                             )
                         }
                     }

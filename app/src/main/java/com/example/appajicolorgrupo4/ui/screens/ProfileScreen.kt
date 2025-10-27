@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -222,7 +223,10 @@ fun ProfileScreen(
                                 disabledBorderColor = MaterialTheme.colorScheme.outline,
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
-                                cursorColor = AmarilloAji
+                                cursorColor = AmarilloAji,
+                                focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                disabledContainerColor = Color.White.copy(alpha = 0.75f)
                             )
                         )
 
@@ -243,7 +247,10 @@ fun ProfileScreen(
                                 disabledBorderColor = MaterialTheme.colorScheme.outline,
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
-                                cursorColor = AmarilloAji
+                                cursorColor = AmarilloAji,
+                                focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                disabledContainerColor = Color.White.copy(alpha = 0.75f)
                             )
                         )
 
@@ -264,7 +271,10 @@ fun ProfileScreen(
                                 disabledBorderColor = MaterialTheme.colorScheme.outline,
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
-                                cursorColor = AmarilloAji
+                                cursorColor = AmarilloAji,
+                                focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                disabledContainerColor = Color.White.copy(alpha = 0.75f)
                             )
                         )
 

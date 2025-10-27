@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -583,7 +584,11 @@ private fun DialogoAgregarResena(
                         label = { Text("Comentario") },
                         modifier = Modifier.fillMaxWidth(),
                         minLines = 3,
-                        placeholder = { Text("Comparte tu experiencia con este producto") }
+                        placeholder = { Text("Comparte tu experiencia con este producto") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                            unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
+                        )
                     )
                 }
 

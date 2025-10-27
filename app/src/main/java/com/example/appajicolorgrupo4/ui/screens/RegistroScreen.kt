@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -39,7 +40,9 @@ fun RegistroScreen(
                     unfocusedBorderColor = AmarilloAji,
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
-                    cursorColor = AmarilloAji
+                    cursorColor = AmarilloAji,
+                    focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )
             )
 
@@ -56,7 +59,9 @@ fun RegistroScreen(
                     unfocusedBorderColor = AmarilloAji,
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
-                    cursorColor = AmarilloAji
+                    cursorColor = AmarilloAji,
+                    focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )
             )
 
@@ -74,7 +79,9 @@ fun RegistroScreen(
                     unfocusedBorderColor = AmarilloAji,
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
-                    cursorColor = AmarilloAji
+                    cursorColor = AmarilloAji,
+                    focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )
             )
 
@@ -91,7 +98,9 @@ fun RegistroScreen(
                     unfocusedBorderColor = AmarilloAji,
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
-                    cursorColor = AmarilloAji
+                    cursorColor = AmarilloAji,
+                    focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                    unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )
             )
 
