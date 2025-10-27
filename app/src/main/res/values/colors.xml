@@ -7,4 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Colores de la app -->
+    <color name="amarillo_aji">#FFD141</color>
+    <color name="rojo_aji">#E84266</color>
+    <color name="verde_aji">#1EA96A</color>
+    <color name="morado_aji">#4F266A</color>
 </resources>

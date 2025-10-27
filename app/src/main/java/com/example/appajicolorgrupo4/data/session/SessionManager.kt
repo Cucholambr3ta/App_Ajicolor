@@ -21,6 +21,7 @@ class SessionManager(context: Context) {
         private const val KEY_USER_EMAIL = "user_email"
         private const val KEY_USER_ADDRESS = "user_address"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
+        private const val KEY_PROFILE_IMAGE_URI = "profile_image_uri"
     }
 
     /**
@@ -73,5 +74,31 @@ class SessionManager(context: Context) {
     fun updateSession(user: UserEntity) {
         saveSession(user)
     }
-}
 
+    /**
+     * Guarda la URI de la foto de perfil
+     */
+    fun saveProfileImageUri(uri: String?) {
+        prefs.edit().apply {
+            putString(KEY_PROFILE_IMAGE_URI, uri)
+            apply()
+        }
+    }
+
+    /**
+     * Obtiene la URI de la foto de perfil guardada
+     */
+    fun getProfileImageUri(): String? {
+        return prefs.getString(KEY_PROFILE_IMAGE_URI, null)
+    }
+
+    /**
+     * Elimina la foto de perfil
+     */
+    fun clearProfileImage() {
+        prefs.edit().apply {
+            remove(KEY_PROFILE_IMAGE_URI)
+            apply()
+        }
+    }
+}

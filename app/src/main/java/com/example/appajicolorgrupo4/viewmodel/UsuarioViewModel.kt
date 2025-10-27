@@ -47,6 +47,10 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     private val _updateResultado = MutableStateFlow<String?>(null)
     val updateResultado: StateFlow<String?> = _updateResultado
 
+    // Estado para la URI de la foto de perfil
+    private val _profileImageUri = MutableStateFlow<String?>(null)
+    val profileImageUri: StateFlow<String?> = _profileImageUri
+
     // Funciones de actualización de campos
     fun actualizaNombre(valor: String) {
         _estado.update { it.copy(nombre = valor, errores = it.errores.copy(nombre = null)) }
@@ -158,6 +162,8 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
                         direccion = user.direccion
                     )
                 }
+                // Cargar la foto de perfil guardada
+                _profileImageUri.value = sessionManager.getProfileImageUri()
             }
         }
     }
@@ -246,6 +252,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         _currentUser.value = null
         _estado.update { UsuarioUiState() }
         _isEditMode.value = false
+        _profileImageUri.value = null
     }
 
     // Verificar si hay sesión activa
@@ -255,5 +262,17 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
 
     fun limpiarMensajeActualizacion() {
         _updateResultado.value = null
+    }
+
+    // Guardar la URI de la foto de perfil
+    fun guardarFotoPerfil(uri: String?) {
+        _profileImageUri.value = uri
+        sessionManager.saveProfileImageUri(uri)
+    }
+
+    // Eliminar la foto de perfil
+    fun eliminarFotoPerfil() {
+        _profileImageUri.value = null
+        sessionManager.clearProfileImage()
     }
 }
