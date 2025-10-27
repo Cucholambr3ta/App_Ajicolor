@@ -1,3 +1,7 @@
 <resources>
+<<<<<<< HEAD
     <string name="app_name">UINavegacion</string>
+=======
+    <string name="app_name">AppAjiColorGrupo4</string>
+>>>>>>> origin/Ale
 </resources>
