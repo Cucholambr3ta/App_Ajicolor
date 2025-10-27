@@ -16,6 +16,7 @@ import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 import com.example.appajicolorgrupo4.viewmodel.AuthViewModel
 import com.example.appajicolorgrupo4.viewmodel.AuthViewModelFactory
 import com.example.appajicolorgrupo4.data.local.database.AppDatabase
@@ -54,7 +55,8 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Iniciar Sesión",
-                style = MaterialTheme.typography.headlineLarge
+                style = MaterialTheme.typography.headlineLarge,
+                color = AmarilloAji
             )
             Spacer(Modifier.height(24.dp))
 
@@ -74,6 +76,8 @@ fun LoginScreen(
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
                     cursorColor = AmarilloAji,
+                    focusedTextColor = MoradoAji,
+                    unfocusedTextColor = MoradoAji,
                     focusedContainerColor = Color.White.copy(alpha = 0.75f),
                     unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 ),
@@ -101,6 +105,8 @@ fun LoginScreen(
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
                     cursorColor = AmarilloAji,
+                    focusedTextColor = MoradoAji,
+                    unfocusedTextColor = MoradoAji,
                     focusedContainerColor = Color.White.copy(alpha = 0.75f),
                     unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )

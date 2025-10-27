@@ -12,6 +12,7 @@ import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 
 @Composable
 fun RegistroScreen(
@@ -41,6 +42,8 @@ fun RegistroScreen(
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
                     cursorColor = AmarilloAji,
+                    focusedTextColor = MoradoAji,
+                    unfocusedTextColor = MoradoAji,
                     focusedContainerColor = Color.White.copy(alpha = 0.75f),
                     unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )
@@ -60,6 +63,8 @@ fun RegistroScreen(
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
                     cursorColor = AmarilloAji,
+                    focusedTextColor = MoradoAji,
+                    unfocusedTextColor = MoradoAji,
                     focusedContainerColor = Color.White.copy(alpha = 0.75f),
                     unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )
@@ -80,6 +85,8 @@ fun RegistroScreen(
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
                     cursorColor = AmarilloAji,
+                    focusedTextColor = MoradoAji,
+                    unfocusedTextColor = MoradoAji,
                     focusedContainerColor = Color.White.copy(alpha = 0.75f),
                     unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )
@@ -99,6 +106,8 @@ fun RegistroScreen(
                     focusedLabelColor = AmarilloAji,
                     unfocusedLabelColor = AmarilloAji,
                     cursorColor = AmarilloAji,
+                    focusedTextColor = MoradoAji,
+                    unfocusedTextColor = MoradoAji,
                     focusedContainerColor = Color.White.copy(alpha = 0.75f),
                     unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                 )

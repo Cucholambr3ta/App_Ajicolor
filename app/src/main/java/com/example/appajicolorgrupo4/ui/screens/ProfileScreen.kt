@@ -33,6 +33,7 @@ import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -174,6 +175,9 @@ fun ProfileScreen(
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
                                 cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
                                 focusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 disabledContainerColor = Color.White.copy(alpha = 0.75f)
@@ -198,6 +202,9 @@ fun ProfileScreen(
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
                                 cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
                                 focusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 disabledContainerColor = Color.White.copy(alpha = 0.75f)
@@ -222,14 +229,17 @@ fun ProfileScreen(
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
                                 cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
                                 focusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 disabledContainerColor = Color.White.copy(alpha = 0.75f)
                             )
                         )
 
-                        Spacer(Modifier.height(16.dp))
 
+                        // Botones de edición
                         // Botones según el modo
                         if (!isEditMode) {
                             // Botón Modificar

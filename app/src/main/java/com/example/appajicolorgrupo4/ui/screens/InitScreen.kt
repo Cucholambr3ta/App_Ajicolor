@@ -24,60 +24,45 @@ fun InitScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Sección superior: Texto y botón Inicio Sesión
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                Spacer(modifier = Modifier.height(48.dp))
+            // Texto de bienvenida
+            Text(
+                text = "Bienvenido Aji Color",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = AmarilloAji
+            )
 
-                Text(
-                    text = "Bienvenido Aji Color",
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = AmarilloAji
-                )
+            Spacer(modifier = Modifier.height(64.dp))
 
-                Spacer(modifier = Modifier.height(48.dp))
+            // Botón Inicio Sesión (imagen horizontal)
+            Image(
+                painter = painterResource(id = R.drawable.inicio_sesion),
+                contentDescription = "Inicio Sesión",
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .height(100.dp)
+                    .clickable {
+                        navController.navigate("login")
+                    }
+            )
 
-                // Botón Inicio Sesión - Parte Superior (imagen horizontal)
-                Image(
-                    painter = painterResource(id = R.drawable.inicio_sesion),
-                    contentDescription = "Inicio Sesión",
-                    modifier = Modifier
-                        .fillMaxWidth(0.85f)
-                        .height(100.dp)
-                        .clickable {
-                            navController.navigate("login")
-                        }
-                )
-            }
+            Spacer(modifier = Modifier.height(32.dp))
 
-            // Sección inferior: Botón Crear Cuenta
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                // Botón Crear Cuenta - Parte Inferior (imagen horizontal)
-                Image(
-                    painter = painterResource(id = R.drawable.crear_cuenta),
-                    contentDescription = "Crear Cuenta",
-                    modifier = Modifier
-                        .fillMaxWidth(0.85f)
-                        .height(100.dp)
-                        .clickable {
-                            navController.navigate("registro")
-                        }
-                )
-
-                Spacer(modifier = Modifier.height(48.dp))
-            }
+            // Botón Crear Cuenta (imagen horizontal)
+            Image(
+                painter = painterResource(id = R.drawable.crear_cuenta),
+                contentDescription = "Crear Cuenta",
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
+                    .height(100.dp)
+                    .clickable {
+                        navController.navigate("registro")
+                    }
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿package com.example.appajicolorgrupo4.ui.screens
+package com.example.appajicolorgrupo4.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -8,11 +8,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,13 +45,13 @@ fun PasswordRecoveryScreen(
                 Text(
                     text = "✓ Correo Enviado",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = AmarilloAji
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Revisa tu correo electrónico para restablecer tu contraseña.",
                     style = MaterialTheme.typography.bodyLarge,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
@@ -77,7 +79,7 @@ fun PasswordRecoveryScreen(
                 Text(
                     text = "Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.",
                     style = MaterialTheme.typography.bodyMedium,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -88,6 +90,13 @@ fun PasswordRecoveryScreen(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = AmarilloAji,
+                        unfocusedBorderColor = AmarilloAji,
+                        focusedLabelColor = AmarilloAji,
+                        unfocusedLabelColor = AmarilloAji,
+                        cursorColor = AmarilloAji,
+                        focusedTextColor = MoradoAji,
+                        unfocusedTextColor = MoradoAji,
                         focusedContainerColor = Color.White.copy(alpha = 0.75f),
                         unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
                     )
@@ -115,3 +124,4 @@ fun PasswordRecoveryScreen(
         }
     }
 }
+
