@@ -32,6 +32,13 @@ import com.example.appajicolorgrupo4.ui.screens.DetalleProductoScreen
 import com.example.appajicolorgrupo4.ui.screens.DetallePedidoScreen
 import com.example.appajicolorgrupo4.ui.theme.AppAjiColorGrupo4Theme
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import com.example.appajicolorgrupo4.viewmodel.AuthViewModel
+import com.example.appajicolorgrupo4.data.repository.UserRepository
+import com.example.appajicolorgrupo4.data.local.database.AppDatabase
+import com.example.appajicolorgrupo4.data.session.SessionManager
+import com.example.appajicolorgrupo4.viewmodel.AuthViewModelFactory
+import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,15 +52,25 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppAjiColorGrupo4Theme {
-                // ViewModel principal
-                val viewModel: MainViewModel = viewModel()
+                // Contexto local
+                val context = LocalContext.current
+
+                // ViewModels
+                val mainViewModel: MainViewModel = viewModel()
+
+                // Crear repositorio, sessionManager y factory para AuthViewModel
+                val database = AppDatabase.getDatabase(context)
+                val userRepository = UserRepository(database.userDao())
+                val sessionManager = SessionManager(context)
+                val authViewModelFactory = AuthViewModelFactory(userRepository, sessionManager)
+                val authViewModel: AuthViewModel = viewModel(factory = authViewModelFactory)
+
                 // Controlador de navegación
                 val navController = rememberNavController()
 
-
                 // Escuchar eventos de navegación desde el ViewModel
                 LaunchedEffect(Unit) {
-                    viewModel.navigationEvents.collectLatest { event ->
+                    mainViewModel.navigationEvents.collectLatest { event ->
                         when (event) {
                             is NavigationEvent.NavigateTo -> {
                                 navController.navigate(event.route.route) {
@@ -87,26 +104,29 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Init.route) {
                             InitScreen(navController = navController)
                         }
-                        composable("registro") {
+                        composable(Screen.Registro.route) {
                             RegistroScreen(
                                 navController = navController,
-                                viewModel = viewModel()
+                                viewModel = viewModel<UsuarioViewModel>()
                             )
                         }
-                        composable("login") {
-                            LoginScreen(navController = navController)
+                        composable(Screen.Login.route) {
+                            LoginScreen(
+                                navController = navController,
+                                authViewModel = authViewModel
+                            )
                         }
-                        composable("password_recovery") {
+                        composable(Screen.PasswordRecovery.route) {
                             PasswordRecoveryScreen(navController = navController)
                         }
                         composable(Screen.Home.route) {
-                            HomeScreen(navController = navController, viewModel = viewModel)
+                            HomeScreen(navController = navController, viewModel = mainViewModel)
                         }
                         composable(Screen.Profile.route) {
-                            ProfileScreen(navController = navController, viewModel = viewModel)
+                            ProfileScreen(navController = navController, viewModel = mainViewModel)
                         }
                         composable(Screen.Settings.route) {
-                            SettingScreen(navController = navController, viewModel = viewModel)
+                            SettingScreen(navController = navController, viewModel = mainViewModel)
                         }
                         composable(Screen.Notification.route) {
                             NotificationScreen(navController = navController)

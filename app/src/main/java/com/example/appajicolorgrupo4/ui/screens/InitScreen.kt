@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
+import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 
@@ -44,7 +45,7 @@ fun InitScreen(
                 modifier = Modifier
                     .size(200.dp)
                     .clickable {
-                        navController.navigate("registro")
+                        navController.navigate(Screen.Registro.route)
                     }
             )
 
@@ -57,7 +58,7 @@ fun InitScreen(
                 modifier = Modifier
                     .size(200.dp)
                     .clickable {
-                        navController.navigate("login")
+                        navController.navigate(Screen.Login.route)
                     }
             )
         }

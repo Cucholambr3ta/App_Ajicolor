@@ -44,6 +44,7 @@ dependencies {
     // Core AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
     // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
@@ -57,10 +58,10 @@ dependencies {
     // Activity Compose
     implementation(libs.androidx.activity.compose)
 
-    // Navigation Compose (estable)
-    implementation("androidx.navigation:navigation-compose:2.8.5")
+    // Navigation Compose
+    implementation(libs.androidx.navigation.compose)
 
-    // Lifecycle + ViewModel en Compose (alineadas)
+    // Lifecycle + ViewModel en Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 
@@ -68,16 +69,19 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
     implementation("androidx.compose.material3.adaptive:adaptive:1.0.0-alpha06")
 
+    // Coil para cargar imágenes
+    implementation(libs.coil.compose)
+
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation(libs.kotlinx.coroutines.android)
 
     // Room Database
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // DataStore Preferences
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation(libs.androidx.datastore.preferences)
 
     // Testing
     testImplementation(libs.junit)
@@ -87,4 +91,3 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
->>>>>>> origin/Ale

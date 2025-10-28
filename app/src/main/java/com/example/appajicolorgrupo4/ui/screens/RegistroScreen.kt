@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
@@ -120,7 +121,7 @@ fun RegistroScreen(
             Button(
                 onClick = {
                     viewModel.registrarUsuario {
-                        navController.navigate("login")
+                        navController.navigate(Screen.Login.route)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
