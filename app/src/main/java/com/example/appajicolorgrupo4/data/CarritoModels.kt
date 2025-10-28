@@ -6,17 +6,27 @@ package com.example.appajicolorgrupo4.data
 data class ProductoCarrito(
     val id: String,
     val nombre: String,
-    val precio: Double,
+    val precio: Int, // Cambiado a Int
     val cantidad: Int = 1,
     val talla: Talla?,
     val color: ColorInfo,
     val categoria: CategoriaProducto,
-    val imagenUrl: String? = null
+    val imagenResId: Int
 ) {
     /**
      * Calcula el subtotal de este item (precio * cantidad)
      */
-    fun subtotal(): Double = precio * cantidad
+    fun subtotal(): Int = precio * cantidad
+
+    /**
+     * Formatea el subtotal con símbolo $
+     */
+    fun subtotalFormateado(): String = "$${ subtotal() }"
+
+    /**
+     * Formatea el precio con símbolo $
+     */
+    fun precioFormateado(): String = "$$precio"
 }
 
 /**
@@ -43,12 +53,12 @@ enum class MetodoPago(val displayName: String, val icono: String) {
 data class Pedido(
     val id: String,
     val productos: List<ProductoCarrito>,
-    val subtotal: Double,
-    val costoEnvio: Double,
-    val total: Double,
+    val subtotal: Int,
+    val costoEnvio: Int,
+    val total: Int,
     val direccionEnvio: String,
     val metodoPago: MetodoPago,
-    val estado: EstadoPedido = EstadoPedido.CREADO,
+    val estado: EstadoPedido = EstadoPedido.CONFIRMADO,
     val fechaPedido: Long = System.currentTimeMillis()
 )
 

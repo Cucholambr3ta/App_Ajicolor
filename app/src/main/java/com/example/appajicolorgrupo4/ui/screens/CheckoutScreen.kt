@@ -1,5 +1,6 @@
 package com.example.appajicolorgrupo4.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,13 +13,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.ProductoCarrito
+import com.example.appajicolorgrupo4.data.* 
+import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
+import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -26,14 +34,15 @@ import java.util.Locale
 @Composable
 fun CheckoutScreen(
     navController: NavController,
-    carritoViewModel: CarritoViewModel = viewModel()
+    carritoViewModel: CarritoViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = viewModel(),
 ) {
     val productos by carritoViewModel.productos.collectAsState()
-    val subtotal = carritoViewModel.calcularSubtotal()
-    val impuestos = carritoViewModel.calcularImpuestos()
-    val costoEnvio = carritoViewModel.calcularCostoEnvio()
-    val total = carritoViewModel.calcularTotal()
-    val calificaEnvioGratis = carritoViewModel.calificaEnvioGratis()
+    val subtotal by carritoViewModel.subtotal.collectAsState()
+    val impuestos by carritoViewModel.iva.collectAsState()
+    val costoEnvio by carritoViewModel.costoEnvio.collectAsState()
+    val total by carritoViewModel.total.collectAsState()
+    val calificaEnvioGratis by carritoViewModel.calificaEnvioGratis.collectAsState()
 
     val formatoMoneda = remember {
         NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
@@ -41,9 +50,14 @@ fun CheckoutScreen(
         }
     }
 
-    var direccion by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
+    val estadoUsuario by usuarioViewModel.estado.collectAsState()
+    val currentUser by usuarioViewModel.currentUser.collectAsState()
     var notasAdicionales by remember { mutableStateOf("") }
+
+    // Cargar el perfil del usuario para obtener la dirección y el teléfono
+    LaunchedEffect(Unit) {
+        usuarioViewModel.cargarPerfil()
+    }
 
     AppBackground {
         Scaffold(
@@ -59,11 +73,11 @@ fun CheckoutScreen(
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color.Transparent
+                        containerColor = Color.Transparent
                     )
                 )
             },
-            containerColor = androidx.compose.ui.graphics.Color.Transparent
+            containerColor = Color.Transparent
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -184,8 +198,8 @@ fun CheckoutScreen(
                             )
 
                             OutlinedTextField(
-                                value = direccion,
-                                onValueChange = { direccion = it },
+                                value = estadoUsuario.direccion,
+                                onValueChange = { usuarioViewModel.actualizaDireccion(it) },
                                 label = { Text("Dirección de Envío *") },
                                 modifier = Modifier.fillMaxWidth(),
                                 minLines = 2,
@@ -197,8 +211,8 @@ fun CheckoutScreen(
                             )
 
                             OutlinedTextField(
-                                value = telefono,
-                                onValueChange = { telefono = it },
+                                value = estadoUsuario.telefono,
+                                onValueChange = { usuarioViewModel.actualizaTelefono(it) },
                                 label = { Text("Teléfono de Contacto *") },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true,
@@ -230,13 +244,15 @@ fun CheckoutScreen(
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(
                             onClick = {
-                                // Navegar a selección de método de pago
-                                navController.navigate("payment_methods")
+                                val direccion = URLEncoder.encode(estadoUsuario.direccion, StandardCharsets.UTF_8.toString())
+                                val telefono = URLEncoder.encode(estadoUsuario.telefono, StandardCharsets.UTF_8.toString())
+                                val notas = URLEncoder.encode(notasAdicionales, StandardCharsets.UTF_8.toString())
+                                navController.navigate("${Screen.PaymentMethods.route}?direccion=$direccion&telefono=$telefono&notas=$notas")
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            enabled = direccion.isNotBlank() && telefono.isNotBlank()
+                            enabled = estadoUsuario.direccion.isNotBlank() && estadoUsuario.telefono.isNotBlank() && productos.isNotEmpty() && currentUser != null
                         ) {
                             Text(
                                 text = "Seleccionar Método de Pago",
@@ -244,7 +260,7 @@ fun CheckoutScreen(
                             )
                         }
 
-                        if (direccion.isBlank() || telefono.isBlank()) {
+                        if (estadoUsuario.direccion.isBlank() || estadoUsuario.telefono.isBlank()) {
                             Text(
                                 text = "* Complete todos los campos obligatorios",
                                 style = MaterialTheme.typography.bodySmall,
@@ -273,12 +289,14 @@ private fun ProductoResumenItem(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Color indicator
-        Box(
+        Image(
+            painter = painterResource(id = producto.imagenResId),
+            contentDescription = "Imagen de ${producto.nombre}",
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(producto.color.color)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
+            contentScale = ContentScale.Crop
         )
 
         // Info
@@ -311,4 +329,3 @@ private fun ProductoResumenItem(
         )
     }
 }
-

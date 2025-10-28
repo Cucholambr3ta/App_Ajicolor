@@ -1,53 +1,54 @@
 package com.example.appajicolorgrupo4.viewmodel
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.appajicolorgrupo4.data.local.database.AppDatabase
 import com.example.appajicolorgrupo4.data.repository.UserRepository
 import com.example.appajicolorgrupo4.data.session.SessionManager
 import com.example.appajicolorgrupo4.data.local.user.UserEntity
+import com.example.appajicolorgrupo4.data.repository.PedidoRepository
 import com.example.appajicolorgrupo4.ui.state.UsuarioUiState
-import com.example.appajicolorgrupo4.ui.state.ErroresUsuario
+import com.example.appajicolorgrupo4.ui.state.UsuarioErrores
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class UsuarioViewModel(application: Application) : AndroidViewModel(application) {
 
-    // Repositorio y SessionManager
     private val repository: UserRepository
+    private val pedidoRepository: PedidoRepository
     private val sessionManager: SessionManager
+
+    private val _estado = MutableStateFlow(UsuarioUiState())
+    val estado: StateFlow<UsuarioUiState> = _estado.asStateFlow()
+
+    private val _registroResultado = MutableStateFlow<String?>(null)
+    val registroResultado: StateFlow<String?> = _registroResultado.asStateFlow()
+
+    private val _currentUser = MutableStateFlow<UserEntity?>(null)
+    val currentUser: StateFlow<UserEntity?> = _currentUser.asStateFlow()
+
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
+
+    private val _updateResultado = MutableStateFlow<String?>(null)
+    val updateResultado: StateFlow<String?> = _updateResultado.asStateFlow()
+
+    private val _profileImageUri = MutableStateFlow<String?>(null)
+    val profileImageUri: StateFlow<String?> = _profileImageUri.asStateFlow()
 
     init {
         val database = AppDatabase.getInstance(application)
         repository = UserRepository(database.userDao())
+        pedidoRepository = PedidoRepository(database.pedidoDao())
         sessionManager = SessionManager(application)
+        cargarPerfil()
     }
 
-    // Estado privado mutable
-    private val _estado = MutableStateFlow(UsuarioUiState())
-    // Estado público inmutable para la UI
-    val estado: StateFlow<UsuarioUiState> = _estado
-
-    // Estado para mensajes de éxito/error al registrar
-    private val _registroResultado = MutableStateFlow<String?>(null)
-    val registroResultado: StateFlow<String?> = _registroResultado
-
-    // Estado para el usuario actual
-    private val _currentUser = MutableStateFlow<UserEntity?>(null)
-    val currentUser: StateFlow<UserEntity?> = _currentUser
-
-    // Estado para el modo de edición
-    private val _isEditMode = MutableStateFlow(false)
-    val isEditMode: StateFlow<Boolean> = _isEditMode
-
-    // Estado para mensajes de actualización
-    private val _updateResultado = MutableStateFlow<String?>(null)
-    val updateResultado: StateFlow<String?> = _updateResultado
-
-    // Funciones de actualización de campos
     fun actualizaNombre(valor: String) {
         _estado.update { it.copy(nombre = valor, errores = it.errores.copy(nombre = null)) }
     }
@@ -56,8 +57,17 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         _estado.update { it.copy(correo = valor, errores = it.errores.copy(correo = null)) }
     }
 
+    fun actualizaTelefono(valor: String) {
+        val soloNumeros = valor.filter { it.isDigit() }
+        _estado.update { it.copy(telefono = soloNumeros, errores = it.errores.copy(telefono = null)) }
+    }
+
     fun actualizaClave(valor: String) {
         _estado.update { it.copy(clave = valor, errores = it.errores.copy(clave = null)) }
+    }
+
+    fun actualizaConfirmarClave(valor: String) {
+        _estado.update { it.copy(confirmarClave = valor, errores = it.errores.copy(confirmarClave = null)) }
     }
 
     fun actualizaDireccion(valor: String) {
@@ -68,40 +78,6 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         _estado.update { it.copy(aceptaTerminos = valor, errores = it.errores.copy(aceptaTerminos = null)) }
     }
 
-    // Validación del formulario
-    fun validarFormulario(): Boolean {
-        val estadoActual = _estado.value
-        var valido = true
-        var errores = ErroresUsuario()
-
-        if (estadoActual.nombre.isBlank()) {
-            errores = errores.copy(nombre = "El nombre es obligatorio")
-            valido = false
-        }
-        if (estadoActual.correo.isBlank() || !estadoActual.correo.contains("@")) {
-            errores = errores.copy(correo = "Correo inválido")
-            valido = false
-        }
-        if (estadoActual.clave.length < 6) {
-            errores = errores.copy(clave = "La clave debe tener al menos 6 caracteres")
-            valido = false
-        }
-        if (estadoActual.direccion.isBlank()) {
-            errores = errores.copy(direccion = "La dirección es obligatoria")
-            valido = false
-        }
-        if (!estadoActual.aceptaTerminos) {
-            errores = errores.copy(aceptaTerminos = "Debes aceptar los términos")
-            valido = false
-        }
-
-        // Actualizamos el estado con los errores
-        _estado.update { it.copy(errores = errores) }
-
-        return valido
-    }
-
-    // Registrar usuario en la base de datos
     fun registrarUsuario(onSuccess: () -> Unit) {
         if (!validarFormulario()) {
             return
@@ -112,20 +88,14 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
             val resultado = repository.register(
                 nombre = estadoActual.nombre,
                 correo = estadoActual.correo,
+                telefono = estadoActual.telefono,
                 clave = estadoActual.clave,
                 direccion = estadoActual.direccion
             )
 
             resultado.onSuccess { userId ->
                 _registroResultado.value = "Usuario registrado exitosamente"
-                // Obtener el usuario recién creado y guardar sesión
-                val newUser = repository.getUserById(userId)
-                newUser?.let {
-                    sessionManager.saveSession(it)
-                    _currentUser.value = it
-                }
-                // Limpiar el formulario
-                _estado.update { UsuarioUiState() }
+                _estado.update { UsuarioUiState() } // Limpiar formulario
                 onSuccess()
             }.onFailure { error ->
                 _registroResultado.value = error.message ?: "Error al registrar"
@@ -145,7 +115,6 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         _registroResultado.value = null
     }
 
-    // Cargar el perfil del usuario logueado
     fun cargarPerfil() {
         viewModelScope.launch {
             val user = sessionManager.getCurrentUser()
@@ -155,32 +124,30 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
                     it.copy(
                         nombre = user.nombre,
                         correo = user.correo,
+                        telefono = user.telefono,
                         direccion = user.direccion
                     )
                 }
+                _profileImageUri.value = sessionManager.getProfileImageUri()
             }
         }
     }
 
-    // Guardar sesión después del login (llamar desde LoginScreen)
     fun saveSession(user: UserEntity) {
         sessionManager.saveSession(user)
         _currentUser.value = user
         cargarPerfil()
     }
 
-    // Activar modo edición
     fun activarEdicion() {
         _isEditMode.value = true
     }
 
-    // Cancelar edición (restaurar valores originales)
     fun cancelarEdicion() {
         _isEditMode.value = false
-        cargarPerfil() // Recargar los valores originales
+        cargarPerfil()
     }
 
-    // Guardar cambios del perfil
     fun guardarCambiosPerfil(onSuccess: () -> Unit) {
         if (!validarFormularioPerfil()) {
             return
@@ -199,7 +166,8 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
             id = currentUserId,
             nombre = estadoActual.nombre,
             correo = estadoActual.correo,
-            clave = currentPassword, // Mantener la misma contraseña
+            telefono = estadoActual.telefono,
+            clave = currentPassword,
             direccion = estadoActual.direccion
         )
 
@@ -217,22 +185,56 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    // Validación del formulario de perfil (similar al registro pero sin clave ni términos)
-    private fun validarFormularioPerfil(): Boolean {
+    fun cerrarSesion() {
+        sessionManager.clearSession()
+        _currentUser.value = null
+        _estado.update { UsuarioUiState() }
+        _isEditMode.value = false
+        _profileImageUri.value = null
+    }
+
+    fun clearAllData(onFinished: () -> Unit) {
+        viewModelScope.launch {
+            repository.deleteAllUsers()
+            pedidoRepository.deleteAllPedidos()
+            sessionManager.clearSession()
+            _currentUser.value = null
+            _estado.update { UsuarioUiState() }
+            onFinished()
+        }
+    }
+
+    fun isLoggedIn(): Boolean {
+        return sessionManager.isLoggedIn()
+    }
+
+    fun limpiarMensajeActualizacion() {
+        _updateResultado.value = null
+    }
+
+    fun guardarFotoPerfil(uri: String?) {
+        _profileImageUri.value = uri
+        sessionManager.saveProfileImageUri(uri)
+    }
+
+    fun eliminarFotoPerfil() {
+        _profileImageUri.value = null
+        sessionManager.clearProfileImage()
+    }
+
+    private fun validarFormulario(): Boolean {
         val estadoActual = _estado.value
         var valido = true
-        var errores = ErroresUsuario()
+        val errores = UsuarioErrores().copy(
+            nombre = if (estadoActual.nombre.isBlank()) "El nombre es obligatorio" else null,
+            correo = if (estadoActual.correo.isBlank() || !estadoActual.correo.contains("@")) "Correo inválido" else null,
+            telefono = if (estadoActual.telefono.isBlank()) "El teléfono es obligatorio" else if (estadoActual.telefono.length < 8) "El teléfono debe tener al menos 8 dígitos" else null,
+            clave = if (estadoActual.clave.length < 6) "La clave debe tener al menos 6 caracteres" else null,
+            confirmarClave = if (estadoActual.confirmarClave.isBlank()) "Debe confirmar la contraseña" else if (estadoActual.clave != estadoActual.confirmarClave) "Las contraseñas no coinciden" else null,
+            aceptaTerminos = if (!estadoActual.aceptaTerminos) "Debes aceptar los términos" else null
+        )
 
-        if (estadoActual.nombre.isBlank()) {
-            errores = errores.copy(nombre = "El nombre es obligatorio")
-            valido = false
-        }
-        if (estadoActual.correo.isBlank() || !estadoActual.correo.contains("@")) {
-            errores = errores.copy(correo = "Correo inválido")
-            valido = false
-        }
-        if (estadoActual.direccion.isBlank()) {
-            errores = errores.copy(direccion = "La dirección es obligatoria")
+        if (errores.hayErrores) {
             valido = false
         }
 
@@ -240,20 +242,21 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         return valido
     }
 
-    // Cerrar sesión
-    fun cerrarSesion() {
-        sessionManager.clearSession()
-        _currentUser.value = null
-        _estado.update { UsuarioUiState() }
-        _isEditMode.value = false
-    }
+    private fun validarFormularioPerfil(): Boolean {
+        val estadoActual = _estado.value
+        var valido = true
+        val errores = UsuarioErrores().copy(
+            nombre = if (estadoActual.nombre.isBlank()) "El nombre es obligatorio" else null,
+            correo = if (estadoActual.correo.isBlank() || !estadoActual.correo.contains("@")) "Correo inválido" else null,
+            telefono = if (estadoActual.telefono.isBlank()) "El teléfono es obligatorio" else if (estadoActual.telefono.length < 8) "El teléfono debe tener al menos 8 dígitos" else null,
+            direccion = if (estadoActual.direccion.isBlank()) "La dirección es obligatoria" else null
+        )
 
-    // Verificar si hay sesión activa
-    fun isLoggedIn(): Boolean {
-        return sessionManager.isLoggedIn()
-    }
+        if (errores.hayErrores) {
+            valido = false
+        }
 
-    fun limpiarMensajeActualizacion() {
-        _updateResultado.value = null
+        _estado.update { it.copy(errores = errores) }
+        return valido
     }
 }

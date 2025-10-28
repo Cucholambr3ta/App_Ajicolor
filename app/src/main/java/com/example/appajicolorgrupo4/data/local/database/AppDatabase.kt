@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch                                // Lanzar corrut
 @Database(
     entities = [UserEntity::class],
     version = 1,
-    exportSchema = false // Cambiado a false para no requerir directorio de exportación
+    exportSchema = true // Mantener true para inspección de esquema (útil en educación)
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -76,8 +76,5 @@ abstract class AppDatabase : RoomDatabase() {
                 instance                                        // Devuelve la instancia
             }
         }
-
-        // Alias para compatibilidad
-        fun getDatabase(context: Context): AppDatabase = getInstance(context)
     }
 }

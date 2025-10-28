@@ -15,7 +15,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -25,9 +27,15 @@ import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.CustomDialog
+import com.example.appajicolorgrupo4.ui.components.DetallePedidoDialogContent
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
+import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.BorderStroke
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -37,10 +45,20 @@ import java.util.Locale
 @Composable
 fun OrderHistoryScreen(
     navController: NavController,
-    pedidosViewModel: PedidosViewModel = viewModel()
+    pedidosViewModel: PedidosViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = viewModel()
 ) {
     val todosPedidos by pedidosViewModel.pedidos.collectAsState()
+    val currentUser by usuarioViewModel.currentUser.collectAsState()
     var estadoFiltro by remember { mutableStateOf<EstadoPedido?>(null) }
+    var pedidoSeleccionado by remember { mutableStateOf<PedidoCompleto?>(null) }
+
+    // Cargar pedidos del usuario desde SQLite
+    LaunchedEffect(currentUser) {
+        currentUser?.let { user ->
+            pedidosViewModel.cargarPedidosUsuario(user.id)
+        }
+    }
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -61,7 +79,16 @@ fun OrderHistoryScreen(
     }
 
     val formatoFecha = remember {
-        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+    }
+
+    if (pedidoSeleccionado != null) {
+        CustomDialog(
+            onDismissRequest = { pedidoSeleccionado = null },
+            title = "Detalle del Pedido"
+        ) {
+            DetallePedidoDialogContent(pedido = pedidoSeleccionado!!, formatoMoneda = formatoMoneda, formatoFecha = formatoFecha)
+        }
     }
 
     AppBackground {
@@ -85,7 +112,7 @@ fun OrderHistoryScreen(
                         currentRoute = currentRoute
                     )
                 },
-                containerColor = androidx.compose.ui.graphics.Color.Transparent
+                containerColor = Color.Transparent
             ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -106,8 +133,18 @@ fun OrderHistoryScreen(
                             onClick = { estadoFiltro = null },
                             label = { Text("Todos (${todosPedidos.size})") },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                selectedContainerColor = AmarilloAji,
+                                selectedLabelColor = MoradoAji,
+                                containerColor = Color.White.copy(alpha = 0.75f),
+                                labelColor = MoradoAji
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = estadoFiltro == null,
+                                borderColor = MoradoAji,
+                                selectedBorderColor = MoradoAji,
+                                borderWidth = 2.dp,
+                                selectedBorderWidth = 2.dp
                             )
                         )
                     }
@@ -122,8 +159,18 @@ fun OrderHistoryScreen(
                                 Text("${estado.displayName} ($cantidadEstado)")
                             },
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                selectedContainerColor = AmarilloAji,
+                                selectedLabelColor = MoradoAji,
+                                containerColor = Color.White.copy(alpha = 0.75f),
+                                labelColor = MoradoAji
+                            ),
+                            border = FilterChipDefaults.filterChipBorder(
+                                enabled = true,
+                                selected = estadoFiltro == estado,
+                                borderColor = MoradoAji,
+                                selectedBorderColor = MoradoAji,
+                                borderWidth = 2.dp,
+                                selectedBorderWidth = 2.dp
                             )
                         )
                     }
@@ -150,13 +197,14 @@ fun OrderHistoryScreen(
                             else
                                 "No tienes pedidos en estado ${estadoFiltro!!.displayName}",
                             style = MaterialTheme.typography.titleLarge,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = MoradoAji
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Realiza tu primera compra",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            color = MoradoAji
                         )
 
                         Spacer(modifier = Modifier.height(24.dp))
@@ -182,7 +230,7 @@ fun OrderHistoryScreen(
                                 formatoMoneda = formatoMoneda,
                                 formatoFecha = formatoFecha,
                                 onClick = {
-                                    navController.navigate("detalle_pedido/${pedido.numeroPedido}")
+                                    pedidoSeleccionado = pedido
                                 }
                             )
                         }
@@ -236,7 +284,7 @@ private fun PedidoCard(
                     Text(
                         text = formatoFecha.format(Date(pedido.fechaCreacion)),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                 }
 
@@ -254,7 +302,7 @@ private fun PedidoCard(
                     Text(
                         text = "Items",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                     Text(
                         text = "${pedido.cantidadTotalItems()} productos",
@@ -267,7 +315,7 @@ private fun PedidoCard(
                     Text(
                         text = "Total",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                     Text(
                         text = formatoMoneda.format(pedido.total),
@@ -281,7 +329,7 @@ private fun PedidoCard(
                     Text(
                         text = "Método",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                     Text(
                         text = pedido.metodoPago.icono,
@@ -343,8 +391,8 @@ private fun PedidoCard(
 @Composable
 private fun EstadoBadge(estado: EstadoPedido) {
     val (backgroundColor, textColor) = when (estado) {
-        EstadoPedido.CREADO -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
         EstadoPedido.CONFIRMADO -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+        EstadoPedido.PREPARANDO -> MaterialTheme.colorScheme.secondaryContainer to MaterialTheme.colorScheme.onSecondaryContainer
         EstadoPedido.ENVIADO -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
         EstadoPedido.ENTREGADO -> MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
     }
@@ -373,4 +421,3 @@ private fun EstadoBadge(estado: EstadoPedido) {
         }
     }
 }
-

@@ -1,48 +1,37 @@
 package com.example.appajicolorgrupo4.ui.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExitToApp
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.ProfileImageSelector
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
-import kotlinx.coroutines.launch
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
+import com.example.appajicolorgrupo4.ui.theme.RojoAji
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    usuarioViewModel: UsuarioViewModel
 ) {
-    val context = LocalContext.current
-    val usuarioViewModel: UsuarioViewModel = viewModel()
-
     // Cargar perfil al entrar
     LaunchedEffect(Unit) {
         usuarioViewModel.cargarPerfil()
@@ -52,9 +41,7 @@ fun ProfileScreen(
     val estado by usuarioViewModel.estado.collectAsState()
     val isEditMode by usuarioViewModel.isEditMode.collectAsState()
     val updateResultado by usuarioViewModel.updateResultado.collectAsState()
-
-    // Estado para mostrar el diálogo de selección de foto
-    var showPhotoDialog by remember { mutableStateOf(false) }
+    val profileImageUri by usuarioViewModel.profileImageUri.collectAsState()
 
     // Estado para el drawer
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -68,30 +55,6 @@ fun ProfileScreen(
         }
     }
 
-    // Diálogo para seleccionar origen de foto
-    if (showPhotoDialog) {
-        AlertDialog(
-            onDismissRequest = { showPhotoDialog = false },
-            title = { Text("Seleccionar foto de perfil") },
-            text = { Text("¿De dónde deseas obtener la foto?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    // TODO: Implementar selección desde galería
-                    showPhotoDialog = false
-                }) {
-                    Text("Galería")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    // TODO: Implementar captura desde cámara
-                    showPhotoDialog = false
-                }) {
-                    Text("Cámara")
-                }
-            }
-        )
-    }
 
     AppBackground {
         AppNavigationDrawer(
@@ -114,7 +77,7 @@ fun ProfileScreen(
                         currentRoute = Screen.Profile.route
                     )
                 },
-                containerColor = androidx.compose.ui.graphics.Color.Transparent
+                containerColor = Color.Transparent
             ) { innerPadding ->
                 Column(
                     modifier = Modifier
@@ -131,42 +94,15 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.bodyLarge
                         )
                     } else {
-                        // Foto de perfil
-                        Box(
-                            modifier = Modifier
-                                .size(120.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .clickable { showPhotoDialog = true },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.profile),
-                                contentDescription = "Foto de perfil",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-
-                            // Overlay con icono de cámara
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f),
-                                        CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                            Icon(
-                                imageVector = Icons.Filled.Edit,
-                                contentDescription = "Cambiar foto",
-                                tint = androidx.compose.ui.graphics.Color.White,
-                                modifier = Modifier.size(32.dp)
-                            )
-                            }
-                        }
+                        // Foto de perfil con selector
+                        ProfileImageSelector(
+                            defaultImageRes = R.drawable.profile,
+                            onImageSelected = { uri ->
+                                // Guardar la URI en el ViewModel para persistencia
+                                usuarioViewModel.guardarFotoPerfil(uri)
+                            },
+                            currentImageUri = profileImageUri
+                        )
 
                         Spacer(Modifier.height(8.dp))
 
@@ -224,6 +160,9 @@ fun ProfileScreen(
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
                                 cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
                                 focusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 disabledContainerColor = Color.White.copy(alpha = 0.75f)
@@ -248,6 +187,36 @@ fun ProfileScreen(
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
                                 cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
+                                focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                disabledContainerColor = Color.White.copy(alpha = 0.75f)
+                            )
+                        )
+
+                        // Campo Teléfono
+                        OutlinedTextField(
+                            value = estado.telefono,
+                            onValueChange = { if (isEditMode) usuarioViewModel.actualizaTelefono(it) },
+                            label = { Text("Teléfono") },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = isEditMode,
+                            isError = estado.errores.telefono != null,
+                            supportingText = {
+                                estado.errores.telefono?.let { Text(it, color = AmarilloAji) }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = AmarilloAji,
+                                unfocusedBorderColor = AmarilloAji,
+                                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedLabelColor = AmarilloAji,
+                                unfocusedLabelColor = AmarilloAji,
+                                cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
                                 focusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 disabledContainerColor = Color.White.copy(alpha = 0.75f)
@@ -272,20 +241,28 @@ fun ProfileScreen(
                                 focusedLabelColor = AmarilloAji,
                                 unfocusedLabelColor = AmarilloAji,
                                 cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
                                 focusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
                                 disabledContainerColor = Color.White.copy(alpha = 0.75f)
                             )
                         )
 
-                        Spacer(Modifier.height(16.dp))
 
+                        // Botones de edición
                         // Botones según el modo
                         if (!isEditMode) {
                             // Botón Modificar
                             Button(
                                 onClick = { usuarioViewModel.activarEdicion() },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = AmarilloAji,
+                                    contentColor = MoradoAji
+                                ),
+                                border = androidx.compose.foundation.BorderStroke(2.dp, MoradoAji)
                             ) {
                                 Text("Modificar Datos")
                             }
@@ -333,16 +310,19 @@ fun ProfileScreen(
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
+                                containerColor = RojoAji,
+                                contentColor = AmarilloAji
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(2.dp, AmarilloAji)
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.ExitToApp,
+                                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                                 contentDescription = "Cerrar Sesión",
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(20.dp),
+                                tint = AmarilloAji
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text("Cerrar Sesión")
+                            Text("Cerrar Sesión", color = AmarilloAji)
                         }
                     }
                 }
@@ -350,4 +330,3 @@ fun ProfileScreen(
         }
     }
 }
-

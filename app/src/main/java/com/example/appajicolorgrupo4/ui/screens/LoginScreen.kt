@@ -7,21 +7,32 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import com.example.appajicolorgrupo4.viewmodel.AuthViewModel
+import com.example.appajicolorgrupo4.viewmodel.AuthViewModelFactory
+import com.example.appajicolorgrupo4.data.local.database.AppDatabase
+import com.example.appajicolorgrupo4.data.repository.UserRepository
+import com.example.appajicolorgrupo4.data.session.SessionManager
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel
+    navController: NavController
 ) {
-    val estado by authViewModel.login.collectAsState()
+    val context = LocalContext.current
+    val database = AppDatabase.getInstance(context)
+    val repository = UserRepository(database.userDao())
+    val sessionManager = SessionManager(context)
+    val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository, sessionManager))
+
+    val estado by viewModel.login.collectAsState()
 
     // Navegar a Home cuando login exitoso
     LaunchedEffect(estado.success) {
@@ -29,7 +40,7 @@ fun LoginScreen(
             navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.StartScreen.route) { inclusive = true }
             }
-            authViewModel.clearLoginResult()
+            viewModel.clearLoginResult()
         }
     }
 
@@ -50,7 +61,7 @@ fun LoginScreen(
             // Campo Email
             OutlinedTextField(
                 value = estado.correo,
-                onValueChange = authViewModel::onLoginEmailChange,
+                onValueChange = viewModel::onLoginEmailChange,
                 label = { Text("Email") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -79,7 +90,7 @@ fun LoginScreen(
             // Campo Password
             OutlinedTextField(
                 value = estado.clave,
-                onValueChange = authViewModel::onLoginPassChange,
+                onValueChange = viewModel::onLoginPassChange,
                 label = { Text("Contraseña") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
@@ -109,7 +120,7 @@ fun LoginScreen(
 
             // Botón Entrar
             Button(
-                onClick = authViewModel::submitLogin,
+                onClick = viewModel::submitLogin,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = estado.canSubmit && !estado.isSubmitting
             ) {
@@ -131,7 +142,7 @@ fun LoginScreen(
             // Botón Ir a Registro
             OutlinedButton(
                 onClick = {
-                    navController.navigate(Screen.Registro.route)
+                    navController.navigate("registro")
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -143,7 +154,7 @@ fun LoginScreen(
             // Botón Recuperar Contraseña
             TextButton(
                 onClick = {
-                    navController.navigate(Screen.PasswordRecovery.route)
+                    navController.navigate("password_recovery")
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

@@ -40,18 +40,18 @@ fun CartScreen(
     carritoViewModel: CarritoViewModel = viewModel()
 ) {
     val productos by carritoViewModel.productos.collectAsState()
-    val subtotal = carritoViewModel.calcularSubtotal()
-    val costoEnvio = carritoViewModel.calcularCostoEnvio()
-    val total = carritoViewModel.calcularTotal()
-    val calificaEnvioGratis = carritoViewModel.calificaEnvioGratis()
-    val montoFaltante = carritoViewModel.montoFaltanteEnvioGratis()
+    val subtotal by carritoViewModel.subtotal.collectAsState()
+    val iva by carritoViewModel.iva.collectAsState()
+    val costoEnvio by carritoViewModel.costoEnvio.collectAsState()
+    val total by carritoViewModel.total.collectAsState()
+    val calificaEnvioGratis by carritoViewModel.calificaEnvioGratis.collectAsState()
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }
@@ -144,11 +144,6 @@ fun CartScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text(
-                                text = "🚚",
-                                style = MaterialTheme.typography.displaySmall,
-                                modifier = Modifier.size(32.dp)
-                            )
                             Column(modifier = Modifier.weight(1f)) {
                                 if (calificaEnvioGratis) {
                                     Text(
@@ -166,11 +161,6 @@ fun CartScreen(
                                         text = "Envío Gratis en compras sobre ${formatoMoneda.format(20000)}",
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold
-                                    )
-                                    Text(
-                                        text = "Te faltan ${formatoMoneda.format(montoFaltante)} para calificar",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
                                     )
                                 }
                             }
@@ -217,6 +207,13 @@ fun CartScreen(
                             ) {
                                 Text("Subtotal:")
                                 Text(formatoMoneda.format(subtotal))
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text("IVA (19%):")
+                                Text(formatoMoneda.format(iva))
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -294,12 +291,14 @@ private fun ProductoCarritoItem(
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Placeholder para imagen (color del producto)
-            Box(
+            Image(
+                painter = painterResource(id = producto.imagenResId),
+                contentDescription = "Imagen de ${producto.nombre}",
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(producto.color.color)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentScale = ContentScale.Crop
             )
 
             // Información del producto
@@ -394,4 +393,3 @@ private fun ProductoCarritoItem(
         }
     }
 }
-

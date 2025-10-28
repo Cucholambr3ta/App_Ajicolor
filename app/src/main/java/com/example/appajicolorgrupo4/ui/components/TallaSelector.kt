@@ -2,9 +2,6 @@ package com.example.appajicolorgrupo4.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,14 +14,15 @@ import com.example.appajicolorgrupo4.data.Talla
 
 /**
  * Componente para seleccionar una talla de una lista disponible.
- * Muestra las tallas en botones tipo chip.
+ * Muestra las tallas en un dropdown similar al selector de colores.
  *
  * @param tallas Lista de tallas disponibles
  * @param tallaSeleccionada La talla actualmente seleccionada
  * @param onTallaSelected Callback cuando se selecciona una talla
  * @param modifier Modificador para personalizar el componente
- * @param columnas Número de columnas en la cuadrícula
+ * @param columnas Número de columnas en la cuadrícula (deprecated, se mantiene por compatibilidad)
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TallaSelector(
     tallas: List<Talla>,
@@ -33,40 +31,73 @@ fun TallaSelector(
     modifier: Modifier = Modifier,
     columnas: Int = 4
 ) {
-    Column(modifier = modifier) {
-        if (tallaSeleccionada != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Talla seleccionada:",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = tallaSeleccionada.displayName,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+    var expanded by remember { mutableStateOf(false) }
+
+    // Seleccionar talla S por defecto si no hay talla seleccionada
+    LaunchedEffect(Unit) {
+        if (tallaSeleccionada == null && tallas.isNotEmpty()) {
+            val tallaS = tallas.find { it.displayName == "S" }
+            if (tallaS != null) {
+                onTallaSelected(tallaS)
+            } else {
+                onTallaSelected(tallas.first())
             }
         }
+    }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(columnas),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+    Column(modifier = modifier) {
+        // Dropdown para seleccionar talla
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
         ) {
-            items(tallas) { talla ->
-                TallaChip(
-                    talla = talla,
-                    isSelected = tallaSeleccionada == talla,
-                    onClick = { onTallaSelected(talla) }
-                )
+            OutlinedTextField(
+                value = tallaSeleccionada?.displayName ?: "Seleccionar talla",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Talla") },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.heightIn(max = 300.dp)
+            ) {
+                tallas.forEach { talla ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = talla.displayName,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = if (tallaSeleccionada == talla) FontWeight.Bold else FontWeight.Normal
+                                )
+                                if (tallaSeleccionada == talla) {
+                                    Text(
+                                        text = "✓",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        },
+                        onClick = {
+                            onTallaSelected(talla)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }

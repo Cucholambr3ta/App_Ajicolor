@@ -34,7 +34,6 @@ import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -140,7 +139,7 @@ fun CatalogoProductosScreen(
                                 ListItem(
                                     headlineContent = { Text(producto.nombre) },
                                     supportingContent = {
-                                        Text("${producto.categoria.displayName} • \$${producto.precio.toInt()}")
+                                        Text("${producto.categoria.displayName} • ${producto.precioFormateado()}")
                                     },
                                     leadingContent = {
                                         Icon(
@@ -152,7 +151,7 @@ fun CatalogoProductosScreen(
                                         .fillMaxWidth()
                                         .clickable {
                                             isSearchActive = false
-                                            navController.navigate("producto/${producto.id}")
+                                            navController.navigate(Screen.DetalleProducto.createRoute(producto.id))
                                         }
                                 )
                             }
@@ -264,7 +263,7 @@ fun CatalogoProductosScreen(
                         items(productosFiltrados) { producto ->
                             ProductoCard(
                                 producto = producto,
-                                onClick = { navController.navigate("producto/${producto.id}") }
+                                onClick = { navController.navigate(Screen.DetalleProducto.createRoute(producto.id)) }
                             )
                         }
                     }
@@ -333,7 +332,7 @@ private fun ProductoCard(
 
                 // Precio
                 Text(
-                    text = "S/ %.2f".format(producto.precio),
+                    text = producto.precioFormateado(),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

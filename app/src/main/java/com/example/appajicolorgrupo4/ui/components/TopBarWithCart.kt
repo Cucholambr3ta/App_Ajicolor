@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.navigation.Screen
+import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -25,7 +26,7 @@ fun TopBarWithCart(
     additionalActions: @Composable () -> Unit = {}
 ) {
     TopAppBar(
-        title = { Text(title) },
+        title = { Text(title, color = AmarilloAji) },
         navigationIcon = {
             IconButton(onClick = {
                 scope.launch {

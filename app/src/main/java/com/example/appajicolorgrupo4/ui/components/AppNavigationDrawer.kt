@@ -55,7 +55,10 @@ fun AppNavigationDrawer(
                         scope.launch { drawerState.close() }
                         if (currentRoute != Screen.Home.route) {
                             navController.navigate(Screen.Home.route) {
-                                popUpTo(Screen.Home.route) { inclusive = true }
+                                popUpTo(Screen.Home.route) {
+                                    inclusive = false
+                                    saveState = true
+                                }
                                 launchSingleTop = true
                                 restoreState = true
                             }
@@ -160,4 +163,3 @@ fun AppNavigationDrawer(
         content = content
     )
 }
-

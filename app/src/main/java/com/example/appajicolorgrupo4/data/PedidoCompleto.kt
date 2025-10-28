@@ -4,8 +4,8 @@ package com.example.appajicolorgrupo4.data
  * Estados posibles de un pedido
  */
 enum class EstadoPedido(val displayName: String, val descripcion: String) {
-    CREADO("Compra Creada", "Tu pedido ha sido creado y está siendo procesado"),
-    CONFIRMADO("Compra Confirmada", "Tu pedido ha sido confirmado y está siendo preparado"),
+    CONFIRMADO("Compra Confirmada", "Tu pedido ha sido confirmado y está siendo procesado"),
+    PREPARANDO("Preparando Pedido", "Tu pedido está siendo preparado para el envío"),
     ENVIADO("Enviado", "Tu pedido está en camino"),
     ENTREGADO("Entregado", "Tu pedido ha sido entregado");
 
@@ -36,7 +36,7 @@ data class PedidoCompleto(
     val notasAdicionales: String = "",
     val numeroDespacho: String? = null, // Se asignará después
     val metodoPago: MetodoPago,
-    val estado: EstadoPedido = EstadoPedido.CREADO,
+    val estado: EstadoPedido = EstadoPedido.CONFIRMADO,
     val fechaCreacion: Long = System.currentTimeMillis(),
     val fechaConfirmacion: Long? = null,
     val fechaEnvio: Long? = null,
@@ -52,8 +52,8 @@ data class PedidoCompleto(
      */
     fun obtenerFechaEstadoActual(): Long {
         return when (estado) {
-            EstadoPedido.CREADO -> fechaCreacion
             EstadoPedido.CONFIRMADO -> fechaConfirmacion ?: fechaCreacion
+            EstadoPedido.PREPARANDO -> fechaConfirmacion ?: fechaCreacion
             EstadoPedido.ENVIADO -> fechaEnvio ?: fechaCreacion
             EstadoPedido.ENTREGADO -> fechaEntrega ?: fechaCreacion
         }
@@ -65,8 +65,8 @@ data class PedidoCompleto(
     fun actualizarEstado(nuevoEstado: EstadoPedido): PedidoCompleto {
         val ahora = System.currentTimeMillis()
         return when (nuevoEstado) {
-            EstadoPedido.CREADO -> this
             EstadoPedido.CONFIRMADO -> copy(estado = nuevoEstado, fechaConfirmacion = ahora)
+            EstadoPedido.PREPARANDO -> copy(estado = nuevoEstado, fechaConfirmacion = ahora)
             EstadoPedido.ENVIADO -> copy(estado = nuevoEstado, fechaEnvio = ahora)
             EstadoPedido.ENTREGADO -> copy(estado = nuevoEstado, fechaEntrega = ahora)
         }
