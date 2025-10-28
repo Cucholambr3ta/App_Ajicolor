@@ -6,49 +6,22 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-<<<<<<< HEAD
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.UINavegacion">
-=======
         android:icon="@mipmap/ic_aji"
         android:roundIcon="@mipmap/ic_aji"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppAjiColorGrupo4">
->>>>>>> origin/Ale
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-<<<<<<< HEAD
-            android:theme="@style/Theme.UINavegacion">
-=======
             android:theme="@style/Theme.AppAjiColorGrupo4">
->>>>>>> origin/Ale
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
-
-        <!-- FileProvider para compartor la Uri temporal de la foto tomada con la camara -->
-        <provider
-            android:authorities="com.example.uinavegacion.fileprovider"
-            android:name="androidx.core.content.FileProvider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
-
-        </provider>
-=======
->>>>>>> origin/Ale
     </application>
 
 </manifest>

@@ -21,7 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "AppAjiColorGrupo4"
 include(":app")
-<<<<<<< HEAD
- 
-=======
->>>>>>> origin/Ale
