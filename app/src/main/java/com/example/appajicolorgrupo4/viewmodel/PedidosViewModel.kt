@@ -90,7 +90,7 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
             // Actualizar en memoria
             _pedidos.value = _pedidos.value.map { pedido ->
                 if (pedido.numeroPedido == numeroPedido) {
-                    pedido.actualizarEstado(nuevoEstado)
+                    pedido.copy(estado = nuevoEstado)
                 } else {
                     pedido
                 }
@@ -109,7 +109,7 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
             // Actualizar en memoria
             _pedidos.value = _pedidos.value.map { pedido ->
                 if (pedido.numeroPedido == numeroPedido) {
-                    pedido.asignarNumeroDespacho(numeroDespacho)
+                    pedido.copy(numeroDespacho = numeroDespacho)
                 } else {
                     pedido
                 }
