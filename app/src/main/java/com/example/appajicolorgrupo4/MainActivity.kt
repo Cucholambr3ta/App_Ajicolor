@@ -34,6 +34,7 @@ import com.example.appajicolorgrupo4.ui.screens.DetallePedidoScreen
 import com.example.appajicolorgrupo4.ui.screens.DebugScreen
 import com.example.appajicolorgrupo4.ui.theme.AppAjiColorGrupo4Theme
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,8 +53,9 @@ class MainActivity : ComponentActivity() {
                 // Controlador de navegación
                 val navController = rememberNavController()
 
-                // ViewModel compartido del carrito para todas las pantallas
+                // ViewModels compartidos
                 val carritoViewModel: CarritoViewModel = viewModel()
+                val usuarioViewModel: UsuarioViewModel = viewModel()
 
                 // Escuchar eventos de navegación desde el ViewModel
                 LaunchedEffect(Unit) {
@@ -98,7 +100,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("login") {
-                            LoginScreen(navController = navController)
+                            LoginScreen(navController = navController, usuarioViewModel = usuarioViewModel)
                         }
                         composable("password_recovery") {
                             PasswordRecoveryScreen(navController = navController)
@@ -107,7 +109,7 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(navController = navController, viewModel = viewModel)
                         }
                         composable(Screen.Profile.route) {
-                            ProfileScreen(navController = navController, viewModel = viewModel)
+                            ProfileScreen(navController = navController, viewModel = viewModel, usuarioViewModel = usuarioViewModel)
                         }
                         composable(Screen.Settings.route) {
                             SettingScreen(navController = navController, viewModel = viewModel)
@@ -127,13 +129,25 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Checkout.route) {
                             CheckoutScreen(
                                 navController = navController,
-                                carritoViewModel = carritoViewModel
+                                carritoViewModel = carritoViewModel,
+                                usuarioViewModel = usuarioViewModel
                             )
                         }
-                        composable(Screen.PaymentMethods.route) {
+                        composable(
+                            route = "${Screen.PaymentMethods.route}?direccion={direccion}&telefono={telefono}&notas={notas}",
+                            arguments = listOf(
+                                navArgument("direccion") { type = NavType.StringType; nullable = true },
+                                navArgument("telefono") { type = NavType.StringType; nullable = true },
+                                navArgument("notas") { type = NavType.StringType; nullable = true }
+                            )
+                        ) { backStackEntry ->
                             PaymentMethodsScreen(
                                 navController = navController,
-                                carritoViewModel = carritoViewModel
+                                carritoViewModel = carritoViewModel,
+                                usuarioViewModel = usuarioViewModel,
+                                direccionEnvio = backStackEntry.arguments?.getString("direccion"),
+                                telefono = backStackEntry.arguments?.getString("telefono"),
+                                notasAdicionales = backStackEntry.arguments?.getString("notas")
                             )
                         }
                         composable(

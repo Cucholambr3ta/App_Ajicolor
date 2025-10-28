@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
 import com.example.appajicolorgrupo4.navigation.Screen
@@ -30,10 +29,9 @@ import com.example.appajicolorgrupo4.ui.theme.RojoAji
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    usuarioViewModel: UsuarioViewModel
 ) {
-    val usuarioViewModel: UsuarioViewModel = viewModel()
-
     // Cargar perfil al entrar
     LaunchedEffect(Unit) {
         usuarioViewModel.cargarPerfil()
@@ -332,4 +330,3 @@ fun ProfileScreen(
         }
     }
 }
-

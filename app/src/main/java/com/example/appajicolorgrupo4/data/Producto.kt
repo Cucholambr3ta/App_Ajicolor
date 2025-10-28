@@ -85,7 +85,7 @@ data class ProductoConfiguracion(
             talla = talla,
             color = color ?: ColorInfo("Sin color", androidx.compose.ui.graphics.Color.Gray, "#808080"),
             categoria = producto.categoria,
-            imagenUrl = producto.imagenResId.toString()
+            imagenResId = producto.imagenResId
         )
     }
 }

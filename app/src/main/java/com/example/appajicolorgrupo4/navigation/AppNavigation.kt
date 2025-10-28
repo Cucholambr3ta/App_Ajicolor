@@ -38,7 +38,7 @@ fun AppNavigation() {
             InitScreen(navController)
         }
         composable(Routes.LOGIN) {
-            LoginScreen(navController)
+            LoginScreen(navController, usuarioViewModel)
         }
         composable(Routes.REGISTRO) {
             RegistroScreen(navController, usuarioViewModel)

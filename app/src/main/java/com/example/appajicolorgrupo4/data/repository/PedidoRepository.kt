@@ -44,10 +44,10 @@ class PedidoRepository(private val pedidoDao: PedidoDao) {
                     numeroPedido = pedido.numeroPedido,
                     productoId = producto.id,
                     productoNombre = producto.nombre,
-                    productoImagenResId = producto.imagenUrl?.toIntOrNull() ?: 0,
+                    productoImagenResId = producto.imagenResId,
                     precio = producto.precio,
                     cantidad = producto.cantidad,
-                    talla = producto.talla?.valor ?: "N/A", // "N/A" para accesorios sin talla
+                    talla = producto.talla?.displayName ?: "N/A", // "N/A" para accesorios sin talla
                     color = producto.color.hexCode,
                     colorNombre = producto.color.nombre,
                     categoria = producto.categoria.name
@@ -180,7 +180,7 @@ class PedidoRepository(private val pedidoDao: PedidoDao) {
                     hexCode = item.color
                 ),
                 categoria = CategoriaProducto.valueOf(item.categoria),
-                imagenUrl = item.productoImagenResId.toString()
+                imagenResId = item.productoImagenResId
             )
         }
 
@@ -205,4 +205,3 @@ class PedidoRepository(private val pedidoDao: PedidoDao) {
         )
     }
 }
-

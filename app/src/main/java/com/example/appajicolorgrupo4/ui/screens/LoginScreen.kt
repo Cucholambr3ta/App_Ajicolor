@@ -27,10 +27,12 @@ import com.example.appajicolorgrupo4.viewmodel.AuthViewModelFactory
 import com.example.appajicolorgrupo4.data.local.database.AppDatabase
 import com.example.appajicolorgrupo4.data.repository.UserRepository
 import com.example.appajicolorgrupo4.data.session.SessionManager
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 
 @Composable
 fun LoginScreen(
-    navController: NavController
+    navController: NavController,
+    usuarioViewModel: UsuarioViewModel
 ) {
     val context = LocalContext.current
     val database = AppDatabase.getInstance(context)
@@ -44,6 +46,7 @@ fun LoginScreen(
     // Navegar a Home cuando login exitoso
     LaunchedEffect(estado.success) {
         if (estado.success) {
+            usuarioViewModel.cargarPerfil()
             navController.navigate(Screen.Home.route) {
                 popUpTo(Screen.StartScreen.route) { inclusive = true }
             }
