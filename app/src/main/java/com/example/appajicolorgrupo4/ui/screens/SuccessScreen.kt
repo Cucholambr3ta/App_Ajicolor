@@ -1,16 +1,19 @@
 package com.example.appajicolorgrupo4.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.appajicolorgrupo4.R
 import com.example.appajicolorgrupo4.data.PedidoCompleto
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
@@ -66,10 +69,10 @@ fun SuccessScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Aquí podrías agregar un icono o animación de éxito
-            Text(
-                text = "🎉",
-                style = MaterialTheme.typography.displayLarge
+            Image(
+                painter = painterResource(id = R.drawable.compra_exitosa),
+                contentDescription = "Compra Exitosa",
+                modifier = Modifier.size(180.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
 
