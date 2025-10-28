@@ -73,7 +73,10 @@ class CarritoViewModel : ViewModel() {
      * Agrega un producto al carrito
      */
     fun agregarProducto(producto: ProductoCarrito) {
+        android.util.Log.d("CarritoViewModel", "agregarProducto llamado con: $producto")
+
         val productosActuales = _productos.value.toMutableList()
+        android.util.Log.d("CarritoViewModel", "Productos actuales en carrito: ${productosActuales.size}")
 
         // Buscar si el producto ya existe (mismo id, talla y color)
         val productoExistente = productosActuales.find {
@@ -84,16 +87,20 @@ class CarritoViewModel : ViewModel() {
 
         if (productoExistente != null) {
             // Incrementar cantidad
+            android.util.Log.d("CarritoViewModel", "Producto existente encontrado, incrementando cantidad")
             val index = productosActuales.indexOf(productoExistente)
             productosActuales[index] = productoExistente.copy(
                 cantidad = productoExistente.cantidad + producto.cantidad
             )
         } else {
             // Agregar nuevo producto
+            android.util.Log.d("CarritoViewModel", "Agregando nuevo producto al carrito")
             productosActuales.add(producto)
         }
 
         _productos.value = productosActuales
+        android.util.Log.d("CarritoViewModel", "Carrito actualizado. Total productos: ${productosActuales.size}")
+        android.util.Log.d("CarritoViewModel", "Contenido del carrito: ${_productos.value}")
     }
 
     /**

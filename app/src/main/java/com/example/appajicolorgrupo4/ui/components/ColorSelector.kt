@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.appajicolorgrupo4.data.ColorInfo
 
@@ -31,6 +30,7 @@ import com.example.appajicolorgrupo4.data.ColorInfo
  * @param modifier Modificador para personalizar el componente
  * @param columnas Número de columnas en la cuadrícula (por defecto 5)
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorSelector(
     colores: List<ColorInfo>,
@@ -84,7 +84,7 @@ fun ColorSelector(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor()
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
             )
 
             ExposedDropdownMenu(
@@ -240,8 +240,8 @@ fun ColorSelectorDialog(
     colores: List<ColorInfo>,
     colorSeleccionado: ColorInfo?,
     onColorSelected: (ColorInfo) -> Unit,
-    titulo: String = "Seleccionar Color",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    titulo: String = "Seleccionar Color"
 ) {
     var showDialog by remember { mutableStateOf(false) }
 

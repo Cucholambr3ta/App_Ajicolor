@@ -7,8 +7,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -31,9 +29,17 @@ import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.data.*
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.*
+import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
 import com.example.appajicolorgrupo4.viewmodel.ProductoViewModel
-import kotlinx.coroutines.launch
+import androidx.core.content.FileProvider
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,6 +123,31 @@ fun DetalleProductoScreen(
     var colorSeleccionado by remember { mutableStateOf<ColorInfo?>(null) }
     var cantidad by remember { mutableStateOf(1) }
 
+    // Inicializar talla y color por defecto
+    LaunchedEffect(producto) {
+        // Inicializar talla con S si el producto requiere talla
+        if (producto.requiereTalla() && tallaSeleccionada == null) {
+            val tallas = Talla.porCategoria(producto.categoria, tipoSeleccionado)
+            val tallaS = tallas.find { it.displayName == "S" }
+            tallaSeleccionada = tallaS ?: tallas.firstOrNull()
+        }
+
+        // Inicializar color con blanco si el producto requiere color
+        if (producto.requiereColor() && colorSeleccionado == null) {
+            val colores = when (producto.categoria) {
+                CategoriaProducto.SERIGRAFIA,
+                CategoriaProducto.CORPORATIVA,
+                CategoriaProducto.ACCESORIOS -> ColoresDisponibles.coloresAdulto
+                CategoriaProducto.DTF -> when (tipoSeleccionado) {
+                    TipoProducto.ADULTO -> ColoresDisponibles.coloresAdulto
+                    TipoProducto.INFANTIL -> ColoresDisponibles.coloresInfantil
+                }
+            }
+            val colorBlanco = colores.find { it.nombre.contains("Blanco", ignoreCase = true) }
+            colorSeleccionado = colorBlanco ?: colores.firstOrNull()
+        }
+    }
+
     // Estado para reseñas
     var mostrarDialogoResena by remember { mutableStateOf(false) }
     val resenas by productoViewModel.resenas.collectAsState()
@@ -135,6 +166,17 @@ fun DetalleProductoScreen(
         if (producto.permiteSeleccionTipo()) {
             tallaSeleccionada = null
             colorSeleccionado = null
+            // Reinicializar con valores por defecto
+            val tallas = Talla.porCategoria(producto.categoria, tipoSeleccionado)
+            val tallaS = tallas.find { it.displayName == "S" } ?: tallas.find { it.displayName == "2" }
+            tallaSeleccionada = tallaS ?: tallas.firstOrNull()
+
+            val colores = when (tipoSeleccionado) {
+                TipoProducto.ADULTO -> ColoresDisponibles.coloresAdulto
+                TipoProducto.INFANTIL -> ColoresDisponibles.coloresInfantil
+            }
+            val colorBlanco = colores.find { it.nombre.contains("Blanco", ignoreCase = true) }
+            colorSeleccionado = colorBlanco ?: colores.firstOrNull()
         }
     }
 
@@ -234,7 +276,8 @@ fun DetalleProductoScreen(
                             Text(
                                 text = producto.nombre,
                                 style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MoradoAji
                             )
 
                             // Calificación
@@ -245,7 +288,8 @@ fun DetalleProductoScreen(
                                 CalificacionEstrellas(producto.calificacionPromedio)
                                 Text(
                                     text = "${producto.calificacionPromedio} (${producto.numeroResenas} reseñas)",
-                                    style = MaterialTheme.typography.bodyMedium
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MoradoAji
                                 )
                             }
 
@@ -256,7 +300,7 @@ fun DetalleProductoScreen(
                                 text = producto.precioFormateado(),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MoradoAji
                             )
 
                             // Descripción con formato
@@ -284,7 +328,8 @@ fun DetalleProductoScreen(
 
                             Text(
                                 text = descripcionFormateada,
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MoradoAji
                             )
 
                             // Stock
@@ -296,7 +341,7 @@ fun DetalleProductoScreen(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = null,
                                     tint = if (producto.stock > 0)
-                                        MaterialTheme.colorScheme.primary
+                                        MoradoAji
                                     else
                                         MaterialTheme.colorScheme.error,
                                     modifier = Modifier.size(20.dp)
@@ -308,7 +353,7 @@ fun DetalleProductoScreen(
                                         "Agotado",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = if (producto.stock > 0)
-                                        MaterialTheme.colorScheme.onSurface
+                                        MoradoAji
                                     else
                                         MaterialTheme.colorScheme.error
                                 )
@@ -347,7 +392,8 @@ fun DetalleProductoScreen(
                             Text(
                                 text = "Cantidad",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MoradoAji
                             )
 
                             Row(
@@ -358,13 +404,14 @@ fun DetalleProductoScreen(
                                     onClick = { if (cantidad > 1) cantidad-- },
                                     modifier = Modifier.size(48.dp)
                                 ) {
-                                    Text("−", style = MaterialTheme.typography.headlineMedium)
+                                    Text("−", style = MaterialTheme.typography.headlineMedium, color = MoradoAji)
                                 }
 
                                 Text(
                                     text = cantidad.toString(),
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontWeight = FontWeight.Bold,
+                                    color = MoradoAji,
                                     modifier = Modifier.widthIn(min = 40.dp)
                                 )
 
@@ -372,7 +419,7 @@ fun DetalleProductoScreen(
                                     onClick = { if (cantidad < producto.stock) cantidad++ },
                                     modifier = Modifier.size(48.dp)
                                 ) {
-                                    Icon(Icons.Default.Add, "Aumentar")
+                                    Icon(Icons.Default.Add, "Aumentar", tint = MoradoAji)
                                 }
 
                                 Spacer(modifier = Modifier.weight(1f))
@@ -381,7 +428,7 @@ fun DetalleProductoScreen(
                                     text = "Total: $${producto.precio * cantidad}",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MoradoAji
                                 )
                             }
                         }
@@ -397,22 +444,50 @@ fun DetalleProductoScreen(
                         cantidad = cantidad
                     )
 
+                    val esValida = configuracion.esValida()
+
+                    // Debug logging
+                    android.util.Log.d("DetalleProducto", """
+                        Configuración:
+                        - Producto: ${producto.nombre}
+                        - Talla: ${tallaSeleccionada?.displayName ?: "null"}
+                        - Color: ${colorSeleccionado?.nombre ?: "null"}
+                        - Cantidad: $cantidad
+                        - Es válida: $esValida
+                        - Requiere talla: ${producto.requiereTalla()}
+                        - Requiere color: ${producto.requiereColor()}
+                    """.trimIndent())
+
                     Button(
                         onClick = {
-                            if (configuracion.esValida()) {
-                                carritoViewModel.agregarProducto(configuracion.toProductoCarrito())
-                                mostrarMensajeAgregado = true
+                            android.util.Log.d("DetalleProducto", "Botón agregar presionado. esValida=$esValida")
+                            if (esValida) {
+                                try {
+                                    val productoCarrito = configuracion.toProductoCarrito()
+                                    android.util.Log.d("DetalleProducto", "ProductoCarrito creado: $productoCarrito")
+
+                                    carritoViewModel.agregarProducto(productoCarrito)
+                                    android.util.Log.d("DetalleProducto", "Producto agregado al ViewModel")
+
+                                    mostrarMensajeAgregado = true
+                                    android.util.Log.d("DetalleProducto", "Mensaje de confirmación activado")
+                                } catch (e: Exception) {
+                                    android.util.Log.e("DetalleProducto", "Error al agregar al carrito", e)
+                                    e.printStackTrace()
+                                }
+                            } else {
+                                android.util.Log.w("DetalleProducto", "Configuración no válida, no se agregó al carrito")
                             }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
-                        enabled = configuracion.esValida() && producto.stock > 0
+                        enabled = esValida && producto.stock > 0
                     ) {
                         Icon(Icons.Default.ShoppingCart, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (!configuracion.esValida()) {
+                            text = if (!esValida) {
                                 "Completa la configuración"
                             } else {
                                 "Agregar al Carrito"
@@ -421,20 +496,41 @@ fun DetalleProductoScreen(
                         )
                     }
 
-                    if (!configuracion.esValida()) {
-                        Text(
-                            text = buildString {
+                    if (!esValida) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(12.dp),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = "Por favor completa:",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    fontWeight = FontWeight.Bold
+                                )
                                 if (producto.requiereTalla() && tallaSeleccionada == null) {
-                                    append("• Selecciona una talla\n")
+                                    Text(
+                                        text = "• Selecciona una talla",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
                                 }
                                 if (producto.requiereColor() && colorSeleccionado == null) {
-                                    append("• Selecciona un color")
+                                    Text(
+                                        text = "• Selecciona un color",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
                                 }
-                            },
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
+                            }
+                        }
                     }
                 }
 
@@ -458,13 +554,21 @@ fun DetalleProductoScreen(
                                 Text(
                                     text = "Reseñas (${resenasProducto.size})",
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = MoradoAji
                                 )
 
-                                Button(onClick = { mostrarDialogoResena = true }) {
-                                    Icon(Icons.Default.Star, contentDescription = null)
+                                Button(
+                                    onClick = { mostrarDialogoResena = true },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = AmarilloAji,
+                                        contentColor = MoradoAji
+                                    ),
+                                    border = androidx.compose.foundation.BorderStroke(2.dp, MoradoAji)
+                                ) {
+                                    Icon(Icons.Default.Star, contentDescription = null, tint = MoradoAji)
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Escribir Reseña")
+                                    Text("Escribir Reseña", color = MoradoAji)
                                 }
                             }
 
@@ -472,7 +576,7 @@ fun DetalleProductoScreen(
                                 Text(
                                     text = "Sé el primero en dejar una reseña",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                    color = MoradoAji.copy(alpha = 0.6f)
                                 )
                             } else {
                                 resenasProducto.forEach { resena ->
@@ -533,9 +637,9 @@ private fun CalificacionEstrellas(
                     Icons.Default.Star,
                 contentDescription = null,
                 tint = if (index < calificacion.toInt())
-                    MaterialTheme.colorScheme.primary
+                    AmarilloAji
                 else
-                    MaterialTheme.colorScheme.outline,
+                    Color.Gray,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -555,7 +659,8 @@ private fun ResenaItem(resena: ProductoResena) {
                 Text(
                     text = resena.usuarioNombre,
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MoradoAji
                 )
                 CalificacionEstrellas(resena.calificacion.toFloat())
             }
@@ -564,28 +669,30 @@ private fun ResenaItem(resena: ProductoResena) {
                 text = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
                     .format(java.util.Date(resena.fecha)),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MoradoAji.copy(alpha = 0.6f)
             )
         }
 
         Text(
             text = resena.comentario,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MoradoAji
         )
 
         // Imagen de la reseña si existe
         if (resena.imagenUrl != null) {
-            Box(
+            Card(
                 modifier = Modifier
-                    .size(100.dp)
+                    .fillMaxWidth()
+                    .height(200.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                // Aquí iría la imagen de la reseña
-                Text(
-                    text = "📷",
-                    style = MaterialTheme.typography.displaySmall,
-                    modifier = Modifier.align(Alignment.Center)
+                AsyncImage(
+                    model = Uri.parse(resena.imagenUrl),
+                    contentDescription = "Imagen de reseña",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    error = painterResource(id = com.example.appajicolorgrupo4.R.drawable.logo_principal)
                 )
             }
         }
@@ -599,99 +706,186 @@ private fun DialogoAgregarResena(
     onDismiss: () -> Unit,
     onResenaAgregada: (ProductoResena) -> Unit
 ) {
+    val context = LocalContext.current
     var calificacion by remember { mutableStateOf(5) }
     var comentario by remember { mutableStateOf("") }
     var imagenUri by remember { mutableStateOf<Uri?>(null) }
-    var mostrarSelectorImagen by remember { mutableStateOf(false) }
+    var pendingCaptureUri by remember { mutableStateOf<Uri?>(null) }
 
+    // Función para crear archivo temporal de imagen
+    fun createTempImageFile(): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir = File(context.cacheDir, "reviews").apply {
+            if(!exists()) mkdirs()
+        }
+        return File(storageDir, "REVIEW_${timeStamp}.jpg")
+    }
+
+    // Función para obtener URI usando FileProvider
+    fun getImageUriForFile(file: File): Uri {
+        val authority = "${context.packageName}.fileprovider"
+        return FileProvider.getUriForFile(context, authority, file)
+    }
+
+    // Launcher para galería
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        imagenUri = uri
+        if (uri != null) {
+            imagenUri = uri
+        }
     }
 
+    // Launcher para cámara
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) {
-            // Imagen tomada
+        if (success && pendingCaptureUri != null) {
+            imagenUri = pendingCaptureUri
         }
+        pendingCaptureUri = null
     }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Escribe tu Reseña") },
+        title = {
+            Text(
+                "Escribe tu Reseña",
+                color = MoradoAji,
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
-            LazyColumn(
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Calificación:", style = MaterialTheme.typography.titleSmall)
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            (1..5).forEach { estrella ->
-                                IconButton(
-                                    onClick = { calificacion = estrella },
-                                    modifier = Modifier.size(40.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = "$estrella estrellas",
-                                        tint = if (estrella <= calificacion)
-                                            MaterialTheme.colorScheme.primary
-                                        else
-                                            MaterialTheme.colorScheme.outline,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
+                // Selector de calificación
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "Calificación:",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MoradoAji,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        (1..5).forEach { estrella ->
+                            IconButton(
+                                onClick = { calificacion = estrella },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Star,
+                                    contentDescription = "$estrella estrellas",
+                                    tint = if (estrella <= calificacion) AmarilloAji else Color.Gray,
+                                    modifier = Modifier.size(32.dp)
+                                )
                             }
                         }
                     }
                 }
 
-                item {
-                    OutlinedTextField(
-                        value = comentario,
-                        onValueChange = { comentario = it },
-                        label = { Text("Comentario") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 3,
-                        placeholder = { Text("Comparte tu experiencia con este producto") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White.copy(alpha = 0.75f),
-                            unfocusedContainerColor = Color.White.copy(alpha = 0.75f)
-                        )
+                // Campo de comentario
+                OutlinedTextField(
+                    value = comentario,
+                    onValueChange = { comentario = it },
+                    label = { Text("Comentario", color = MoradoAji) },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 3,
+                    placeholder = { Text("Comparte tu experiencia con este producto", color = MoradoAji.copy(alpha = 0.5f)) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                        unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
+                        focusedBorderColor = MoradoAji,
+                        unfocusedBorderColor = MoradoAji.copy(alpha = 0.5f),
+                        focusedTextColor = MoradoAji,
+                        unfocusedTextColor = MoradoAji
                     )
-                }
+                )
 
-                item {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Agregar foto (opcional):", style = MaterialTheme.typography.titleSmall)
+                // Botones de imagen
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        "Agregar foto (opcional):",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MoradoAji,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(
-                                onClick = { galleryLauncher.launch("image/*") },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Icon(Icons.Default.Favorite, contentDescription = null)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Galería")
-                            }
-
-                            OutlinedButton(
-                                onClick = { /* Lanzar cámara */ },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("📷 Cámara")
-                            }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(
+                            onClick = { galleryLauncher.launch("image/*") },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MoradoAji
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MoradoAji)
+                        ) {
+                            Icon(Icons.Default.Favorite, contentDescription = null, tint = MoradoAji)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Galería", color = MoradoAji)
                         }
 
-                        if (imagenUri != null) {
-                            Text(
-                                text = "✓ Imagen seleccionada",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
+                        OutlinedButton(
+                            onClick = {
+                                try {
+                                    val file = createTempImageFile()
+                                    val uri = getImageUriForFile(file)
+                                    pendingCaptureUri = uri
+                                    cameraLauncher.launch(uri)
+                                } catch (e: Exception) {
+                                    android.widget.Toast.makeText(
+                                        context,
+                                        "Error al abrir cámara: ${e.message}",
+                                        android.widget.Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = MoradoAji
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, MoradoAji)
+                        ) {
+                            Text("📷 Cámara", color = MoradoAji)
+                        }
+                    }
+
+                    // Preview de la imagen seleccionada
+                    if (imagenUri != null) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White.copy(alpha = 0.75f)
                             )
+                        ) {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                AsyncImage(
+                                    model = imagenUri,
+                                    contentDescription = "Imagen de reseña",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                                // Botón para eliminar imagen
+                                IconButton(
+                                    onClick = { imagenUri = null },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(8.dp)
+                                        .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(20.dp))
+                                ) {
+                                    Icon(
+                                        Icons.Default.Close,
+                                        contentDescription = "Eliminar imagen",
+                                        tint = MoradoAji
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -710,16 +904,29 @@ private fun DialogoAgregarResena(
                     )
                     onResenaAgregada(resena)
                 },
-                enabled = comentario.isNotBlank()
+                enabled = comentario.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AmarilloAji,
+                    contentColor = MoradoAji,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.White
+                ),
+                border = androidx.compose.foundation.BorderStroke(2.dp, MoradoAji)
             ) {
-                Text("Publicar")
+                Text("Publicar", color = MoradoAji, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
+            TextButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = MoradoAji
+                )
+            ) {
+                Text("Cancelar", color = MoradoAji)
             }
-        }
+        },
+        containerColor = Color.White.copy(alpha = 0.95f)
     )
 }
 

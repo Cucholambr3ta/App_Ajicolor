@@ -29,6 +29,7 @@ import com.example.appajicolorgrupo4.ui.screens.PaymentMethodsScreen
 import com.example.appajicolorgrupo4.ui.screens.SuccessScreen
 import com.example.appajicolorgrupo4.ui.screens.CatalogoProductosScreen
 import com.example.appajicolorgrupo4.ui.screens.DetalleProductoScreen
+import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
 import com.example.appajicolorgrupo4.ui.screens.DetallePedidoScreen
 import com.example.appajicolorgrupo4.ui.screens.DebugScreen
 import com.example.appajicolorgrupo4.ui.theme.AppAjiColorGrupo4Theme
@@ -51,6 +52,8 @@ class MainActivity : ComponentActivity() {
                 // Controlador de navegación
                 val navController = rememberNavController()
 
+                // ViewModel compartido del carrito para todas las pantallas
+                val carritoViewModel: CarritoViewModel = viewModel()
 
                 // Escuchar eventos de navegación desde el ViewModel
                 LaunchedEffect(Unit) {
@@ -113,16 +116,25 @@ class MainActivity : ComponentActivity() {
                             NotificationScreen(navController = navController)
                         }
                         composable(Screen.Cart.route) {
-                            CartScreen(navController = navController)
+                            CartScreen(
+                                navController = navController,
+                                carritoViewModel = carritoViewModel
+                            )
                         }
                         composable(Screen.OrderHistory.route) {
                             OrderHistoryScreen(navController = navController)
                         }
                         composable(Screen.Checkout.route) {
-                            CheckoutScreen(navController = navController)
+                            CheckoutScreen(
+                                navController = navController,
+                                carritoViewModel = carritoViewModel
+                            )
                         }
                         composable(Screen.PaymentMethods.route) {
-                            PaymentMethodsScreen(navController = navController)
+                            PaymentMethodsScreen(
+                                navController = navController,
+                                carritoViewModel = carritoViewModel
+                            )
                         }
                         composable(
                             route = Screen.Success.routePattern,
@@ -151,7 +163,8 @@ class MainActivity : ComponentActivity() {
                             val productoId = backStackEntry.arguments?.getString("productoId") ?: ""
                             DetalleProductoScreen(
                                 productoId = productoId,
-                                navController = navController
+                                navController = navController,
+                                carritoViewModel = carritoViewModel
                             )
                         }
                         composable(
