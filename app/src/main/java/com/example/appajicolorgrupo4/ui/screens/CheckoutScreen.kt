@@ -38,11 +38,11 @@ fun CheckoutScreen(
     usuarioViewModel: UsuarioViewModel = viewModel(),
 ) {
     val productos by carritoViewModel.productos.collectAsState()
-    val subtotal = carritoViewModel.calcularSubtotal()
-    val impuestos = carritoViewModel.calcularImpuestos()
-    val costoEnvio = carritoViewModel.calcularCostoEnvio()
-    val total = carritoViewModel.calcularTotal()
-    val calificaEnvioGratis = carritoViewModel.calificaEnvioGratis()
+    val subtotal by carritoViewModel.subtotal.collectAsState()
+    val impuestos by carritoViewModel.iva.collectAsState()
+    val costoEnvio by carritoViewModel.costoEnvio.collectAsState()
+    val total by carritoViewModel.total.collectAsState()
+    val calificaEnvioGratis by carritoViewModel.calificaEnvioGratis.collectAsState()
 
     val formatoMoneda = remember {
         NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {

@@ -40,18 +40,18 @@ fun CartScreen(
     carritoViewModel: CarritoViewModel = viewModel()
 ) {
     val productos by carritoViewModel.productos.collectAsState()
-    val subtotal = carritoViewModel.calcularSubtotal()
-    val iva = carritoViewModel.calcularImpuestos()
-    val costoEnvio = carritoViewModel.calcularCostoEnvio()
-    val total = carritoViewModel.calcularTotal()
-    val calificaEnvioGratis = carritoViewModel.calificaEnvioGratis()
+    val subtotal by carritoViewModel.subtotal.collectAsState()
+    val iva by carritoViewModel.iva.collectAsState()
+    val costoEnvio by carritoViewModel.costoEnvio.collectAsState()
+    val total by carritoViewModel.total.collectAsState()
+    val calificaEnvioGratis by carritoViewModel.calificaEnvioGratis.collectAsState()
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val currentRoute = navController.currentBackStackEntry?.destination?.route ?: ""
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }

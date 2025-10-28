@@ -33,26 +33,22 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
     val ultimoPedidoGuardado: StateFlow<String?> = _ultimoPedidoGuardado.asStateFlow()
 
     /**
-     * Agrega un nuevo pedido y lo guarda en SQLite
+     * Agrega un nuevo pedido y lo guarda en SQLite. Es una función de suspensión para que la UI pueda esperar.
      */
-    fun agregarPedido(pedido: PedidoCompleto, userId: Long) {
-        viewModelScope.launch {
-            // Guardar en SQLite
-            val resultado = pedidoRepository.guardarPedido(pedido, userId)
-
-            resultado.onSuccess { numeroPedido ->
-                // Actualizar lista en memoria
+    suspend fun agregarPedido(pedido: PedidoCompleto, userId: Long): Result<String> {
+        val resultado = pedidoRepository.guardarPedido(pedido, userId)
+        resultado.onSuccess { numeroPedido ->
+            // Actualizar lista en memoria en el hilo principal
+            viewModelScope.launch {
                 val pedidosActuales = _pedidos.value.toMutableList()
                 pedidosActuales.add(0, pedido) // Agregar al inicio (más reciente primero)
                 _pedidos.value = pedidosActuales
-
-                // Notificar que se guardó exitosamente
                 _ultimoPedidoGuardado.value = numeroPedido
-            }.onFailure { error ->
-                // Manejar error (podrías usar un StateFlow para errores)
-                android.util.Log.e("PedidosViewModel", "Error al guardar pedido: ${error.message}")
             }
+        }.onFailure { error ->
+            android.util.Log.e("PedidosViewModel", "Error al guardar pedido: ${error.message}")
         }
+        return resultado
     }
 
     /**
@@ -67,10 +63,10 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
     }
 
     /**
-     * Obtiene un pedido por su número (primero de memoria, luego de SQLite si no está)
+     * Obtiene un pedido por su número desde SQLite.
      */
-    fun obtenerPedido(numeroPedido: String): PedidoCompleto? {
-        return _pedidos.value.find { it.numeroPedido == numeroPedido }
+    suspend fun obtenerPedidoPorNumero(numeroPedido: String): PedidoCompleto? {
+        return pedidoRepository.obtenerPedidoPorNumero(numeroPedido)
     }
 
     /**
@@ -94,7 +90,7 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
             // Actualizar en memoria
             _pedidos.value = _pedidos.value.map { pedido ->
                 if (pedido.numeroPedido == numeroPedido) {
-                    pedido.actualizarEstado(nuevoEstado)
+                    pedido.copy(estado = nuevoEstado)
                 } else {
                     pedido
                 }
@@ -113,7 +109,7 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
             // Actualizar en memoria
             _pedidos.value = _pedidos.value.map { pedido ->
                 if (pedido.numeroPedido == numeroPedido) {
-                    pedido.asignarNumeroDespacho(numeroDespacho)
+                    pedido.copy(numeroDespacho = numeroDespacho)
                 } else {
                     pedido
                 }
@@ -147,4 +143,3 @@ class PedidosViewModel(application: Application) : AndroidViewModel(application)
         _ultimoPedidoGuardado.value = null
     }
 }
-

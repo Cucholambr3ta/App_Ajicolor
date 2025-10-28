@@ -66,7 +66,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 )
 
                                 // Inserta seed sólo si la tabla está vacía
-                                if (dao.count() == 0) {
+                                if (dao.countUsers() == 0) {
                                     seed.forEach { dao.insert(it) }
                                 }
                             }
