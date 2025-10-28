@@ -1,8 +1,6 @@
 package com.example.appajicolorgrupo4.ui.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,9 +38,8 @@ fun ProductoConfiguracionSelector(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+        modifier = modifier.fillMaxWidth(),
+        // ← ELIMINADO .verticalScroll() porque ya está dentro de LazyColumn
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Selector de Tipo (solo para DTF)
@@ -50,24 +47,10 @@ fun ProductoConfiguracionSelector(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                 )
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Tipo de Producto",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    TipoProductoSelector(
-                        tipoSeleccionado = tipoSeleccionado,
-                        onTipoSelected = onTipoChanged
-                    )
-                }
+                // ...existing code...
             }
         }
 
@@ -76,33 +59,10 @@ fun ProductoConfiguracionSelector(
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                 )
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Selecciona la Talla",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = obtenerDescripcionTallas(categoria, tipoSeleccionado),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                    )
-
-                    val tallas = Talla.porCategoria(categoria, tipoSeleccionado)
-                    TallaSelector(
-                        tallas = tallas,
-                        tallaSeleccionada = tallaSeleccionada,
-                        onTallaSelected = onTallaSelected,
-                        columnas = if (tipoSeleccionado == TipoProducto.ADULTO) 3 else 4
-                    )
-                }
+                // ...existing code...
             }
         }
 
@@ -110,7 +70,7 @@ fun ProductoConfiguracionSelector(
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
             )
         ) {
             Column(

@@ -49,7 +49,16 @@ fun DetalleProductoScreen(
 
     // Si el producto no existe, mostrar error
     if (producto == null) {
-        AppBackground {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Fondo
+            Image(
+                painter = painterResource(id = com.example.appajicolorgrupo4.R.drawable.fondo_app),
+                contentDescription = "Fondo",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+
+            // Contenido
             Scaffold(
                 topBar = {
                     TopAppBar(
@@ -58,9 +67,13 @@ fun DetalleProductoScreen(
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
                             }
-                        }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent
+                        )
                     )
-                }
+                },
+                containerColor = Color.Transparent
             ) { paddingValues ->
                 Column(
                     modifier = Modifier
@@ -125,7 +138,17 @@ fun DetalleProductoScreen(
         }
     }
 
-    AppBackground {
+    // Estructura sin anidamientos problemáticos
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Fondo
+        Image(
+            painter = painterResource(id = com.example.appajicolorgrupo4.R.drawable.fondo_app),
+            contentDescription = "Fondo",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+
+        // Contenido principal
         AppNavigationDrawer(
             navController = navController,
             drawerState = drawerState,
@@ -151,7 +174,7 @@ fun DetalleProductoScreen(
                         currentRoute = currentRoute
                     )
                 },
-                containerColor = androidx.compose.ui.graphics.Color.Transparent,
+                containerColor = Color.Transparent,
                 snackbarHost = {
                     if (mostrarMensajeAgregado) {
                         Snackbar(
@@ -167,16 +190,16 @@ fun DetalleProductoScreen(
                         ) {
                             Text("✓ Producto agregado al carrito")
                         }
+                    }
                 }
-            }
-        ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+            ) { paddingValues ->
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(paddingValues),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                 // Imagen del producto
                 item {
                     Card(
@@ -184,7 +207,7 @@ fun DetalleProductoScreen(
                             .fillMaxWidth()
                             .height(300.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                         )
                     ) {
                         Image(
@@ -201,7 +224,7 @@ fun DetalleProductoScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                         )
                     ) {
                         Column(
@@ -314,7 +337,7 @@ fun DetalleProductoScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                         )
                     ) {
                         Column(
@@ -420,7 +443,7 @@ fun DetalleProductoScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
+                            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                         )
                     ) {
                         Column(
@@ -467,10 +490,10 @@ fun DetalleProductoScreen(
                 item {
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-            }
-        }
-        }
-    }
+            } // Fin LazyColumn
+        } // Fin Scaffold
+        } // Fin AppNavigationDrawer
+    } // Fin Box
 
     // Diálogo para agregar reseña
     if (mostrarDialogoResena) {

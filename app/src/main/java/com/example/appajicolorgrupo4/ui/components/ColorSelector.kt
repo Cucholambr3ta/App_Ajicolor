@@ -73,12 +73,15 @@ fun ColorSelector(
             }
         }
 
-        // Cuadrícula de colores
+        // Cuadrícula de colores - Usando heightIn para evitar constraints infinitos
         LazyVerticalGrid(
             columns = GridCells.Fixed(columnas),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 2000.dp), // Altura máxima para evitar constraints infinitos
+            userScrollEnabled = false // Deshabilitar scroll porque está dentro de LazyColumn
         ) {
             items(colores) { colorInfo ->
                 ColorItem(

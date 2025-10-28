@@ -59,7 +59,10 @@ fun TallaSelector(
             columns = GridCells.Fixed(columnas),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 1000.dp), // Altura máxima para evitar constraints infinitos
+            userScrollEnabled = false // Deshabilitar scroll porque está dentro de LazyColumn
         ) {
             items(tallas) { talla ->
                 TallaChip(
