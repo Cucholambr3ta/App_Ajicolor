@@ -553,8 +553,8 @@ private fun ProductoPedidoItem(
 
 private fun obtenerFechaEstado(pedido: PedidoCompleto, estado: EstadoPedido): Long? {
     return when (estado) {
-        EstadoPedido.CREADO -> pedido.fechaCreacion
-        EstadoPedido.CONFIRMADO -> pedido.fechaConfirmacion
+        EstadoPedido.CONFIRMADO -> pedido.fechaConfirmacion ?: pedido.fechaCreacion
+        EstadoPedido.PREPARANDO -> pedido.fechaConfirmacion ?: pedido.fechaCreacion
         EstadoPedido.ENVIADO -> pedido.fechaEnvio
         EstadoPedido.ENTREGADO -> pedido.fechaEntrega
     }

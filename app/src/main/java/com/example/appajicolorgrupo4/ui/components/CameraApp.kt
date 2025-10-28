@@ -1,5 +1,6 @@
 package com.example.appajicolorgrupo4.ui.components
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
@@ -25,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -95,6 +97,19 @@ fun CameraApp(
     // Estado para mostrar o no el diálogo de confirmación
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    // Launcher para solicitar permisos de cámara
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permiso concedido, preparar para abrir cámara
+            Toast.makeText(context, "Permiso concedido. Presiona el botón nuevamente.", Toast.LENGTH_SHORT).show()
+        } else {
+            // Permiso denegado
+            Toast.makeText(context, "Se necesita permiso de cámara para tomar fotos", Toast.LENGTH_LONG).show()
+        }
+    }
+
     // Launcher para abrir la cámara
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -105,9 +120,9 @@ fun CameraApp(
             onPhotoTaken?.invoke(photoUriString!!)
             Toast.makeText(context, "Foto tomada correctamente", Toast.LENGTH_SHORT).show()
         } else {
-            pendingCaptureUri = null
             Toast.makeText(context, "No se tomó ninguna foto", Toast.LENGTH_SHORT).show()
         }
+        pendingCaptureUri = null
     }
 
     ElevatedCard(
@@ -150,10 +165,21 @@ fun CameraApp(
             // Botón para tomar foto
             Button(
                 onClick = {
-                    val file = createTempImageFile(context)
-                    val uri = getImageUriForFile(context, file)
-                    pendingCaptureUri = uri
-                    takePictureLauncher.launch(uri)
+                    try {
+                        // Solicitar permiso primero
+                        cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        // Crear archivo y lanzar cámara
+                        val file = createTempImageFile(context)
+                        val uri = getImageUriForFile(context, file)
+                        pendingCaptureUri = uri
+                        takePictureLauncher.launch(uri)
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            context,
+                            "Error al abrir cámara: ${e.message}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             ) {
                 Text(
@@ -177,8 +203,19 @@ fun CameraApp(
             if (showDeleteDialog) {
                 AlertDialog(
                     onDismissRequest = { showDeleteDialog = false },
-                    title = { Text("Confirmación") },
-                    text = { Text("¿Desea eliminar la foto?") },
+                    containerColor = Color.White.copy(alpha = 0.25f), // 75% más transparente
+                    title = {
+                        Text(
+                            "Confirmación",
+                            color = Color.Black
+                        )
+                    },
+                    text = {
+                        Text(
+                            "¿Desea eliminar la foto?",
+                            color = Color.Black
+                        )
+                    },
                     confirmButton = {
                         TextButton(
                             onClick = {
@@ -192,14 +229,14 @@ fun CameraApp(
                                 ).show()
                             }
                         ) {
-                            Text("Aceptar")
+                            Text("Aceptar", color = Color.Black)
                         }
                     },
                     dismissButton = {
                         TextButton(
                             onClick = { showDeleteDialog = false }
                         ) {
-                            Text("Cancelar")
+                            Text("Cancelar", color = Color.Black)
                         }
                     }
                 )

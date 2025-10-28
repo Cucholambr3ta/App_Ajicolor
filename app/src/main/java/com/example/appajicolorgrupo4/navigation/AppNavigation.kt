@@ -10,6 +10,7 @@ import com.example.appajicolorgrupo4.ui.screens.InitScreen
 import com.example.appajicolorgrupo4.ui.screens.LoginScreen
 import com.example.appajicolorgrupo4.ui.screens.RegistroScreen
 import com.example.appajicolorgrupo4.ui.screens.HomeScreen
+import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 
 object Routes {
@@ -26,6 +27,7 @@ fun AppNavigation() {
 
     // ViewModel para la pantalla de registro
     val usuarioViewModel: UsuarioViewModel = viewModel()
+    val mainViewModel: MainViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -38,13 +40,13 @@ fun AppNavigation() {
             InitScreen(navController)
         }
         composable(Routes.LOGIN) {
-            LoginScreen(navController)
+            LoginScreen(navController, usuarioViewModel)
         }
         composable(Routes.REGISTRO) {
-            RegistroScreen(navController, usuarioViewModel)
+            RegistroScreen(navController, mainViewModel)
         }
         composable(Routes.HOME) {
-            HomeScreen(navController)
+            HomeScreen(navController, mainViewModel, usuarioViewModel)
         }
     }
 }

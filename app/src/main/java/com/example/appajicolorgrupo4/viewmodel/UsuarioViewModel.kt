@@ -8,7 +8,7 @@ import com.example.appajicolorgrupo4.data.repository.UserRepository
 import com.example.appajicolorgrupo4.data.session.SessionManager
 import com.example.appajicolorgrupo4.data.local.user.UserEntity
 import com.example.appajicolorgrupo4.ui.state.UsuarioUiState
-import com.example.appajicolorgrupo4.ui.state.ErroresUsuario
+import com.example.appajicolorgrupo4.ui.state.UsuarioErrores
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -47,6 +47,10 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     private val _updateResultado = MutableStateFlow<String?>(null)
     val updateResultado: StateFlow<String?> = _updateResultado
 
+    // Estado para la URI de la foto de perfil
+    private val _profileImageUri = MutableStateFlow<String?>(null)
+    val profileImageUri: StateFlow<String?> = _profileImageUri
+
     // Funciones de actualización de campos
     fun actualizaNombre(valor: String) {
         _estado.update { it.copy(nombre = valor, errores = it.errores.copy(nombre = null)) }
@@ -56,8 +60,18 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         _estado.update { it.copy(correo = valor, errores = it.errores.copy(correo = null)) }
     }
 
+    fun actualizaTelefono(valor: String) {
+        // Filtrar solo números
+        val soloNumeros = valor.filter { it.isDigit() }
+        _estado.update { it.copy(telefono = soloNumeros, errores = it.errores.copy(telefono = null)) }
+    }
+
     fun actualizaClave(valor: String) {
         _estado.update { it.copy(clave = valor, errores = it.errores.copy(clave = null)) }
+    }
+
+    fun actualizaConfirmarClave(valor: String) {
+        _estado.update { it.copy(confirmarClave = valor, errores = it.errores.copy(confirmarClave = null)) }
     }
 
     fun actualizaDireccion(valor: String) {
@@ -72,7 +86,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     fun validarFormulario(): Boolean {
         val estadoActual = _estado.value
         var valido = true
-        var errores = ErroresUsuario()
+        var errores = UsuarioErrores()
 
         if (estadoActual.nombre.isBlank()) {
             errores = errores.copy(nombre = "El nombre es obligatorio")
@@ -82,12 +96,23 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
             errores = errores.copy(correo = "Correo inválido")
             valido = false
         }
+        // Teléfono ya no es opcional - es obligatorio
+        if (estadoActual.telefono.isBlank()) {
+            errores = errores.copy(telefono = "El teléfono es obligatorio")
+            valido = false
+        } else if (estadoActual.telefono.length < 8) {
+            errores = errores.copy(telefono = "El teléfono debe tener al menos 8 dígitos")
+            valido = false
+        }
         if (estadoActual.clave.length < 6) {
             errores = errores.copy(clave = "La clave debe tener al menos 6 caracteres")
             valido = false
         }
-        if (estadoActual.direccion.isBlank()) {
-            errores = errores.copy(direccion = "La dirección es obligatoria")
+        if (estadoActual.confirmarClave.isBlank()) {
+            errores = errores.copy(confirmarClave = "Debe confirmar la contraseña")
+            valido = false
+        } else if (estadoActual.clave != estadoActual.confirmarClave) {
+            errores = errores.copy(confirmarClave = "Las contraseñas no coinciden")
             valido = false
         }
         if (!estadoActual.aceptaTerminos) {
@@ -112,6 +137,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
             val resultado = repository.register(
                 nombre = estadoActual.nombre,
                 correo = estadoActual.correo,
+                telefono = estadoActual.telefono,
                 clave = estadoActual.clave,
                 direccion = estadoActual.direccion
             )
@@ -155,9 +181,12 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
                     it.copy(
                         nombre = user.nombre,
                         correo = user.correo,
+                        telefono = user.telefono,
                         direccion = user.direccion
                     )
                 }
+                // Cargar la foto de perfil guardada
+                _profileImageUri.value = sessionManager.getProfileImageUri()
             }
         }
     }
@@ -199,6 +228,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
             id = currentUserId,
             nombre = estadoActual.nombre,
             correo = estadoActual.correo,
+            telefono = estadoActual.telefono,
             clave = currentPassword, // Mantener la misma contraseña
             direccion = estadoActual.direccion
         )
@@ -221,7 +251,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     private fun validarFormularioPerfil(): Boolean {
         val estadoActual = _estado.value
         var valido = true
-        var errores = ErroresUsuario()
+        var errores = UsuarioErrores()
 
         if (estadoActual.nombre.isBlank()) {
             errores = errores.copy(nombre = "El nombre es obligatorio")
@@ -229,6 +259,14 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         }
         if (estadoActual.correo.isBlank() || !estadoActual.correo.contains("@")) {
             errores = errores.copy(correo = "Correo inválido")
+            valido = false
+        }
+        // Teléfono es obligatorio
+        if (estadoActual.telefono.isBlank()) {
+            errores = errores.copy(telefono = "El teléfono es obligatorio")
+            valido = false
+        } else if (estadoActual.telefono.length < 8) {
+            errores = errores.copy(telefono = "El teléfono debe tener al menos 8 dígitos")
             valido = false
         }
         if (estadoActual.direccion.isBlank()) {
@@ -246,6 +284,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         _currentUser.value = null
         _estado.update { UsuarioUiState() }
         _isEditMode.value = false
+        _profileImageUri.value = null
     }
 
     // Verificar si hay sesión activa
@@ -255,5 +294,17 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
 
     fun limpiarMensajeActualizacion() {
         _updateResultado.value = null
+    }
+
+    // Guardar la URI de la foto de perfil
+    fun guardarFotoPerfil(uri: String?) {
+        _profileImageUri.value = uri
+        sessionManager.saveProfileImageUri(uri)
+    }
+
+    // Eliminar la foto de perfil
+    fun eliminarFotoPerfil() {
+        _profileImageUri.value = null
+        sessionManager.clearProfileImage()
     }
 }

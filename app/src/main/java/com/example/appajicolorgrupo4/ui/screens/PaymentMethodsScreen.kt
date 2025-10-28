@@ -18,10 +18,12 @@ import com.example.appajicolorgrupo4.data.EstadoPedido
 import com.example.appajicolorgrupo4.data.GeneradorNumeroPedido
 import com.example.appajicolorgrupo4.data.MetodoPago
 import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
 import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import java.net.URLDecoder
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -29,9 +31,9 @@ import java.util.Locale
 @Composable
 fun PaymentMethodsScreen(
     navController: NavController,
-    direccionEnvio: String = "",
-    telefono: String = "",
-    notasAdicionales: String = "",
+    direccionEnvio: String?,
+    telefono: String?,
+    notasAdicionales: String?,
     carritoViewModel: CarritoViewModel = viewModel(),
     pedidosViewModel: PedidosViewModel = viewModel(),
     usuarioViewModel: UsuarioViewModel = viewModel()
@@ -47,12 +49,29 @@ fun PaymentMethodsScreen(
     val currentUser by usuarioViewModel.currentUser.collectAsState()
     val nombreUsuario = currentUser?.nombre ?: "Usuario"
 
-    val metodosPago = MetodoPago.entries.toList()
+    // Cargar el perfil del usuario para asegurar que currentUser no sea nulo
+    LaunchedEffect(currentUser) {
+        if (currentUser == null) {
+            usuarioViewModel.cargarPerfil()
+        }
+    }
+
+    val metodosPago = listOf(MetodoPago.TARJETA_CREDITO, MetodoPago.TARJETA_DEBITO)
 
     val formatoMoneda = remember {
         NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
             maximumFractionDigits = 0
         }
+    }
+
+    val direccionDecodificada = remember(direccionEnvio) {
+        URLDecoder.decode(direccionEnvio ?: "", "UTF-8")
+    }
+    val telefonoDecodificado = remember(telefono) {
+        URLDecoder.decode(telefono ?: "", "UTF-8")
+    }
+    val notasDecodificadas = remember(notasAdicionales) {
+        URLDecoder.decode(notasAdicionales ?: "", "UTF-8")
     }
 
     AppBackground {
@@ -135,35 +154,11 @@ fun PaymentMethodsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Información de simulación
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "ℹ️",
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = "Esta es una simulación. No se realizará ningún cargo real.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 // Botón confirmar pago
                 Button(
                     onClick = {
-                        if (metodoSeleccionado != null) {
+                        val user = currentUser
+                        if (metodoSeleccionado != null && user != null) {
                             // Generar número de pedido
                             val numeroPedido = GeneradorNumeroPedido.generar(nombreUsuario)
 
@@ -172,38 +167,39 @@ fun PaymentMethodsScreen(
                                 numeroPedido = numeroPedido,
                                 nombreUsuario = nombreUsuario,
                                 productos = productos,
-                                subtotal = subtotal,
-                                impuestos = impuestos,
-                                costoEnvio = costoEnvio,
-                                total = total,
-                                direccionEnvio = direccionEnvio,
-                                telefono = telefono,
-                                notasAdicionales = notasAdicionales,
+                                subtotal = subtotal.toDouble(),
+                                impuestos = impuestos.toDouble(),
+                                costoEnvio = costoEnvio.toDouble(),
+                                total = total.toDouble(),
+                                direccionEnvio = direccionDecodificada,
+                                telefono = telefonoDecodificado,
+                                notasAdicionales = notasDecodificadas,
                                 metodoPago = metodoSeleccionado!!,
-                                estado = EstadoPedido.CREADO,
-                                fechaCreacion = System.currentTimeMillis()
+                                estado = EstadoPedido.CONFIRMADO,
+                                fechaCreacion = System.currentTimeMillis(),
+                                fechaConfirmacion = System.currentTimeMillis()
                             )
 
-                            // Guardar pedido
-                            pedidosViewModel.agregarPedido(pedido)
+                            // Guardar pedido en SQLite y en memoria
+                            pedidosViewModel.agregarPedido(pedido, user.id)
 
                             // Limpiar carrito
                             carritoViewModel.limpiarCarrito()
 
                             // Navegar a success con el número de pedido
-                            navController.navigate("success/${numeroPedido}") {
-                                popUpTo("cart") { inclusive = true }
+                            navController.navigate(Screen.Success.createRoute(numeroPedido)) {
+                                popUpTo(Screen.Cart.route) { inclusive = true }
                             }
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    enabled = metodoSeleccionado != null
+                    enabled = metodoSeleccionado != null && currentUser != null
                 ) {
                     Text(
                         text = if (metodoSeleccionado != null)
-                            "Confirmar Pago con ${metodoSeleccionado!!.displayName}"
+                            "Confirmar Pago"
                         else
                             "Selecciona un Método de Pago",
                         style = MaterialTheme.typography.titleMedium
@@ -282,10 +278,6 @@ private fun obtenerDescripcionMetodo(metodo: MetodoPago): String {
     return when (metodo) {
         MetodoPago.TARJETA_CREDITO -> "Visa, Mastercard, American Express"
         MetodoPago.TARJETA_DEBITO -> "Tarjetas de débito bancarias"
-        MetodoPago.YAPE -> "Pago mediante billetera digital Yape"
-        MetodoPago.PLIN -> "Pago mediante billetera digital Plin"
-        MetodoPago.TRANSFERENCIA -> "Transferencia a cuenta bancaria"
-        MetodoPago.EFECTIVO -> "Paga al recibir tu pedido"
+        else -> ""
     }
 }
-

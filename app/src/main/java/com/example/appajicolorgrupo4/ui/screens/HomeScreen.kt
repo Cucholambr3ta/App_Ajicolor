@@ -18,12 +18,16 @@ import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
 import com.example.appajicolorgrupo4.ui.components.CarouselProductosCompacto
 import com.example.appajicolorgrupo4.ui.components.ProductoCarousel
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
+import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = viewModel()
 ) {
     AppBackground {
         HomeScreenCompact(navController, viewModel)
@@ -46,33 +50,33 @@ fun HomeScreenCompact(
     val productosDestacados = remember {
         listOf(
             ProductoCarousel(
-                id = "1",
-                nombre = "Polera Serigrafía",
-                precio = "$1.000",
-                imageResId = R.drawable.camiseta,
+                id = "prod_015", // ID correcto de Red Hot Chili Peppers
+                nombre = "Polera Red Hot Chili Peppers",
+                precio = "$15.000",
+                imageResId = R.drawable.polera_red_hot_chili_peppers,
+                categoria = "Serigrafía",
+                descripcion = "Polera diseño Material: Algodón 100%"
+            ),
+            ProductoCarousel(
+                id = "prod_005", // ID correcto de Faith No More
+                nombre = "Polera Faith No More",
+                precio = "$15.000",
+                imageResId = R.drawable.polera_faith_no_more,
                 categoria = "Serigrafía",
                 descripcion = "Polera diseño Material: Algodón"
             ),
             ProductoCarousel(
-                id = "2",
-                nombre = "Polera DTF Adulto",
-                precio = "$1.000",
-                imageResId = R.drawable.camiseta,
-                categoria = "DTF",
+                id = "prod_017", // ID correcto de System Of A Down
+                nombre = "Polera System Of A Down",
+                precio = "$15.000",
+                imageResId = R.drawable.polera_system_of_a_down,
+                categoria = "Serigrafía",
                 descripcion = "Polera diseño Material: Algodón"
             ),
             ProductoCarousel(
-                id = "3",
-                nombre = "Polera Corporativa",
-                precio = "$1.000",
-                imageResId = R.drawable.camiseta,
-                categoria = "Corporativa",
-                descripcion = "Polera diseño Material: Algodón"
-            ),
-            ProductoCarousel(
-                id = "4",
+                id = "prod_023", // ID correcto de Jockey
                 nombre = "Jockey Genérico",
-                precio = "$1.000",
+                precio = "$8.000",
                 imageResId = R.drawable.jockey,
                 categoria = "Accesorios",
                 descripcion = "Jockey genérico"
@@ -83,28 +87,36 @@ fun HomeScreenCompact(
     val productosNuevos = remember {
         listOf(
             ProductoCarousel(
-                id = "5",
-                nombre = "Polera DTF Infantil",
-                precio = "$1.000",
-                imageResId = R.drawable.camiseta,
-                categoria = "DTF",
-                descripcion = "Polera diseño Material: Algodón"
+                id = "prod_021", // ID correcto de Tool
+                nombre = "Polera Tool",
+                precio = "$15.000",
+                imageResId = R.drawable.polera_tool,
+                categoria = "Serigrafía",
+                descripcion = "Polera diseño Material: Algodón 100%"
             ),
             ProductoCarousel(
-                id = "6",
-                nombre = "Polera Edición Especial",
-                precio = "$1.000",
-                imageResId = R.drawable.camiseta,
+                id = "prod_008", // ID correcto de Incubus
+                nombre = "Polera Incubus",
+                precio = "$15.000",
+                imageResId = R.drawable.polera_incubus,
                 categoria = "Serigrafía",
                 descripcion = "Polera diseño Material: Algodón"
             ),
             ProductoCarousel(
-                id = "7",
-                nombre = "Jockey Premium",
-                precio = "$1.000",
-                imageResId = R.drawable.jockey,
-                categoria = "Accesorios",
-                descripcion = "Jockey genérico"
+                id = "prod_004", // ID correcto de Deftones
+                nombre = "Polera Deftones",
+                precio = "$15.000",
+                imageResId = R.drawable.polera_deftones,
+                categoria = "Serigrafía",
+                descripcion = "Polera diseño Material: Algodón 100%"
+            ),
+            ProductoCarousel(
+                id = "prod_014", // ID correcto de Rage Against The Machine
+                nombre = "Polera Rage Against The Machine",
+                precio = "$15.000",
+                imageResId = R.drawable.polera_rage_against_the_machine,
+                categoria = "Serigrafía",
+                descripcion = "Polera diseño Material: Algodón"
             )
         )
     }
@@ -142,15 +154,16 @@ fun HomeScreenCompact(
                     text = "¡Bienvenido a Aji Color!",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
+                    color = AmarilloAji,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                 )
 
                 // Carousel de productos destacados
                 CarouselProductosCompacto(
                     productos = productosDestacados,
-                    titulo = "🔥 Productos Destacados",
+                    titulo = "Productos Destacados",
                     onProductClick = { producto ->
-                        navController.navigate("producto/${producto.id}")
+                        navController.navigate(Screen.DetalleProducto.createRoute(producto.id))
                     }
                 )
 
@@ -159,9 +172,9 @@ fun HomeScreenCompact(
                 // Carousel de nuevos productos
                 CarouselProductosCompacto(
                     productos = productosNuevos,
-                    titulo = "✨ Nuevos Productos",
+                    titulo = "Nuevos Productos",
                     onProductClick = { producto ->
-                        navController.navigate("producto/${producto.id}")
+                        navController.navigate(Screen.DetalleProducto.createRoute(producto.id))
                     }
                 )
 
@@ -170,9 +183,9 @@ fun HomeScreenCompact(
                 // Carousel de recomendados (reutilizando los mismos datos)
                 CarouselProductosCompacto(
                     productos = productosDestacados,
-                    titulo = "👕 Más Vendidos",
+                    titulo = "Más Vendidos",
                     onProductClick = { producto ->
-                        navController.navigate("producto/${producto.id}")
+                        navController.navigate(Screen.DetalleProducto.createRoute(producto.id))
                     }
                 )
 
@@ -183,9 +196,14 @@ fun HomeScreenCompact(
                     onClick = { navController.navigate(Screen.Catalogo.route) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AmarilloAji,
+                        contentColor = MoradoAji
+                    ),
+                    border = androidx.compose.foundation.BorderStroke(2.dp, MoradoAji)
                 ) {
-                    Text("Ver Todo el Catálogo")
+                    Text("Ver Todo el Catálogo", color = MoradoAji)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -219,4 +237,3 @@ fun HomeScreenExpanded(
     // En el futuro se puede personalizar para pantallas grandes
     HomeScreenCompact(navController, viewModel)
 }
-

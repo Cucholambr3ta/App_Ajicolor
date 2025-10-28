@@ -12,6 +12,7 @@ data class UserEntity(
 
     val nombre: String,                 // Nombre completo del usuario
     val correo: String,                 // Correo (idealmente único a nivel de negocio)
+    val telefono: String = "",          // Teléfono del usuario
     val clave: String,                  // Contraseña (para demo; en prod usar hash)
-    val direccion: String               // Dirección del usuario
+    val direccion: String = ""          // Dirección del usuario
 )

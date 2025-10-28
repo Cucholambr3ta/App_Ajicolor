@@ -24,8 +24,8 @@ import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
+import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 import com.example.appajicolorgrupo4.viewmodel.NotificacionesViewModel
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -97,19 +97,19 @@ fun NotificationScreen(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Sin notificaciones",
                         modifier = Modifier.size(80.dp),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                        tint = MoradoAji
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
                         text = "No tienes notificaciones",
                         style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = MoradoAji
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Las notificaciones sobre tus pedidos aparecerán aquí",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                        color = MoradoAji
                     )
                 }
             } else {
