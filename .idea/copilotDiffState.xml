@@ -3,6 +3,15 @@
   <component name="CopilotDiffPersistence">
     <option name="pendingDiffs">
       <map>
+        <entry key="$PROJECT_DIR$/.gitignore">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/.gitignore" />
+              <option name="originalContent" value="*.iml&#10;.gradle&#10;/local.properties&#10;/.idea/caches&#10;/.idea/libraries&#10;/.idea/modules.xml&#10;/.idea/workspace.xml&#10;/.idea/navEditor.xml&#10;/.idea/assetWizardSettings.xml&#10;.DS_Store&#10;/build&#10;/captures&#10;.externalNativeBuild&#10;.cxx&#10;local.properties&#10;App_Ajicolor/&#10;&#10;# Scripts de migración temporal&#10;*.bat&#10;*.ps1&#10;ANALISIS_RAMAS.txt&#10;GUIA_POWERSHELL.txt&#10;LEEME_PRIMERO.txt&#10;" />
+              <option name="updatedContent" value="*.iml&#10;.gradle&#10;/local.properties&#10;/.idea/caches&#10;/.idea/libraries&#10;/.idea/modules.xml&#10;/.idea/workspace.xml&#10;/.idea/navEditor.xml&#10;/.idea/assetWizardSettings.xml&#10;.DS_Store&#10;/build&#10;/captures&#10;.externalNativeBuild&#10;.cxx&#10;local.properties&#10;App_Ajicolor/&#10;&#10;# Scripts de migración temporal&#10;*.bat&#10;*.ps1&#10;ANALISIS_RAMAS.txt&#10;GUIA_POWERSHELL.txt&#10;LEEME_PRIMERO.txt&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/res/values/themes.xml">
           <value>
             <PendingDiffInfo>

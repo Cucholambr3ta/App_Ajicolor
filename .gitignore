@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+App_Ajicolor/
+
+# Scripts de migración temporal
+*.bat
+*.ps1
+ANALISIS_RAMAS.txt
+GUIA_POWERSHELL.txt
+LEEME_PRIMERO.txt
