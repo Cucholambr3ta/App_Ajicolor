@@ -21,11 +21,13 @@ import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import com.example.appajicolorgrupo4.ui.theme.MoradoAji
 import com.example.appajicolorgrupo4.viewmodel.MainViewModel
+import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: MainViewModel = viewModel()
+    viewModel: MainViewModel = viewModel(),
+    usuarioViewModel: UsuarioViewModel = viewModel()
 ) {
     AppBackground {
         HomeScreenCompact(navController, viewModel)
@@ -235,4 +237,3 @@ fun HomeScreenExpanded(
     // En el futuro se puede personalizar para pantallas grandes
     HomeScreenCompact(navController, viewModel)
 }
-

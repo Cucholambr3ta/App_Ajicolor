@@ -25,6 +25,7 @@ import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
+import com.example.appajicolorgrupo4.ui.components.CustomDialog
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import com.example.appajicolorgrupo4.ui.theme.MoradoAji
@@ -47,6 +48,7 @@ fun OrderHistoryScreen(
     val todosPedidos by pedidosViewModel.pedidos.collectAsState()
     val currentUser by usuarioViewModel.currentUser.collectAsState()
     var estadoFiltro by remember { mutableStateOf<EstadoPedido?>(null) }
+    var pedidoSeleccionado by remember { mutableStateOf<PedidoCompleto?>(null) }
 
     // Cargar pedidos del usuario desde SQLite
     LaunchedEffect(currentUser) {
@@ -75,6 +77,16 @@ fun OrderHistoryScreen(
 
     val formatoFecha = remember {
         SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    }
+
+    if (pedidoSeleccionado != null) {
+        CustomDialog(
+            onDismissRequest = { pedidoSeleccionado = null },
+            title = "Detalle del Pedido",
+            content = {
+                DetallePedidoDialogContent(pedido = pedidoSeleccionado!!, formatoMoneda = formatoMoneda, formatoFecha = formatoFecha)
+            }
+        )
     }
 
     AppBackground {
@@ -216,7 +228,7 @@ fun OrderHistoryScreen(
                                 formatoMoneda = formatoMoneda,
                                 formatoFecha = formatoFecha,
                                 onClick = {
-                                    navController.navigate("detalle_pedido/${pedido.numeroPedido}")
+                                    pedidoSeleccionado = pedido
                                 }
                             )
                         }
@@ -230,6 +242,21 @@ fun OrderHistoryScreen(
             }
         }
         }
+    }
+}
+
+@Composable
+private fun DetallePedidoDialogContent(
+    pedido: PedidoCompleto,
+    formatoMoneda: NumberFormat,
+    formatoFecha: SimpleDateFormat
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text("Pedido: ${pedido.numeroPedido}", fontWeight = FontWeight.Bold)
+        Text("Fecha: ${formatoFecha.format(Date(pedido.fechaCreacion))}")
+        Text("Estado: ${pedido.estado.displayName}")
+        HorizontalDivider()
+        Text("Total: ${formatoMoneda.format(pedido.total)}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
     }
 }
 
@@ -407,4 +434,3 @@ private fun EstadoBadge(estado: EstadoPedido) {
         }
     }
 }
-

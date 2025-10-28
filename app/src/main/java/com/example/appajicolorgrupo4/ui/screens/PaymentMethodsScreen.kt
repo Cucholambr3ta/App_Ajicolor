@@ -50,8 +50,10 @@ fun PaymentMethodsScreen(
     val nombreUsuario = currentUser?.nombre ?: "Usuario"
 
     // Cargar el perfil del usuario para asegurar que currentUser no sea nulo
-    LaunchedEffect(Unit) {
-        usuarioViewModel.cargarPerfil()
+    LaunchedEffect(currentUser) {
+        if (currentUser == null) {
+            usuarioViewModel.cargarPerfil()
+        }
     }
 
     val metodosPago = listOf(MetodoPago.TARJETA_CREDITO, MetodoPago.TARJETA_DEBITO)

@@ -96,7 +96,7 @@ class MainActivity : ComponentActivity() {
                         composable("registro") {
                             RegistroScreen(
                                 navController = navController,
-                                viewModel = viewModel()
+                                viewModel = viewModel
                             )
                         }
                         composable("login") {
@@ -106,7 +106,7 @@ class MainActivity : ComponentActivity() {
                             PasswordRecoveryScreen(navController = navController)
                         }
                         composable(Screen.Home.route) {
-                            HomeScreen(navController = navController, viewModel = viewModel)
+                            HomeScreen(navController = navController, viewModel = viewModel, usuarioViewModel = usuarioViewModel)
                         }
                         composable(Screen.Profile.route) {
                             ProfileScreen(navController = navController, viewModel = viewModel, usuarioViewModel = usuarioViewModel)
@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(Screen.OrderHistory.route) {
-                            OrderHistoryScreen(navController = navController)
+                            OrderHistoryScreen(navController = navController, usuarioViewModel = usuarioViewModel)
                         }
                         composable(Screen.Checkout.route) {
                             CheckoutScreen(
