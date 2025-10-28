@@ -39,56 +39,94 @@ fun ColorSelector(
     modifier: Modifier = Modifier,
     columnas: Int = 5
 ) {
-    Column(modifier = modifier) {
-        // Título o información
-        if (colorSeleccionado != null) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Color seleccionado:",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(colorSeleccionado.color)
-                            .border(1.dp, Color.Gray, CircleShape)
-                    )
-                    Text(
-                        text = colorSeleccionado.nombre,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+    var expanded by remember { mutableStateOf(false) }
+
+    // Seleccionar blanco por defecto si no hay color seleccionado
+    LaunchedEffect(Unit) {
+        if (colorSeleccionado == null) {
+            val colorBlanco = colores.find { it.nombre.contains("Blanco", ignoreCase = true) }
+            if (colorBlanco != null) {
+                onColorSelected(colorBlanco)
+            } else if (colores.isNotEmpty()) {
+                onColorSelected(colores.first())
             }
         }
+    }
 
-        // Cuadrícula de colores - Usando heightIn para evitar constraints infinitos
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(columnas),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 2000.dp), // Altura máxima para evitar constraints infinitos
-            userScrollEnabled = false // Deshabilitar scroll porque está dentro de LazyColumn
+    Column(modifier = modifier) {
+        // Dropdown para seleccionar color
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
         ) {
-            items(colores) { colorInfo ->
-                ColorItem(
-                    colorInfo = colorInfo,
-                    isSelected = colorSeleccionado?.nombre == colorInfo.nombre,
-                    onClick = { onColorSelected(colorInfo) }
-                )
+            OutlinedTextField(
+                value = colorSeleccionado?.nombre ?: "Seleccionar color",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Color") },
+                trailingIcon = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Círculo de vista previa del color
+                        if (colorSeleccionado != null) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(colorSeleccionado.color)
+                                    .border(1.dp, Color.Gray, CircleShape)
+                            )
+                        }
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.heightIn(max = 400.dp)
+            ) {
+                colores.forEach { colorInfo ->
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(colorInfo.color)
+                                        .border(1.dp, Color.Gray, CircleShape)
+                                )
+                                Text(
+                                    text = colorInfo.nombre,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                if (colorSeleccionado?.nombre == colorInfo.nombre) {
+                                    Spacer(Modifier.weight(1f))
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "Seleccionado",
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        },
+                        onClick = {
+                            onColorSelected(colorInfo)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }

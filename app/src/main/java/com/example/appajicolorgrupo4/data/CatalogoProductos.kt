@@ -360,6 +360,91 @@ object CatalogoProductos {
     )
 
     /**
+     * === PRODUCTOS DTF (Digital Transfer Film) ===
+     * Estos productos permiten seleccionar entre tallas adulto e infantil
+     */
+
+    /**
+     * Polera DTF Beastie Boys - Adulto
+     */
+    val poleraDTFBeastieBoys = Producto(
+        id = "prod_dtf_001",
+        nombre = "Polera DTF Beastie Boys",
+        descripcion = "Polera con diseño personalizado en DTF\n**Material:** Algodón\n**Técnica:** Digital Transfer Film",
+        precio = 18000,
+        categoria = CategoriaProducto.DTF,
+        imagenResId = R.drawable.polera_beastie_boys,
+        tallasDisponibles = Talla.tallasAdulto() + Talla.tallasInfantil(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera DTF Chancho en Piedra - Adulto
+     */
+    val poleraDTFChanchoEnPiedra = Producto(
+        id = "prod_dtf_002",
+        nombre = "Polera DTF Chancho En Piedra",
+        descripcion = "Polera con diseño personalizado en DTF\n**Material:** Algodón\n**Técnica:** Digital Transfer Film",
+        precio = 18000,
+        categoria = CategoriaProducto.DTF,
+        imagenResId = R.drawable.polera_chancho_en_piedra,
+        tallasDisponibles = Talla.tallasAdulto() + Talla.tallasInfantil(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera DTF Deftones - Adulto
+     */
+    val poleraDTFDeftones = Producto(
+        id = "prod_dtf_003",
+        nombre = "Polera DTF Deftones",
+        descripcion = "Polera con diseño personalizado en DTF\n**Material:** Algodón\n**Técnica:** Digital Transfer Film",
+        precio = 18000,
+        categoria = CategoriaProducto.DTF,
+        imagenResId = R.drawable.polera_deftones,
+        tallasDisponibles = Talla.tallasAdulto() + Talla.tallasInfantil(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera DTF Incubus - Adulto
+     */
+    val poleraDTFIncubus = Producto(
+        id = "prod_dtf_004",
+        nombre = "Polera DTF Incubus",
+        descripcion = "Polera con diseño personalizado en DTF\n**Material:** Algodón\n**Técnica:** Digital Transfer Film",
+        precio = 18000,
+        categoria = CategoriaProducto.DTF,
+        imagenResId = R.drawable.polera_incubus,
+        tallasDisponibles = Talla.tallasAdulto() + Talla.tallasInfantil(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera DTF Tool - Adulto
+     */
+    val poleraDTFTool = Producto(
+        id = "prod_dtf_005",
+        nombre = "Polera DTF Tool",
+        descripcion = "Polera con diseño personalizado en DTF\n**Material:** Algodón\n**Técnica:** Digital Transfer Film",
+        precio = 18000,
+        categoria = CategoriaProducto.DTF,
+        imagenResId = R.drawable.polera_tool,
+        tallasDisponibles = Talla.tallasAdulto() + Talla.tallasInfantil(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
      * Jockey (Accesorio)
      */
     val jockey = Producto(
@@ -380,6 +465,7 @@ object CatalogoProductos {
      */
     fun obtenerTodos(): List<Producto> {
         return listOf(
+            // Serigrafía
             poleraBeastieBoys,
             poleraChanchoEnPiedra,
             poleraChanchoEnPiedraVoyYVuelvo,
@@ -402,6 +488,13 @@ object CatalogoProductos {
             poleraTiroDeGracia,
             poleraTool,
             poleraTwentyOnePilots,
+            // DTF
+            poleraDTFBeastieBoys,
+            poleraDTFChanchoEnPiedra,
+            poleraDTFDeftones,
+            poleraDTFIncubus,
+            poleraDTFTool,
+            // Accesorios
             jockey
         )
     }

@@ -50,7 +50,21 @@ fun ProductoConfiguracionSelector(
                     containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                 )
             ) {
-                // ...existing code...
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Tipo de Producto",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    TipoProductoSelector(
+                        tipoSeleccionado = tipoSeleccionado,
+                        onTipoSelected = onTipoChanged
+                    )
+                }
             }
         }
 
@@ -62,7 +76,30 @@ fun ProductoConfiguracionSelector(
                     containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.75f)
                 )
             ) {
-                // ...existing code...
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Selecciona la Talla",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Text(
+                        text = obtenerDescripcionTallas(categoria, tipoSeleccionado),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+
+                    val tallas = Talla.porCategoria(categoria, tipoSeleccionado)
+                    TallaSelector(
+                        tallas = tallas,
+                        tallaSeleccionada = tallaSeleccionada,
+                        onTallaSelected = onTallaSelected,
+                        columnas = if (tipoSeleccionado == TipoProducto.ADULTO) 3 else 4
+                    )
+                }
             }
         }
 
