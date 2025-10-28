@@ -45,7 +45,56 @@ fun DetalleProductoScreen(
 ) {
     val producto = remember(productoId) {
         CatalogoProductos.obtenerTodos().find { it.id == productoId }
-    } ?: return
+    }
+
+    // Si el producto no existe, mostrar error
+    if (producto == null) {
+        AppBackground {
+            Scaffold(
+                topBar = {
+                    TopAppBar(
+                        title = { Text("Error") },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
+                            }
+                        }
+                    )
+                }
+            ) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "❌",
+                        style = MaterialTheme.typography.displayLarge
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Producto no encontrado",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "El producto con ID: $productoId no existe en el catálogo",
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(onClick = { navController.popBackStack() }) {
+                        Text("Volver")
+                    }
+                }
+            }
+        }
+        return
+    }
 
     // Estados para la configuración del producto
     var tipoSeleccionado by remember {
@@ -181,7 +230,7 @@ fun DetalleProductoScreen(
 
                             // Precio
                             Text(
-                                text = "S/ %.2f".format(producto.precio),
+                                text = producto.precioFormateado(),
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -306,7 +355,7 @@ fun DetalleProductoScreen(
                                 Spacer(modifier = Modifier.weight(1f))
 
                                 Text(
-                                    text = "Total: S/ %.2f".format(producto.precio * cantidad),
+                                    text = "Total: $${producto.precio * cantidad}",
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary

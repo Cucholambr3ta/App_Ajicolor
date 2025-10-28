@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.appajicolorgrupo4.R
+import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 
 /**
  * Carousel de ejemplo con imágenes múltiples
@@ -42,11 +43,11 @@ fun CarouselExample_MultiBrowse() {
 
     val items = remember {
         listOf(
-            CarouselItem(0, R.drawable.camiseta, "camiseta"),
-            CarouselItem(1, R.drawable.jockey, "jockey"),
-            CarouselItem(2, R.drawable.logo_principal, "logo"),
-            CarouselItem(3, R.drawable.ajicolor_principal, "ajicolor"),
-            CarouselItem(4, R.drawable.profile, "profile"),
+            CarouselItem(0, R.drawable.polera_red_hot_chili_peppers, "Polera Red Hot Chili Peppers"),
+            CarouselItem(1, R.drawable.polera_tool, "Polera Tool"),
+            CarouselItem(2, R.drawable.polera_deftones, "Polera Deftones"),
+            CarouselItem(3, R.drawable.polera_incubus, "Polera Incubus"),
+            CarouselItem(4, R.drawable.jockey, "Jockey"),
         )
     }
 
@@ -157,6 +158,7 @@ fun CarouselProductosCompacto(
             text = titulo,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
+            color = AmarilloAji,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
         )
 

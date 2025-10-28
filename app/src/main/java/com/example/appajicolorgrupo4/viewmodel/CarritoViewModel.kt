@@ -16,14 +16,14 @@ class CarritoViewModel : ViewModel() {
 
     // Constantes para cálculos
     companion object {
-        const val COSTO_ENVIO_NORMAL = 5000.0
-        const val MONTO_ENVIO_GRATIS = 20000.0
+        const val COSTO_ENVIO_NORMAL = 5000
+        const val MONTO_ENVIO_GRATIS = 20000
     }
 
     /**
      * Calcula el subtotal de todos los productos
      */
-    fun calcularSubtotal(): Double {
+    fun calcularSubtotal(): Int {
         return _productos.value.sumOf { it.subtotal() }
     }
 
@@ -31,9 +31,9 @@ class CarritoViewModel : ViewModel() {
      * Calcula el costo de envío según el monto de compra
      * Envío gratis para compras >= $20.000
      */
-    fun calcularCostoEnvio(): Double {
+    fun calcularCostoEnvio(): Int {
         val subtotal = calcularSubtotal()
-        return if (subtotal >= MONTO_ENVIO_GRATIS) 0.0 else COSTO_ENVIO_NORMAL
+        return if (subtotal >= MONTO_ENVIO_GRATIS) 0 else COSTO_ENVIO_NORMAL
     }
 
     /**
@@ -46,26 +46,26 @@ class CarritoViewModel : ViewModel() {
     /**
      * Calcula cuánto falta para envío gratis
      */
-    fun montoFaltanteEnvioGratis(): Double {
+    fun montoFaltanteEnvioGratis(): Int {
         val subtotal = calcularSubtotal()
         return if (subtotal < MONTO_ENVIO_GRATIS) {
             MONTO_ENVIO_GRATIS - subtotal
         } else {
-            0.0
+            0
         }
     }
 
     /**
      * Calcula impuestos (19% IVA)
      */
-    fun calcularImpuestos(): Double {
-        return calcularSubtotal() * 0.19
+    fun calcularImpuestos(): Int {
+        return (calcularSubtotal() * 0.19).toInt()
     }
 
     /**
      * Calcula el total incluyendo impuestos y envío
      */
-    fun calcularTotal(): Double {
+    fun calcularTotal(): Int {
         return calcularSubtotal() + calcularImpuestos() + calcularCostoEnvio()
     }
 

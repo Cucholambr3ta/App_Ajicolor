@@ -1,7 +1,9 @@
 package com.example.appajicolorgrupo4.ui.components
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -44,6 +46,27 @@ fun ProfileImageSelector(
     var showDialog by remember { mutableStateOf(false) }
     var pendingCaptureUri by remember { mutableStateOf<Uri?>(null) }
 
+    // Launcher para solicitar permisos de cámara
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Permiso concedido, abrir cámara
+            try {
+                val file = createImageFile(context)
+                val uri = getUriForFile(context, file)
+                pendingCaptureUri = uri
+                // Necesitamos relanzar la cámara después de obtener el permiso
+                Toast.makeText(context, "Permiso concedido. Abre de nuevo la cámara.", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error al crear archivo: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        } else {
+            // Permiso denegado
+            Toast.makeText(context, "Se necesita permiso de cámara para tomar fotos", Toast.LENGTH_LONG).show()
+        }
+    }
+
     // Launcher para la galería usando Photo Picker
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -60,8 +83,12 @@ fun ProfileImageSelector(
         if (success) {
             pendingCaptureUri?.let {
                 onImageSelected(it.toString())
+                Toast.makeText(context, "Foto capturada exitosamente", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            Toast.makeText(context, "No se capturó ninguna foto", Toast.LENGTH_SHORT).show()
         }
+        pendingCaptureUri = null
     }
 
     // Imagen de perfil clickeable
@@ -127,24 +154,44 @@ fun ProfileImageSelector(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Foto de perfil") },
+            containerColor = Color.White.copy(alpha = 0.25f), // 75% más transparente
+            title = {
+                Text(
+                    "Foto de perfil",
+                    color = Color.Black
+                )
+            },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("¿Cómo deseas agregar tu foto?")
+                    Text(
+                        "¿Cómo deseas agregar tu foto?",
+                        color = Color.Black
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Botón Cámara
+                    // Botón Cámara con solicitud de permisos
                     OutlinedButton(
                         onClick = {
-                            val file = createImageFile(context)
-                            val uri = getUriForFile(context, file)
-                            pendingCaptureUri = uri
-                            cameraLauncher.launch(uri)
                             showDialog = false
+                            try {
+                                // Solicitar permiso de cámara
+                                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                                // Preparar y lanzar la cámara
+                                val file = createImageFile(context)
+                                val uri = getUriForFile(context, file)
+                                pendingCaptureUri = uri
+                                cameraLauncher.launch(uri)
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Error al abrir cámara: ${e.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -182,7 +229,7 @@ fun ProfileImageSelector(
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { showDialog = false }) {
-                    Text("Cancelar")
+                    Text("Cancelar", color = Color.Black)
                 }
             }
         )

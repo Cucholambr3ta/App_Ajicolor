@@ -19,7 +19,7 @@ class UserRepository(
     }
 
     // Registro: valida no duplicado y crea nuevo usuario
-    suspend fun register(nombre: String, correo: String, clave: String, direccion: String): Result<Long> {
+    suspend fun register(nombre: String, correo: String, telefono: String, clave: String, direccion: String = ""): Result<Long> {
         val exists = userDao.getByCorreo(correo) != null             // ¿Correo ya usado?
         if (exists) {
             return Result.failure(IllegalStateException("El correo ya está registrado"))
@@ -28,6 +28,7 @@ class UserRepository(
             UserEntity(
                 nombre = nombre,
                 correo = correo,
+                telefono = telefono,
                 clave = clave,
                 direccion = direccion
             )

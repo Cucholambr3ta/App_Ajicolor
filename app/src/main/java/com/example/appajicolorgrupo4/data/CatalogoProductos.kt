@@ -8,15 +8,15 @@ import com.example.appajicolorgrupo4.R
 object CatalogoProductos {
 
     /**
-     * Camiseta de Serigrafía
+     * Polera Beastie Boys
      */
-    val camisetaSerigrafia = Producto(
+    val poleraBeastieBoys = Producto(
         id = "prod_001",
-        nombre = "Polera Serigrafía Premium",
+        nombre = "Polera Beastie Boys",
         descripcion = "Polera diseño personalizado\n**Material:** Algodón",
-        precio = 1000.00,
+        precio = 15000,
         categoria = CategoriaProducto.SERIGRAFIA,
-        imagenResId = R.drawable.camiseta, // Asegúrate de tener este recurso
+        imagenResId = R.drawable.polera_beastie_boys,
         tallasDisponibles = Talla.tallasAdulto(),
         coloresDisponibles = ColoresDisponibles.coloresAdulto,
         tipoProducto = TipoProducto.ADULTO,
@@ -24,65 +24,353 @@ object CatalogoProductos {
     )
 
     /**
-     * Camiseta DTF Adulto
+     * Polera Chancho en Piedra
      */
-    val camisetaDTFAdulto = Producto(
+    val poleraChanchoEnPiedra = Producto(
         id = "prod_002",
-        nombre = "Polera DTF Adulto",
-        descripcion = "Polera diseño DTF de alta calidad\n**Material:** Algodón",
-        precio = 1000.00,
-        categoria = CategoriaProducto.DTF,
-        imagenResId = R.drawable.camiseta,
+        nombre = "Polera Chancho En Piedra",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_chancho_en_piedra,
         tallasDisponibles = Talla.tallasAdulto(),
         coloresDisponibles = ColoresDisponibles.coloresAdulto,
         tipoProducto = TipoProducto.ADULTO,
-        stock = 60
+        stock = 50
     )
 
     /**
-     * Camiseta DTF Infantil
+     * Polera Chancho en Piedra Voy y Vuelvo
      */
-    val camisetaDTFInfantil = Producto(
+    val poleraChanchoEnPiedraVoyYVuelvo = Producto(
         id = "prod_003",
-        nombre = "Polera DTF Infantil",
-        descripcion = "Polera diseño DTF para niños\n**Material:** Algodón",
-        precio = 1000.00,
-        categoria = CategoriaProducto.DTF,
-        imagenResId = R.drawable.camiseta,
-        tallasDisponibles = Talla.tallasInfantil(),
-        coloresDisponibles = ColoresDisponibles.coloresInfantil,
-        tipoProducto = TipoProducto.INFANTIL,
-        stock = 40
-    )
-
-    /**
-     * Camiseta Corporativa
-     */
-    val camisetaCorporativa = Producto(
-        id = "prod_004",
-        nombre = "Polera Corporativa",
-        descripcion = "Polera diseño corporativo profesional\n**Material:** Algodón",
-        precio = 1000.00,
-        categoria = CategoriaProducto.CORPORATIVA,
-        imagenResId = R.drawable.camiseta,
+        nombre = "Polera Chancho En Piedra Voy Y Vuelvo",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_chancho_en_piedra_voy_y_vuelvo,
         tallasDisponibles = Talla.tallasAdulto(),
         coloresDisponibles = ColoresDisponibles.coloresAdulto,
         tipoProducto = TipoProducto.ADULTO,
-        stock = 70
+        stock = 50
+    )
+
+    /**
+     * Polera Deftones
+     */
+    val poleraDeftones = Producto(
+        id = "prod_004",
+        nombre = "Polera Deftones",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_deftones,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Faith No More
+     */
+    val poleraFaithNoMore = Producto(
+        id = "prod_005",
+        nombre = "Polera Faith No More",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_faith_no_more,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Foo Fighters
+     */
+    val poleraFooFighters = Producto(
+        id = "prod_006",
+        nombre = "Polera Foo Fighters",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_foof_fighters,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Idles
+     */
+    val poleraIdles = Producto(
+        id = "prod_007",
+        nombre = "Polera Idles",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_idles,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Incubus
+     */
+    val poleraIncubus = Producto(
+        id = "prod_008",
+        nombre = "Polera Incubus",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_incubus,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Jamiroquai
+     */
+    val poleraJamiroquai = Producto(
+        id = "prod_009",
+        nombre = "Polera Jamiroquai",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_jamiroquai,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Los Tetas
+     */
+    val poleraLosTetas = Producto(
+        id = "prod_010",
+        nombre = "Polera Los Tetas",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_los_tetas,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Makiza
+     */
+    val poleraMakiza = Producto(
+        id = "prod_011",
+        nombre = "Polera Makiza",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_makiza,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Mr Bungle
+     */
+    val poleraMrBungle = Producto(
+        id = "prod_012",
+        nombre = "Polera Mr Bungle",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_mr_bungle,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Prince
+     */
+    val poleraPrince = Producto(
+        id = "prod_013",
+        nombre = "Polera Prince",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_prince,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Rage Against The Machine
+     */
+    val poleraRageAgainstTheMachine = Producto(
+        id = "prod_014",
+        nombre = "Polera Rage Against The Machine",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_rage_against_the_machine,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Red Hot Chili Peppers
+     */
+    val poleraRedHotChiliPeppers = Producto(
+        id = "prod_015",
+        nombre = "Polera Red Hot Chili Peppers",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_red_hot_chili_peppers,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Silk Sonic
+     */
+    val poleraSilkSonic = Producto(
+        id = "prod_016",
+        nombre = "Polera Silk Sonic",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_silk_sonic,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera System Of A Down
+     */
+    val poleraSystemOfADown = Producto(
+        id = "prod_017",
+        nombre = "Polera System Of A Down",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_system_of_a_down,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera The Mars Volta
+     */
+    val poleraTheMarsVolta = Producto(
+        id = "prod_018",
+        nombre = "Polera The Mars Volta",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_the_mars_volta,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera The Police
+     */
+    val poleraThePolice = Producto(
+        id = "prod_019",
+        nombre = "Polera The Police",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_the_police,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Tiro De Gracia
+     */
+    val poleraTiroDeGracia = Producto(
+        id = "prod_020",
+        nombre = "Polera Tiro De Gracia",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_tiro_de_gracia,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Tool
+     */
+    val poleraTool = Producto(
+        id = "prod_021",
+        nombre = "Polera Tool",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_tool,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
+    )
+
+    /**
+     * Polera Twenty One Pilots
+     */
+    val poleraTwentyOnePilots = Producto(
+        id = "prod_022",
+        nombre = "Polera Twenty One Pilots",
+        descripcion = "Polera diseño personalizado\n**Material:** Algodón",
+        precio = 15000,
+        categoria = CategoriaProducto.SERIGRAFIA,
+        imagenResId = R.drawable.polera_twenty_one_pilots,
+        tallasDisponibles = Talla.tallasAdulto(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto,
+        tipoProducto = TipoProducto.ADULTO,
+        stock = 50
     )
 
     /**
      * Jockey (Accesorio)
      */
     val jockey = Producto(
-        id = "prod_005",
+        id = "prod_023",
         nombre = "Jockey Genérico",
         descripcion = "Jockey generico",
-        precio = 1000.00,
+        precio = 8000,
         categoria = CategoriaProducto.ACCESORIOS,
-        imagenResId = R.drawable.jockey, // Asegúrate de tener este recurso
-        tallasDisponibles = emptyList(), // Sin tallas
-        coloresDisponibles = ColoresDisponibles.coloresAdulto.take(10), // Solo algunos colores
+        imagenResId = R.drawable.jockey,
+        tallasDisponibles = emptyList(),
+        coloresDisponibles = ColoresDisponibles.coloresAdulto.take(10),
         tipoProducto = null,
         stock = 100
     )
@@ -92,10 +380,28 @@ object CatalogoProductos {
      */
     fun obtenerTodos(): List<Producto> {
         return listOf(
-            camisetaSerigrafia,
-            camisetaDTFAdulto,
-            camisetaDTFInfantil,
-            camisetaCorporativa,
+            poleraBeastieBoys,
+            poleraChanchoEnPiedra,
+            poleraChanchoEnPiedraVoyYVuelvo,
+            poleraDeftones,
+            poleraFaithNoMore,
+            poleraFooFighters,
+            poleraIdles,
+            poleraIncubus,
+            poleraJamiroquai,
+            poleraLosTetas,
+            poleraMakiza,
+            poleraMrBungle,
+            poleraPrince,
+            poleraRageAgainstTheMachine,
+            poleraRedHotChiliPeppers,
+            poleraSilkSonic,
+            poleraSystemOfADown,
+            poleraTheMarsVolta,
+            poleraThePolice,
+            poleraTiroDeGracia,
+            poleraTool,
+            poleraTwentyOnePilots,
             jockey
         )
     }
@@ -116,4 +422,3 @@ object CatalogoProductos {
         }
     }
 }
-

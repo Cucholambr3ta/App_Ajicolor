@@ -24,6 +24,7 @@ import com.example.appajicolorgrupo4.viewmodel.MainViewModel
 import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import com.example.appajicolorgrupo4.ui.theme.MoradoAji
+import com.example.appajicolorgrupo4.ui.theme.RojoAji
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -197,6 +198,33 @@ fun ProfileScreen(
                             )
                         )
 
+                        // Campo Teléfono
+                        OutlinedTextField(
+                            value = estado.telefono,
+                            onValueChange = { if (isEditMode) usuarioViewModel.actualizaTelefono(it) },
+                            label = { Text("Teléfono") },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = isEditMode,
+                            isError = estado.errores.telefono != null,
+                            supportingText = {
+                                estado.errores.telefono?.let { Text(it, color = AmarilloAji) }
+                            },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = AmarilloAji,
+                                unfocusedBorderColor = AmarilloAji,
+                                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                                focusedLabelColor = AmarilloAji,
+                                unfocusedLabelColor = AmarilloAji,
+                                cursorColor = AmarilloAji,
+                                focusedTextColor = MoradoAji,
+                                unfocusedTextColor = MoradoAji,
+                                disabledTextColor = MoradoAji,
+                                focusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                unfocusedContainerColor = Color.White.copy(alpha = 0.75f),
+                                disabledContainerColor = Color.White.copy(alpha = 0.75f)
+                            )
+                        )
+
                         // Campo Dirección
                         OutlinedTextField(
                             value = estado.direccion,
@@ -231,7 +259,12 @@ fun ProfileScreen(
                             // Botón Modificar
                             Button(
                                 onClick = { usuarioViewModel.activarEdicion() },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = AmarilloAji,
+                                    contentColor = MoradoAji
+                                ),
+                                border = androidx.compose.foundation.BorderStroke(2.dp, MoradoAji)
                             ) {
                                 Text("Modificar Datos")
                             }
@@ -279,16 +312,19 @@ fun ProfileScreen(
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.error
-                            )
+                                containerColor = RojoAji,
+                                contentColor = AmarilloAji
+                            ),
+                            border = androidx.compose.foundation.BorderStroke(2.dp, AmarilloAji)
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                                 contentDescription = "Cerrar Sesión",
-                                modifier = Modifier.size(20.dp)
+                                modifier = Modifier.size(20.dp),
+                                tint = AmarilloAji
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text("Cerrar Sesión")
+                            Text("Cerrar Sesión", color = AmarilloAji)
                         }
                     }
                 }

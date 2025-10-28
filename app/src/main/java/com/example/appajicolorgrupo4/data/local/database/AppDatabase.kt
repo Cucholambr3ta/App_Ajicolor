@@ -7,21 +7,25 @@ import androidx.room.RoomDatabase                               // Clase base de
 import androidx.sqlite.db.SupportSQLiteDatabase                 // Tipo del callback onCreate
 import com.example.appajicolorgrupo4.data.local.user.UserDao         // Import del DAO de usuario
 import com.example.appajicolorgrupo4.data.local.user.UserEntity      // Import de la entidad de usuario
+import com.example.appajicolorgrupo4.data.local.pedido.PedidoDao     // Import del DAO de pedido
+import com.example.appajicolorgrupo4.data.local.pedido.PedidoEntity  // Import de la entidad de pedido
+import com.example.appajicolorgrupo4.data.local.pedido.PedidoItemEntity // Import de los items de pedido
 import kotlinx.coroutines.CoroutineScope                        // Para corrutinas en callback
 import kotlinx.coroutines.Dispatchers                           // Dispatcher IO
 import kotlinx.coroutines.launch                                // Lanzar corrutina
 
 // @Database registra entidades y versión del esquema.
-// version = 1: como es primera inclusión, partimos en 1.
+// version = 2: Agregadas las tablas de pedidos y pedido_items
 @Database(
-    entities = [UserEntity::class],
-    version = 1,
+    entities = [UserEntity::class, PedidoEntity::class, PedidoItemEntity::class],
+    version = 2,
     exportSchema = true // Mantener true para inspección de esquema (útil en educación)
 )
 abstract class AppDatabase : RoomDatabase() {
 
-    // Exponemos el DAO de usuarios
+    // Exponemos los DAOs
     abstract fun userDao(): UserDao
+    abstract fun pedidoDao(): PedidoDao
 
     companion object {
         @Volatile

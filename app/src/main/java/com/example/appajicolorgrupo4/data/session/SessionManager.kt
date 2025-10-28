@@ -19,6 +19,7 @@ class SessionManager(context: Context) {
         private const val KEY_USER_ID = "user_id"
         private const val KEY_USER_NAME = "user_name"
         private const val KEY_USER_EMAIL = "user_email"
+        private const val KEY_USER_PHONE = "user_phone"
         private const val KEY_USER_ADDRESS = "user_address"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
         private const val KEY_PROFILE_IMAGE_URI = "profile_image_uri"
@@ -32,6 +33,7 @@ class SessionManager(context: Context) {
             putLong(KEY_USER_ID, user.id)
             putString(KEY_USER_NAME, user.nombre)
             putString(KEY_USER_EMAIL, user.correo)
+            putString(KEY_USER_PHONE, user.telefono)
             putString(KEY_USER_ADDRESS, user.direccion)
             putBoolean(KEY_IS_LOGGED_IN, true)
             apply()
@@ -47,10 +49,11 @@ class SessionManager(context: Context) {
         val id = prefs.getLong(KEY_USER_ID, 0L)
         val nombre = prefs.getString(KEY_USER_NAME, "") ?: ""
         val correo = prefs.getString(KEY_USER_EMAIL, "") ?: ""
+        val telefono = prefs.getString(KEY_USER_PHONE, "") ?: ""
         val direccion = prefs.getString(KEY_USER_ADDRESS, "") ?: ""
 
         return if (id > 0) {
-            UserEntity(id = id, nombre = nombre, correo = correo, clave = "", direccion = direccion)
+            UserEntity(id = id, nombre = nombre, correo = correo, telefono = telefono, clave = "", direccion = direccion)
         } else null
     }
 

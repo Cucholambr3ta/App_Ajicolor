@@ -1,6 +1,5 @@
 package com.example.appajicolorgrupo4.viewmodel
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
@@ -30,12 +29,14 @@ data class RegisterUiState(
     val correo: String = "",
     val clave: String = "",
     val direccion: String = "",
+    val telefono: String = "",
     val confirm: String = "",
 
     val nombreError: String? = null,
     val correoError: String? = null,
     val claveError: String? = null,
     val direccionError: String? = null,
+    val telefonoError: String? = null,
     val confirmError: String? = null,
 
     val isSubmitting: Boolean = false,
@@ -128,6 +129,15 @@ class AuthViewModel(
         recomputeRegisterCanSubmit()
     }
 
+    fun onTelefonoChange(value: String) {
+        // Filtrar solo números
+        val soloNumeros = value.filter { it.isDigit() }
+        _register.update {
+            it.copy(telefono = soloNumeros, telefonoError = validatePhoneDigitsOnly(soloNumeros))
+        }
+        recomputeRegisterCanSubmit()
+    }
+
     fun onRegisterPassChange(value: String) {
         _register.update { it.copy(clave = value, claveError = validateStrongPassword(value)) }
         _register.update { it.copy(confirmError = validateConfirm(it.clave, it.confirm)) }
@@ -141,8 +151,8 @@ class AuthViewModel(
 
     private fun recomputeRegisterCanSubmit() {
         val s = _register.value
-        val noErrors = listOf(s.nombreError, s.correoError, s.direccionError, s.claveError, s.confirmError).all { it == null }
-        val filled = s.nombre.isNotBlank() && s.correo.isNotBlank() && s.direccion.isNotBlank() && s.clave.isNotBlank() && s.confirm.isNotBlank()
+        val noErrors = listOf(s.nombreError, s.correoError, s.direccionError, s.telefonoError, s.claveError, s.confirmError).all { it == null }
+        val filled = s.nombre.isNotBlank() && s.correo.isNotBlank() && s.direccion.isNotBlank() && s.telefono.isNotBlank() && s.clave.isNotBlank() && s.confirm.isNotBlank()
         _register.update { it.copy(canSubmit = noErrors && filled) }
     }
 
@@ -156,6 +166,7 @@ class AuthViewModel(
             val result = repository.register(
                 nombre = s.nombre.trim(),
                 correo = s.correo.trim(),
+                telefono = s.telefono.trim(),
                 clave = s.clave,
                 direccion = s.direccion.trim()
             )

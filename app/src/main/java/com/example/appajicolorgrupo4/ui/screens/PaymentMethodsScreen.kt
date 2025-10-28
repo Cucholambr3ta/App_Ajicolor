@@ -163,7 +163,8 @@ fun PaymentMethodsScreen(
                 // Botón confirmar pago
                 Button(
                     onClick = {
-                        if (metodoSeleccionado != null) {
+                        val user = currentUser
+                        if (metodoSeleccionado != null && user != null) {
                             // Generar número de pedido
                             val numeroPedido = GeneradorNumeroPedido.generar(nombreUsuario)
 
@@ -172,20 +173,21 @@ fun PaymentMethodsScreen(
                                 numeroPedido = numeroPedido,
                                 nombreUsuario = nombreUsuario,
                                 productos = productos,
-                                subtotal = subtotal,
-                                impuestos = impuestos,
-                                costoEnvio = costoEnvio,
-                                total = total,
+                                subtotal = subtotal.toDouble(),
+                                impuestos = impuestos.toDouble(),
+                                costoEnvio = costoEnvio.toDouble(),
+                                total = total.toDouble(),
                                 direccionEnvio = direccionEnvio,
                                 telefono = telefono,
                                 notasAdicionales = notasAdicionales,
                                 metodoPago = metodoSeleccionado!!,
-                                estado = EstadoPedido.CREADO,
-                                fechaCreacion = System.currentTimeMillis()
+                                estado = EstadoPedido.CONFIRMADO,
+                                fechaCreacion = System.currentTimeMillis(),
+                                fechaConfirmacion = System.currentTimeMillis()
                             )
 
-                            // Guardar pedido
-                            pedidosViewModel.agregarPedido(pedido)
+                            // Guardar pedido en SQLite y en memoria
+                            pedidosViewModel.agregarPedido(pedido, user.id)
 
                             // Limpiar carrito
                             carritoViewModel.limpiarCarrito()
@@ -199,7 +201,7 @@ fun PaymentMethodsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    enabled = metodoSeleccionado != null
+                    enabled = metodoSeleccionado != null && currentUser != null
                 ) {
                     Text(
                         text = if (metodoSeleccionado != null)

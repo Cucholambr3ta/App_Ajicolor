@@ -1,7 +1,11 @@
 package com.example.appajicolorgrupo4.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -10,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -34,6 +39,7 @@ fun LoginScreen(
     val viewModel: AuthViewModel = viewModel(factory = AuthViewModelFactory(repository, sessionManager))
 
     val estado by viewModel.login.collectAsState()
+    var showPassword by remember { mutableStateOf(false) }
 
     // Navegar a Home cuando login exitoso
     LaunchedEffect(estado.success) {
@@ -64,7 +70,8 @@ fun LoginScreen(
             OutlinedTextField(
                 value = estado.correo,
                 onValueChange = viewModel::onLoginEmailChange,
-                label = { Text("Email") },
+                label = { Text("Email", color = MoradoAji) },
+                placeholder = { Text("Ingrese su email", color = MoradoAji) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email
@@ -73,8 +80,8 @@ fun LoginScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = AmarilloAji,
                     unfocusedBorderColor = AmarilloAji,
-                    focusedLabelColor = AmarilloAji,
-                    unfocusedLabelColor = AmarilloAji,
+                    focusedLabelColor = MoradoAji,
+                    unfocusedLabelColor = MoradoAji,
                     cursorColor = AmarilloAji,
                     focusedTextColor = MoradoAji,
                     unfocusedTextColor = MoradoAji,
@@ -95,15 +102,25 @@ fun LoginScreen(
             OutlinedTextField(
                 value = estado.clave,
                 onValueChange = viewModel::onLoginPassChange,
-                label = { Text("Contraseña") },
+                label = { Text("Contraseña", color = MoradoAji) },
+                placeholder = { Text("Ingrese su contraseña", color = MoradoAji) },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(
+                            imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                            contentDescription = if (showPassword) "Ocultar contraseña" else "Mostrar contraseña",
+                            tint = AmarilloAji
+                        )
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = AmarilloAji,
                     unfocusedBorderColor = AmarilloAji,
-                    focusedLabelColor = AmarilloAji,
-                    unfocusedLabelColor = AmarilloAji,
+                    focusedLabelColor = MoradoAji,
+                    unfocusedLabelColor = MoradoAji,
                     cursorColor = AmarilloAji,
                     focusedTextColor = MoradoAji,
                     unfocusedTextColor = MoradoAji,
@@ -128,12 +145,19 @@ fun LoginScreen(
             Button(
                 onClick = viewModel::submitLogin,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = estado.canSubmit && !estado.isSubmitting
+                enabled = estado.canSubmit && !estado.isSubmitting,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AmarilloAji,
+                    contentColor = MoradoAji,
+                    disabledContainerColor = AmarilloAji.copy(alpha = 0.5f),
+                    disabledContentColor = MoradoAji.copy(alpha = 0.5f)
+                ),
+                border = BorderStroke(2.dp, MoradoAji)
             ) {
                 if (estado.isSubmitting) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
+                        color = MoradoAji,
                         strokeWidth = 2.dp
                     )
                     Spacer(Modifier.width(8.dp))
@@ -150,7 +174,12 @@ fun LoginScreen(
                 onClick = {
                     navController.navigate("registro")
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = AmarilloAji,
+                    contentColor = MoradoAji
+                ),
+                border = BorderStroke(1.dp, MoradoAji)
             ) {
                 Text("Crear cuenta")
             }
@@ -162,7 +191,10 @@ fun LoginScreen(
                 onClick = {
                     navController.navigate("password_recovery")
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.textButtonColors(
+                    contentColor = AmarilloAji
+                )
             ) {
                 Text("Recuperar contraseña")
             }
