@@ -4,8 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -24,7 +23,17 @@ fun StartScreen(
 ) {
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
-    val isLoggedIn = sessionManager.isLoggedIn()
+    var isLoggedIn by remember { mutableStateOf(false) }
+
+    // Verificar sesión de forma segura después de la composición
+    LaunchedEffect(Unit) {
+        try {
+            isLoggedIn = sessionManager.isLoggedIn()
+        } catch (e: Exception) {
+            // Si falla, asumimos que no hay sesión
+            isLoggedIn = false
+        }
+    }
 
     AppBackground {
         Box(
@@ -43,12 +52,24 @@ fun StartScreen(
                         indication = null
                     ) {
                         // Si hay sesión activa, ir a Home, sino ir a Init
-                        if (isLoggedIn) {
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(Screen.StartScreen.route) { inclusive = true }
+                        try {
+                            if (isLoggedIn) {
+                                navController.navigate(Screen.Home.route) {
+                                    popUpTo(Screen.StartScreen.route) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            } else {
+                                navController.navigate(Screen.Init.route) {
+                                    popUpTo(Screen.StartScreen.route) { inclusive = true }
+                                    launchSingleTop = true
+                                }
                             }
-                        } else {
-                            navController.navigate(Screen.Init.route)
+                        } catch (e: Exception) {
+                            // En caso de error, ir a Init
+                            navController.navigate(Screen.Init.route) {
+                                popUpTo(Screen.StartScreen.route) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
                     }
             )

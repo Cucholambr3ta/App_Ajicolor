@@ -55,7 +55,14 @@ class MainActivity : ComponentActivity() {
 
                 // ViewModels compartidos
                 val carritoViewModel: CarritoViewModel = viewModel()
-                val usuarioViewModel: UsuarioViewModel = viewModel()
+                val usuarioViewModel: UsuarioViewModel = viewModel(
+                    factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                            return UsuarioViewModel(application) as T
+                        }
+                    }
+                )
 
                 // Escuchar eventos de navegación desde el ViewModel
                 LaunchedEffect(Unit) {
@@ -124,13 +131,12 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(Screen.OrderHistory.route) {
-                            OrderHistoryScreen(navController = navController, usuarioViewModel = usuarioViewModel)
+                            OrderHistoryScreen(navController = navController)
                         }
                         composable(Screen.Checkout.route) {
                             CheckoutScreen(
                                 navController = navController,
-                                carritoViewModel = carritoViewModel,
-                                usuarioViewModel = usuarioViewModel
+                                carritoViewModel = carritoViewModel
                             )
                         }
                         composable(
@@ -144,7 +150,6 @@ class MainActivity : ComponentActivity() {
                             PaymentMethodsScreen(
                                 navController = navController,
                                 carritoViewModel = carritoViewModel,
-                                usuarioViewModel = usuarioViewModel,
                                 direccionEnvio = backStackEntry.arguments?.getString("direccion"),
                                 telefono = backStackEntry.arguments?.getString("telefono"),
                                 notasAdicionales = backStackEntry.arguments?.getString("notas")
