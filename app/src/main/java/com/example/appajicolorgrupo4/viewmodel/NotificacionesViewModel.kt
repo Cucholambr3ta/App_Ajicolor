@@ -1,9 +1,9 @@
 package com.example.appajicolorgrupo4.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.appajicolorgrupo4.data.AccionNotificacion
-import com.example.appajicolorgrupo4.data.Notificacion
-import com.example.appajicolorgrupo4.data.TipoNotificacion
+import com.example.appajicolorgrupo4.data.model.AccionNotificacion
+import com.example.appajicolorgrupo4.data.model.Notificacion
+import com.example.appajicolorgrupo4.data.model.TipoNotificacion
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

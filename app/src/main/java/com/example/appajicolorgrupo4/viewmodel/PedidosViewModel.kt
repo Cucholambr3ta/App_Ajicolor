@@ -3,8 +3,8 @@ package com.example.appajicolorgrupo4.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.appajicolorgrupo4.data.EstadoPedido
-import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.data.model.EstadoPedido
+import com.example.appajicolorgrupo4.data.model.PedidoCompleto
 import com.example.appajicolorgrupo4.data.local.database.AppDatabase
 import com.example.appajicolorgrupo4.data.repository.PedidoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +14,7 @@ import kotlinx.coroutines.launch
 
 /**
  * ViewModel para gestionar los pedidos del usuario
- * Ahora con integración a SQLite
- */
+ * Ahora con integración a SQLite */
 class PedidosViewModel(application: Application) : AndroidViewModel(application) {
 
     // Repositorio para acceder a la base de datos

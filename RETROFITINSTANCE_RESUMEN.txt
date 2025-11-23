@@ -1,0 +1,395 @@
+═══════════════════════════════════════════════════════════════════════
+    ✅ RETROFITINSTANCE.KT - CREADO EXITOSAMENTE
+═══════════════════════════════════════════════════════════════════════
+
+📅 Fecha: 18 de Noviembre 2025
+📦 Proyecto: App_Ajicolor - Grupo 4
+✅ Estado: COMPLETADO SIN ERRORES
+
+═══════════════════════════════════════════════════════════════════════
+                          📍 UBICACIÓN
+═══════════════════════════════════════════════════════════════════════
+
+Archivo: RetrofitInstance.kt
+
+Ruta completa:
+app/src/main/java/com/example/appajicolorgrupo4/data/remote/RetrofitInstance.kt
+
+Estructura actual del paquete remote:
+data/remote/
+├── api/
+│   ├── ApiService.kt           ✅ 29 endpoints
+│   └── RetrofitClient.kt       ✅ Implementación básica
+├── dto/
+│   ├── UserDto.kt              ✅ DTOs Usuario
+│   ├── ProductoDto.kt          ✅ DTOs Producto
+│   └── PostDto.kt              ✅ DTOs Post
+├── NetworkResult.kt            ✅ Estados
+└── RetrofitInstance.kt         ✅ NUEVO - Implementación avanzada
+
+═══════════════════════════════════════════════════════════════════════
+                    🌟 CARACTERÍSTICAS PRINCIPALES
+═══════════════════════════════════════════════════════════════════════
+
+RetrofitInstance.kt incluye:
+
+1. ✅ SINGLETON OBJECT
+   └─ Instancia única de Retrofit para toda la app
+
+2. ✅ CONFIGURACIÓN COMPLETA
+   ├─ BASE_URL configurable
+   ├─ Timeouts (connect, read, write)
+   └─ Flag de logging
+
+3. ✅ LOGGING INTERCEPTOR
+   ├─ Nivel BODY en desarrollo
+   └─ Nivel NONE en producción
+
+4. ✅ GSON PERSONALIZADO
+   ├─ Formato de fechas ISO 8601
+   ├─ SerializeNulls habilitado
+   └─ Modo lenient
+
+5. ✅ OKHTTP CLIENT
+   ├─ Timeouts configurados (30s)
+   ├─ Retry automático en fallos
+   └─ Interceptores agregados
+
+6. ✅ AUTH INTERCEPTOR (Preparado)
+   └─ Listo para agregar tokens automáticamente
+
+7. ✅ BUILDER PATTERN
+   └─ Clase RetrofitBuilder para configuración flexible
+
+8. ✅ FUNCIONES AUXILIARES
+   ├─ getBaseUrl()
+   ├─ isLoggingEnabled()
+   ├─ createCustomApiService()
+   └─ getConfiguration()
+
+9. ✅ DOCUMENTACIÓN KDOC
+   └─ Comentarios detallados en cada función
+
+═══════════════════════════════════════════════════════════════════════
+                    🆚 COMPARACIÓN CON RETROFITCLIENT
+═══════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────┬──────────────────┬──────────────────────┐
+│  CARACTERÍSTICA         │ RetrofitClient   │ RetrofitInstance     │
+├─────────────────────────┼──────────────────┼──────────────────────┤
+│  Ubicación              │ remote/api/      │ remote/ (raíz)       │
+│  Líneas de código       │ ~100             │ ~270                 │
+│  Configuración Gson     │ Default          │ Personalizado ✨     │
+│  Retry automático       │ NO               │ SÍ ✨               │
+│  Auth interceptor       │ NO               │ Preparado ✨         │
+│  Builder pattern        │ NO               │ SÍ ✨               │
+│  Debug functions        │ NO               │ SÍ ✨               │
+│  Custom instances       │ NO               │ SÍ ✨               │
+│  Documentación KDoc     │ Básica           │ Completa ✨          │
+│  Nivel profesional      │ Básico           │ Avanzado ✨          │
+└─────────────────────────┴──────────────────┴──────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════
+                        💡 USO BÁSICO
+═══════════════════════════════════════════════════════════════════════
+
+Opción 1: Uso directo (más simple)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+val apiService = RetrofitInstance.apiService
+
+// Hacer llamadas
+suspend fun getPosts() {
+    val response = apiService.getAllPosts()
+}
+
+
+Opción 2: Con Repository
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class PostRepositoryImpl(
+    private val apiService: ApiService = RetrofitInstance.apiService
+) {
+    suspend fun getAllPosts(): NetworkResult<List<Post>> {
+        try {
+            val response = apiService.getAllPosts()
+            // Procesar...
+        } catch (e: Exception) {
+            // Error...
+        }
+    }
+}
+
+
+Opción 3: Builder Pattern
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+val apiService = RetrofitBuilder()
+    .setBaseUrl("https://api.ejemplo.com/")
+    .enableLogging(true)
+    .setTimeout(60)
+    .build()
+
+
+Opción 4: Instancia personalizada
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+val testApi = RetrofitInstance.createCustomApiService(
+    baseUrl = "http://test-api.com/"
+)
+
+═══════════════════════════════════════════════════════════════════════
+                    🔧 CONFIGURACIÓN DE URL BASE
+═══════════════════════════════════════════════════════════════════════
+
+Edita la línea 46 de RetrofitInstance.kt según tu entorno:
+
+DESARROLLO LOCAL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Para emulador Android
+private const val BASE_URL = "http://10.0.2.2:8080/api/"
+
+// Para dispositivo físico (misma red WiFi)
+// Ejecuta "ipconfig" en CMD para obtener tu IP
+private const val BASE_URL = "http://192.168.1.XXX:8080/api/"
+
+
+PRODUCCIÓN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+private const val BASE_URL = "https://api.ajicolor.com/api/"
+
+═══════════════════════════════════════════════════════════════════════
+                    🔐 ACTIVAR AUTENTICACIÓN AUTOMÁTICA
+═══════════════════════════════════════════════════════════════════════
+
+Paso 1: Descomenta el authInterceptor (líneas 80-96)
+Paso 2: Implementa la función getAuthToken()
+Paso 3: Agrega al OkHttpClient (línea 123):
+        .addInterceptor(authInterceptor)
+
+Ejemplo de implementación:
+
+private fun getAuthToken(): String? {
+    // Obtener de SharedPreferences, DataStore, etc.
+    val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
+    return prefs.getString("token", null)
+}
+
+═══════════════════════════════════════════════════════════════════════
+                    🛠️ FUNCIONES AUXILIARES DISPONIBLES
+═══════════════════════════════════════════════════════════════════════
+
+[1] getBaseUrl()
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+val url = RetrofitInstance.getBaseUrl()
+// Retorna: "http://10.0.2.2:8080/api/"
+
+
+[2] isLoggingEnabled()
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+val enabled = RetrofitInstance.isLoggingEnabled()
+// Retorna: true o false
+
+
+[3] createCustomApiService(baseUrl: String)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+val customApi = RetrofitInstance.createCustomApiService(
+    baseUrl = "https://otra-api.com/"
+)
+
+
+[4] getConfiguration()
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+println(RetrofitInstance.getConfiguration())
+// Muestra toda la configuración actual
+
+
+[5] logConfiguration() (extensión)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RetrofitInstance.apiService.logConfiguration()
+// Imprime la configuración en consola
+
+═══════════════════════════════════════════════════════════════════════
+                    📊 EJEMPLO COMPLETO DE INTEGRACIÓN
+═══════════════════════════════════════════════════════════════════════
+
+1. REPOSITORY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class PostRepositoryImpl(
+    private val apiService: ApiService = RetrofitInstance.apiService
+) {
+    suspend fun getAllPosts(): NetworkResult<List<Post>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getAllPosts()
+
+                if (response.isSuccessful && response.body() != null) {
+                    val data = response.body()!!.data
+                    NetworkResult.Success(data ?: emptyList())
+                } else {
+                    NetworkResult.Error("Error ${response.code()}")
+                }
+            } catch (e: Exception) {
+                NetworkResult.Error(e.message ?: "Error")
+            }
+        }
+    }
+}
+
+
+2. VIEWMODEL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class PostViewModel(
+    private val repository: PostRepositoryImpl = PostRepositoryImpl()
+) : ViewModel() {
+
+    private val _posts = MutableStateFlow<NetworkResult<List<Post>>>(
+        NetworkResult.Idle()
+    )
+    val posts = _posts.asStateFlow()
+
+    fun loadPosts() {
+        viewModelScope.launch {
+            _posts.value = NetworkResult.Loading()
+            _posts.value = repository.getAllPosts()
+        }
+    }
+}
+
+
+3. COMPOSABLE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Composable
+fun PostsScreen(viewModel: PostViewModel = viewModel()) {
+    val postsState by viewModel.posts.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadPosts()
+    }
+
+    when (postsState) {
+        is NetworkResult.Loading -> CircularProgressIndicator()
+        is NetworkResult.Success -> {
+            val posts = (postsState as NetworkResult.Success).data
+            PostsList(posts)
+        }
+        is NetworkResult.Error -> {
+            Text("Error: ${(postsState as NetworkResult.Error).message}")
+        }
+        else -> {}
+    }
+}
+
+═══════════════════════════════════════════════════════════════════════
+                    ✅ VERIFICACIÓN COMPLETA
+═══════════════════════════════════════════════════════════════════════
+
+Estado del Archivo:
+  ✅ Archivo creado correctamente
+  ✅ Ubicación: data/remote/RetrofitInstance.kt
+  ✅ Líneas de código: ~270
+  ✅ Sin errores de compilación
+  ✅ Documentación KDoc completa
+  ✅ Todas las features implementadas
+
+Componentes Incluidos:
+  ✅ Singleton object
+  ✅ Logging interceptor
+  ✅ Auth interceptor (preparado)
+  ✅ Gson personalizado
+  ✅ OkHttpClient completo
+  ✅ Retry automático
+  ✅ Builder pattern
+  ✅ Funciones auxiliares
+  ✅ Extensiones
+
+Compatible con:
+  ✅ ApiService.kt (29 endpoints)
+  ✅ Todos los DTOs (UserDto, ProductoDto, PostDto)
+  ✅ NetworkResult.kt
+  ✅ Arquitectura MVVM existente
+  ✅ Retrofit 2.11.0
+  ✅ OkHttp 4.12.0
+  ✅ Gson 2.11.0
+
+═══════════════════════════════════════════════════════════════════════
+                    🎯 CUÁL USAR: RetrofitClient o RetrofitInstance
+═══════════════════════════════════════════════════════════════════════
+
+USA RetrofitInstance.kt SI:
+  ✓ Quieres la mejor implementación
+  ✓ Necesitas configuración avanzada
+  ✓ Vas a producción
+  ✓ Quieres debug tools
+  ✓ Necesitas auth automática
+  ✓ Quieres múltiples instancias
+
+USA RetrofitClient.kt SI:
+  ✓ Ya tienes código que lo usa
+  ✓ Prefieres simplicidad básica
+  ✓ Solo necesitas funcionalidad mínima
+
+RECOMENDACIÓN: ⭐ RetrofitInstance.kt
+Es más profesional, completo y preparado para producción.
+
+═══════════════════════════════════════════════════════════════════════
+                    🔄 MIGRACIÓN FÁCIL
+═══════════════════════════════════════════════════════════════════════
+
+Si ya usas RetrofitClient, migrar es simple:
+
+ANTES:
+val apiService = RetrofitClient.apiService
+
+DESPUÉS:
+val apiService = RetrofitInstance.apiService
+
+¡SOLO CAMBIAS EL NOMBRE! El resto del código es idéntico.
+
+═══════════════════════════════════════════════════════════════════════
+                    📚 DOCUMENTACIÓN DISPONIBLE
+═══════════════════════════════════════════════════════════════════════
+
+[1] documentos/retrofitinstance_documentation.md
+    → Documentación completa de RetrofitInstance
+
+[2] RETROFIT_GUIDE.md
+    → Guía general de Retrofit
+
+[3] INSTRUCCIONES_RETROFIT.md
+    → Instrucciones paso a paso
+
+[4] documentos/retrofit_implementation.html
+    → Documentación HTML con estilos
+
+[5] APISERVICE_RESUMEN.txt
+    → Resumen de ApiService con 29 endpoints
+
+═══════════════════════════════════════════════════════════════════════
+                          🎉 CONCLUSIÓN
+═══════════════════════════════════════════════════════════════════════
+
+RetrofitInstance.kt está:
+
+  ✅ COMPLETAMENTE IMPLEMENTADO
+  ✅ SIN ERRORES DE COMPILACIÓN
+  ✅ LISTO PARA USAR
+  ✅ DOCUMENTADO AL 100%
+  ✅ COMPATIBLE CON TODO EL PROYECTO
+
+Características destacadas:
+  🌟 270 líneas de código profesional
+  🌟 Gson personalizado con fechas ISO
+  🌟 Retry automático en fallos
+  🌟 Auth interceptor preparado
+  🌟 Builder pattern incluido
+  🌟 5 funciones auxiliares
+  🌟 Documentación KDoc completa
+
+Uso simple:
+  val api = RetrofitInstance.apiService
+
+═══════════════════════════════════════════════════════════════════════
+
+    ¡RetrofitInstance.kt está listo para conectar tu app con la API! 🚀
+
+═══════════════════════════════════════════════════════════════════════
+Generado: 18 de Noviembre 2025 | Proyecto: App_Ajicolor Grupo 4
+═══════════════════════════════════════════════════════════════════════
+

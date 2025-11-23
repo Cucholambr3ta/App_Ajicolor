@@ -1,0 +1,380 @@
+═══════════════════════════════════════════════════════════════════════
+    ✅ POSTVIEWMODEL.KT - VERIFICADO Y ACTUALIZADO
+═══════════════════════════════════════════════════════════════════════
+
+📅 Fecha: 19 de Noviembre 2025
+📦 Proyecto: App_Ajicolor - Grupo 4
+✅ Estado: COMPLETADO - ACTUALIZADO PARA MEJOR ARQUITECTURA
+
+═══════════════════════════════════════════════════════════════════════
+                          📍 UBICACIÓN
+═══════════════════════════════════════════════════════════════════════
+
+Archivo: PostViewModel.kt
+Ruta: app/src/main/java/com/example/appajicolorgrupo4/viewmodel/PostViewModel.kt
+
+Estado: ✅ Ya existía - ACTUALIZADO
+
+Estructura del paquete viewmodel:
+viewmodel/
+├── AuthViewModel.kt
+├── AuthViewModelFactory.kt
+├── CarritoViewModel.kt
+├── LoginViewModelWithRetrofit.kt
+├── MainViewModel.kt
+├── NotificacionesViewModel.kt
+├── PedidosViewModel.kt
+├── PostViewModel.kt                    ✅ ACTUALIZADO
+├── ProductoViewModel.kt
+├── RetrofitExampleViewModel.kt
+├── UsuarioViewModel.kt
+└── ViewModelFactory.kt
+
+═══════════════════════════════════════════════════════════════════════
+                    🔄 CAMBIO IMPORTANTE REALIZADO
+═══════════════════════════════════════════════════════════════════════
+
+ANTES (Acoplamiento concreto):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class PostViewModel(
+    private val repository: PostRepositoryImpl  // ❌ Implementación concreta
+) : ViewModel()
+
+AHORA (Inversión de dependencias):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+class PostViewModel(
+    private val repository: PostRepository = PostRepositoryImpl(  // ✅ Interfaz
+        RetrofitInstance.apiService
+    )
+) : ViewModel()
+
+VENTAJAS DEL CAMBIO:
+  ✅ Sigue principio de Inversión de Dependencias (SOLID)
+  ✅ Facilita testing con mocks
+  ✅ Permite cambiar implementación sin tocar ViewModel
+  ✅ Valor por defecto para instanciación fácil
+  ✅ Código más limpio y profesional
+
+═══════════════════════════════════════════════════════════════════════
+                    📊 CONTENIDO DEL VIEWMODEL
+═══════════════════════════════════════════════════════════════════════
+
+ESTADOS EXPUESTOS (7 StateFlows):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[1] postsState                  → Lista general de posts
+[2] postDetailState             → Post individual para detalle
+[3] postsDestacadosState        → Posts destacados
+[4] postsPopularesState         → Posts más populares
+[5] searchState                 → Resultados de búsqueda
+[6] searchQuery                 → Query de búsqueda actual
+[7] categoriaSeleccionada       → Categoría filtrada
+
+FUNCIONES PÚBLICAS (12 funciones):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Consultas:
+  [1]  cargarPosts()                      → Cargar todos los posts
+  [2]  cargarPostPorId(postId)            → Cargar post específico
+  [3]  cargarPostsPorCategoria(cat)       → Filtrar por categoría
+  [4]  cargarPostsDestacados()            → Posts destacados
+  [5]  cargarPostsPopulares(limite)       → Posts más populares
+  [6]  cargarPostsRecientes(limite)       → Posts más recientes
+
+Búsqueda:
+  [7]  buscarPosts(query)                 → Buscar posts
+  [8]  limpiarBusqueda()                  → Limpiar búsqueda
+
+Filtros:
+  [9]  limpiarCategoria()                 → Quitar filtro categoría
+
+Acciones:
+  [10] darLikeAPost(token, postId)        → Dar like a post
+  [11] refrescar()                        → Refrescar datos
+
+Privadas:
+  [12] actualizarLikesEnEstado()          → Actualizar likes local
+
+═══════════════════════════════════════════════════════════════════════
+                    💡 FORMAS DE USO
+═══════════════════════════════════════════════════════════════════════
+
+FORMA 1: Instanciación Simple (Recomendada)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Composable
+fun PostsScreen() {
+    val viewModel: PostViewModel = viewModel()  // ← Usa default
+
+    val postsState by viewModel.postsState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.cargarPosts()
+    }
+
+    when (postsState) {
+        is NetworkResult.Loading -> CircularProgressIndicator()
+        is NetworkResult.Success -> {
+            val posts = (postsState as NetworkResult.Success).data
+            PostsList(posts)
+        }
+        is NetworkResult.Error -> ErrorMessage(...)
+        else -> {}
+    }
+}
+
+
+FORMA 2: Con Repository Personalizado
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Composable
+fun PostsScreen() {
+    val customRepository = remember {
+        PostRepositoryImpl(RetrofitInstance.apiService)
+    }
+
+    val viewModel: PostViewModel = viewModel {
+        PostViewModel(customRepository)
+    }
+}
+
+
+FORMA 3: Para Testing
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Test
+fun `test load posts`() {
+    val fakeRepo = FakePostRepository()
+    val viewModel = PostViewModel(fakeRepo)
+
+    viewModel.cargarPosts()
+
+    assertTrue(viewModel.postsState.value is NetworkResult.Success)
+}
+
+═══════════════════════════════════════════════════════════════════════
+                    🎯 EJEMPLOS DE USO COMPLETOS
+═══════════════════════════════════════════════════════════════════════
+
+EJEMPLO 1: Lista de Posts
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Composable
+fun PostsListScreen(viewModel: PostViewModel = viewModel()) {
+    val postsState by viewModel.postsState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.cargarPosts()
+    }
+
+    when (postsState) {
+        is NetworkResult.Loading -> LoadingScreen()
+        is NetworkResult.Success -> {
+            val posts = (postsState as NetworkResult.Success).data
+            LazyColumn {
+                items(posts) { post ->
+                    PostCard(
+                        post = post,
+                        onLikeClick = { viewModel.darLikeAPost(token, post.id) }
+                    )
+                }
+            }
+        }
+        is NetworkResult.Error -> ErrorScreen()
+        else -> {}
+    }
+}
+
+
+EJEMPLO 2: Búsqueda de Posts
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Composable
+fun SearchPostsScreen(viewModel: PostViewModel = viewModel()) {
+    var searchText by remember { mutableStateOf("") }
+    val searchState by viewModel.searchState.collectAsState()
+
+    Column {
+        SearchBar(
+            query = searchText,
+            onQueryChange = { query ->
+                searchText = query
+                viewModel.buscarPosts(query)
+            }
+        )
+
+        when (searchState) {
+            is NetworkResult.Success -> {
+                val posts = (searchState as NetworkResult.Success).data
+                PostsList(posts)
+            }
+            else -> {}
+        }
+    }
+}
+
+
+EJEMPLO 3: Detalle de Post
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Composable
+fun PostDetailScreen(
+    postId: String,
+    viewModel: PostViewModel = viewModel()
+) {
+    val postDetailState by viewModel.postDetailState.collectAsState()
+
+    LaunchedEffect(postId) {
+        viewModel.cargarPostPorId(postId)
+    }
+
+    when (postDetailState) {
+        is NetworkResult.Success -> {
+            val post = (postDetailState as NetworkResult.Success).data
+            PostDetailContent(post)
+        }
+        else -> {}
+    }
+}
+
+
+EJEMPLO 4: Posts por Categoría
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@Composable
+fun CategoryPostsScreen(
+    categoria: CategoriaPost,
+    viewModel: PostViewModel = viewModel()
+) {
+    val postsState by viewModel.postsState.collectAsState()
+
+    LaunchedEffect(categoria) {
+        viewModel.cargarPostsPorCategoria(categoria)
+    }
+}
+
+═══════════════════════════════════════════════════════════════════════
+                    🏗️ ARQUITECTURA COMPLETA
+═══════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────┐
+│  UI Layer (Composable)              │
+│  - PostsListScreen                  │
+│  - PostDetailScreen                 │
+│  - SearchPostsScreen                │
+└──────────────┬──────────────────────┘
+               │ viewModel()
+               ↓
+┌─────────────────────────────────────┐
+│  ViewModel Layer                    │
+│  - PostViewModel                    │
+│  - Expone StateFlow                 │
+│  - Maneja estados UI                │
+└──────────────┬──────────────────────┘
+               │ repository (interfaz)
+               ↓
+┌─────────────────────────────────────┐
+│  Repository Layer (Interfaz)        │
+│  - PostRepository                   │
+└──────────────┬──────────────────────┘
+               │ implementa
+               ↓
+┌─────────────────────────────────────┐
+│  Repository Impl                    │
+│  - PostRepositoryImpl               │
+└──────────────┬──────────────────────┘
+               │ usa
+        ┌──────┴──────┐
+        ↓             ↓
+┌────────────┐  ┌──────────────┐
+│ Retrofit   │  │ Mock Data    │
+│ ApiService │  │ (Local)      │
+└────────────┘  └──────────────┘
+
+═══════════════════════════════════════════════════════════════════════
+                    ✅ VERIFICACIÓN COMPLETA
+═══════════════════════════════════════════════════════════════════════
+
+Estado del Archivo:
+  ✅ Existe en viewmodel/PostViewModel.kt
+  ✅ Actualizado para usar PostRepository (interfaz)
+  ✅ Constructor con valor por defecto
+  ✅ Sin errores de compilación
+  ✅ 7 StateFlows expuestos
+  ✅ 12 funciones públicas
+  ✅ Documentación KDoc completa
+
+Arquitectura:
+  ✅ Sigue patrón MVVM
+  ✅ Inversión de dependencias (SOLID)
+  ✅ Estados reactivos con StateFlow
+  ✅ Coroutines con viewModelScope
+  ✅ Compatible con Jetpack Compose
+  ✅ Fácil de testear
+
+Características:
+  ✅ Gestión de múltiples estados
+  ✅ Loading, Success, Error, Idle
+  ✅ Búsqueda y filtrado
+  ✅ Actualización optimista (likes)
+  ✅ Refresh de datos
+  ✅ Preserva estado en rotaciones
+
+═══════════════════════════════════════════════════════════════════════
+                    🎯 VENTAJAS DE ESTA IMPLEMENTACIÓN
+═══════════════════════════════════════════════════════════════════════
+
+┌─────────────────────┬────────────────────────────────────────────┐
+│  CARACTERÍSTICA     │  DESCRIPCIÓN                               │
+├─────────────────────┼────────────────────────────────────────────┤
+│  Reactivo           │  UI se actualiza automáticamente           │
+│  Type-Safe          │  Estados tipados con sealed classes        │
+│  SOLID              │  Usa interfaz, no implementación           │
+│  Testing            │  Fácil inyectar mocks                      │
+│  Lifecycle          │  viewModelScope maneja coroutines          │
+│  Clean              │  Lógica separada de UI                     │
+│  Scalable           │  Fácil agregar features                    │
+│  Default Constructor│  Fácil instanciar sin parámetros           │
+└─────────────────────┴────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════
+                    📚 DOCUMENTACIÓN Y RECURSOS
+═══════════════════════════════════════════════════════════════════════
+
+[1] PostViewModel.kt
+    → Archivo con KDoc completo
+
+[2] POSTREPOSITORY_RESUMEN.txt
+    → Documentación del Repository
+
+[3] Este archivo (POSTVIEWMODEL_RESUMEN.txt)
+    → Guía completa del ViewModel
+
+═══════════════════════════════════════════════════════════════════════
+                          🎉 CONCLUSIÓN
+═══════════════════════════════════════════════════════════════════════
+
+PostViewModel.kt está:
+
+  ✅ VERIFICADO Y ACTUALIZADO
+  ✅ USANDO POSTREPOSITORY (INTERFAZ)
+  ✅ SIGUIENDO MEJORES PRÁCTICAS
+  ✅ LISTO PARA USAR EN COMPOSABLES
+  ✅ FÁCIL DE TESTEAR
+  ✅ SIN ERRORES DE COMPILACIÓN
+
+Características destacadas:
+  🌟 7 Estados reactivos con StateFlow
+  🌟 12 Funciones públicas para UI
+  🌟 Constructor con valor por defecto
+  🌟 Usa PostRepository (interfaz)
+  🌟 Inversión de dependencias (SOLID)
+  🌟 Actualización optimista de likes
+  🌟 Múltiples estados independientes
+
+Ubicación:
+  📄 viewmodel/PostViewModel.kt
+
+Uso simple:
+  val viewModel: PostViewModel = viewModel()
+  viewModel.cargarPosts()
+
+═══════════════════════════════════════════════════════════════════════
+
+    ¡PostViewModel.kt está listo con arquitectura profesional! 🚀
+
+═══════════════════════════════════════════════════════════════════════
+Generado: 19 de Noviembre 2025 | Proyecto: App_Ajicolor Grupo 4
+═══════════════════════════════════════════════════════════════════════
+

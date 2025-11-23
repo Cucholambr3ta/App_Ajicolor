@@ -14,10 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.EstadoPedido
-import com.example.appajicolorgrupo4.data.GeneradorNumeroPedido
-import com.example.appajicolorgrupo4.data.MetodoPago
-import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.data.model.GeneradorNumeroPedido
+import com.example.appajicolorgrupo4.data.model.EstadoPedido
+import com.example.appajicolorgrupo4.data.model.MetodoPago
+import com.example.appajicolorgrupo4.data.model.PedidoCompleto
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel

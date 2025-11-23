@@ -1,8 +1,8 @@
 package com.example.appajicolorgrupo4.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.appajicolorgrupo4.data.Producto
-import com.example.appajicolorgrupo4.data.ProductoResena
+import com.example.appajicolorgrupo4.data.model.Producto
+import com.example.appajicolorgrupo4.data.model.ProductoResena
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

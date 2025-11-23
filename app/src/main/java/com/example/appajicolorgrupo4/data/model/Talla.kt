@@ -1,4 +1,4 @@
-package com.example.appajicolorgrupo4.data
+package com.example.appajicolorgrupo4.data.model
 
 /**
  * Clase sellada que representa las tallas disponibles para productos

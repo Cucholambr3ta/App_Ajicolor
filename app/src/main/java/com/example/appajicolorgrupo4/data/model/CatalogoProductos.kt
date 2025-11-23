@@ -1,4 +1,4 @@
-package com.example.appajicolorgrupo4.data
+package com.example.appajicolorgrupo4.data.model
 
 import com.example.appajicolorgrupo4.R
 
@@ -515,3 +515,4 @@ object CatalogoProductos {
         }
     }
 }
+

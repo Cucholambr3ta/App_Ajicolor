@@ -26,9 +26,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.CatalogoProductos
-import com.example.appajicolorgrupo4.data.CategoriaProducto
-import com.example.appajicolorgrupo4.data.Producto
+import com.example.appajicolorgrupo4.data.model.CatalogoProductos
+import com.example.appajicolorgrupo4.data.model.CategoriaProducto
+import com.example.appajicolorgrupo4.data.model.Producto
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer

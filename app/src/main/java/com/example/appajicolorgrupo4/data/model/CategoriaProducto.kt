@@ -1,4 +1,4 @@
-package com.example.appajicolorgrupo4.data
+package com.example.appajicolorgrupo4.data.model
 
 /**
  * Categorías de productos disponibles en la aplicación.
@@ -37,3 +37,4 @@ enum class CategoriaProducto(val displayName: String) {
         return TipoProducto.ADULTO
     }
 }
+
