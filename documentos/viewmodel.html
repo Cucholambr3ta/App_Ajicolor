@@ -1,0 +1,879 @@
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+<!DOCTYPE html>
+        .folder-tree {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            line-height: 1.8;
+        }
+
+        .folder {
+            color: #ffd60a;
+            font-weight: bold;
+        }
+
+        .file {
+            color: #68d391;
+        }
+
+        .annotation {
+            color: #9f7aea;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Análisis de la Capa ViewModel</h1>
+
+        <h2>🎯 Propósito del ViewModel en MVVM</h2>
+        <p>
+            El <code>ViewModel</code> es el <span class="highlight">puente entre la capa de datos y la UI</span>,
+            implementando la <strong>lógica de presentación</strong> de la aplicación. Su responsabilidad principal
+            es preparar y gestionar datos para la UI, mantener el estado de la pantalla y manejar eventos del usuario.
+        </p>
+
+        <div class="box box-info">
+            <h4>🔑 Responsabilidades del ViewModel</h4>
+            <ul>
+                <li><strong>Gestión de Estado:</strong> Mantiene el estado de UI observable con StateFlow/LiveData</li>
+                <li><strong>Lógica de Presentación:</strong> Transforma datos del repositorio para la UI</li>
+                <li><strong>Manejo de Eventos:</strong> Procesa acciones del usuario (clicks, inputs)</li>
+                <li><strong>Ciclo de Vida:</strong> Sobrevive a cambios de configuración (rotación)</li>
+                <li><strong>Desacoplamiento:</strong> Separa la UI de la lógica de negocio</li>
+            </ul>
+        </div>
+
+        <h3>🏗️ Arquitectura ViewModel en App AjiColor</h3>
+        <div class="diagram">
+            <div class="flow-step">UI (Composable)</div>
+            <span class="arrow">↕️</span>
+            <div class="flow-step">ViewModel</div>
+            <span class="arrow">↕️</span>
+            <div class="flow-step">Repository</div>
+            <span class="arrow">↕️</span>
+            <div class="flow-step">Data Source</div>
+        </div>
+
+        <h2>📂 Estructura de /viewmodel</h2>
+        <div class="folder-tree">
+📁 viewmodel/
+├── 📄 <span class="file">AuthViewModel.kt</span>           <span class="annotation">// Autenticación (Login, Registro)</span>
+├── 📄 <span class="file">AuthViewModelFactory.kt</span>    <span class="annotation">// Factory para inyectar dependencias</span>
+├── 📄 <span class="file">CarritoViewModel.kt</span>        <span class="annotation">// Gestión del carrito de compras</span>
+├── 📄 <span class="file">MainViewModel.kt</span>           <span class="annotation">// ViewModel principal de la app</span>
+├── 📄 <span class="file">NotificacionesViewModel.kt</span> <span class="annotation">// Notificaciones del usuario</span>
+├── 📄 <span class="file">PedidosViewModel.kt</span>        <span class="annotation">// Historial y gestión de pedidos</span>
+├── 📄 <span class="file">ProductoViewModel.kt</span>       <span class="annotation">// Catálogo y detalle de productos</span>
+├── 📄 <span class="file">UsuarioViewModel.kt</span>        <span class="annotation">// Perfil y datos del usuario</span>
+└── 📄 <span class="file">ViewModelFactory.kt</span>        <span class="annotation">// Factory genérico</span>
+        </div>
+
+        <h2>🔍 Análisis Detallado de ViewModels</h2>
+
+        <h3>1️⃣ AuthViewModel - Autenticación</h3>
+        <p>
+            Este ViewModel gestiona todo el flujo de autenticación: login, registro y validación de formularios.
+        </p>
+
+        <h4>📊 Estados de UI</h4>
+        <p>
+            Los estados encapsulan toda la información que la UI necesita para renderizarse:
+        </p>
+
+        <div class="box box-success">
+            <pre><code>// Estado para Login
+data class LoginUiState(
+    val correo: String = "",
+    val clave: String = "",
+    val correoError: String? = null,      // Error de validación
+    val claveError: String? = null,
+    val isSubmitting: Boolean = false,    // Cargando
+    val canSubmit: Boolean = false,       // Botón habilitado
+    val success: Boolean = false,         // Login exitoso
+    val errorMsg: String? = null          // Error del servidor
+)
+
+// Estado para Registro
+data class RegisterUiState(
+    val nombre: String = "",
+    val correo: String = "",
+    val clave: String = "",
+    val direccion: String = "",
+    val telefono: String = "",
+    val confirm: String = "",
+
+    // Errores de validación individuales
+    val nombreError: String? = null,
+    val correoError: String? = null,
+    val claveError: String? = null,
+    val direccionError: String? = null,
+    val telefonoError: String? = null,
+    val confirmError: String? = null,
+
+    val isSubmitting: Boolean = false,
+    val canSubmit: Boolean = false,
+    val success: Boolean = false,
+    val errorMsg: String? = null
+)</code></pre>
+        </div>
+
+        <h4>🔧 Implementación del ViewModel</h4>
+        <div class="box box-info">
+            <pre><code>class AuthViewModel(
+    private val repository: UserRepository,
+    private val sessionManager: SessionManager
+) : ViewModel() {
+
+    // StateFlow para estado observable
+    private val _login = MutableStateFlow(LoginUiState())
+    val login: StateFlow&lt;LoginUiState&gt; = _login
+
+    private val _register = MutableStateFlow(RegisterUiState())
+    val register: StateFlow&lt;RegisterUiState&gt; = _register
+
+    // Handler de cambio de email
+    fun onLoginEmailChange(value: String) {
+        _login.update {
+            it.copy(
+                correo = value,
+                correoError = validateEmail(value)
+            )
+        }
+        recomputeLoginCanSubmit()
+    }
+
+    // Handler de cambio de contraseña
+    fun onLoginPassChange(value: String) {
+        _login.update { it.copy(clave = value) }
+        recomputeLoginCanSubmit()
+    }
+
+    // Validación reactiva del formulario
+    private fun recomputeLoginCanSubmit() {
+        val s = _login.value
+        val can = s.correoError == null &&
+                  s.correo.isNotBlank() &&
+                  s.clave.isNotBlank()
+        _login.update { it.copy(canSubmit = can) }
+    }
+
+    // Envío del formulario
+    fun submitLogin() {
+        val s = _login.value
+        if (!s.canSubmit || s.isSubmitting) return
+
+        viewModelScope.launch {
+            _login.update {
+                it.copy(isSubmitting = true, errorMsg = null)
+            }
+            delay(500)  // Simular latencia de red
+
+            val result = repository.login(s.correo.trim(), s.clave)
+
+            _login.update {
+                if (result.isSuccess) {
+                    // Guardar sesión
+                    result.getOrNull()?.let { user ->
+                        sessionManager.saveSession(user)
+                    }
+                    it.copy(
+                        isSubmitting = false,
+                        success = true,
+                        errorMsg = null
+                    )
+                } else {
+                    it.copy(
+                        isSubmitting = false,
+                        success = false,
+                        errorMsg = result.exceptionOrNull()?.message
+                    )
+                }
+            }
+        }
+    }
+}</code></pre>
+        </div>
+
+        <h4>🎯 Conceptos Clave:</h4>
+        <ul>
+            <li><strong>MutableStateFlow:</strong> Estado mutable interno del ViewModel</li>
+            <li><strong>StateFlow:</strong> Versión inmutable expuesta a la UI</li>
+            <li><strong>update { }:</strong> Función de extensión para actualizar StateFlow de forma segura</li>
+            <li><strong>viewModelScope:</strong> CoroutineScope vinculado al ciclo de vida del ViewModel</li>
+            <li><strong>Validación reactiva:</strong> Se recalcula automáticamente al cambiar los campos</li>
+        </ul>
+
+        <h3>2️⃣ CarritoViewModel - Carrito de Compras</h3>
+        <p>
+            Este ViewModel gestiona el estado del carrito y operaciones como agregar, eliminar y actualizar productos.
+        </p>
+
+        <div class="box box-success">
+            <pre><code>class CarritoViewModel : ViewModel() {
+
+    // Lista de productos en el carrito
+    private val _items = MutableStateFlow&lt;List&lt;ProductoCarrito&gt;&gt;(emptyList())
+    val items: StateFlow&lt;List&lt;ProductoCarrito&gt;&gt; = _items
+
+    // Totales calculados
+    val subtotal: StateFlow&lt;Int&gt; = items.map { list ->
+        list.sumOf { it.subtotal() }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
+
+    val cantidadTotal: StateFlow&lt;Int&gt; = items.map { list ->
+        list.sumOf { it.cantidad }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, 0)
+
+    // Agregar producto al carrito
+    fun agregarProducto(
+        producto: Producto,
+        talla: Talla?,
+        color: ColorInfo?,
+        cantidad: Int = 1
+    ) {
+        _items.update { currentList ->
+            val existente = currentList.find { item ->
+                item.id == producto.id &&
+                item.talla == talla &&
+                item.color.hexCode == color?.hexCode
+            }
+
+            if (existente != null) {
+                // Incrementar cantidad si ya existe
+                currentList.map { item ->
+                    if (item == existente) {
+                        item.copy(cantidad = item.cantidad + cantidad)
+                    } else {
+                        item
+                    }
+                }
+            } else {
+                // Agregar nuevo item
+                currentList + ProductoCarrito(
+                    id = producto.id,
+                    nombre = producto.nombre,
+                    precio = producto.precio,
+                    cantidad = cantidad,
+                    talla = talla,
+                    color = color ?: ColorInfo("Sin color", Color.Gray, "#808080"),
+                    categoria = producto.categoria,
+                    imagenResId = producto.imagenResId
+                )
+            }
+        }
+    }
+
+    // Actualizar cantidad
+    fun actualizarCantidad(item: ProductoCarrito, nuevaCantidad: Int) {
+        if (nuevaCantidad <= 0) {
+            eliminarProducto(item)
+            return
+        }
+
+        _items.update { currentList ->
+            currentList.map {
+                if (it == item) it.copy(cantidad = nuevaCantidad) else it
+            }
+        }
+    }
+
+    // Eliminar producto
+    fun eliminarProducto(item: ProductoCarrito) {
+        _items.update { it.filterNot { prod -> prod == item } }
+    }
+
+    // Vaciar carrito
+    fun vaciarCarrito() {
+        _items.value = emptyList()
+    }
+}</code></pre>
+        </div>
+
+        <h4>🔧 Patrones Utilizados:</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>Patrón</th>
+                    <th>Descripción</th>
+                    <th>Beneficio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>stateIn()</code></td>
+                    <td>Convierte Flow en StateFlow</td>
+                    <td>Cachea valores computados</td>
+                </tr>
+                <tr>
+                    <td><code>map { }</code></td>
+                    <td>Transforma valores del Flow</td>
+                    <td>Cálculos reactivos automáticos</td>
+                </tr>
+                <tr>
+                    <td><code>update { }</code></td>
+                    <td>Actualiza estado de forma atómica</td>
+                    <td>Thread-safe, sin race conditions</td>
+                </tr>
+                <tr>
+                    <td><code>filterNot { }</code></td>
+                    <td>Filtra elementos de la lista</td>
+                    <td>Programación funcional inmutable</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3️⃣ UsuarioViewModel - Perfil de Usuario</h3>
+        <p>
+            Gestiona el perfil del usuario logueado, incluyendo carga, edición y actualización de datos.
+        </p>
+
+        <div class="box box-info">
+            <pre><code>class UsuarioViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository: UserRepository
+    private val sessionManager: SessionManager
+
+    // Estado del perfil
+    private val _currentUser = MutableStateFlow&lt;UserEntity?&gt;(null)
+    val currentUser: StateFlow&lt;UserEntity?&gt; = _currentUser
+
+    // Modo edición
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow&lt;Boolean&gt; = _isEditMode
+
+    // Resultado de actualización
+    private val _updateResultado = MutableStateFlow&lt;String?&gt;(null)
+    val updateResultado: StateFlow&lt;String?&gt; = _updateResultado
+
+    init {
+        val database = AppDatabase.getInstance(application)
+        repository = UserRepository(database.userDao())
+        sessionManager = SessionManager(application)
+        cargarPerfil()
+    }
+
+    // Cargar perfil del usuario logueado
+    fun cargarPerfil() {
+        viewModelScope.launch {
+            val user = sessionManager.getCurrentUser()
+            if (user != null) {
+                // Recargar desde BD para datos frescos
+                val freshUser = repository.getUserById(user.id)
+                _currentUser.value = freshUser
+            }
+        }
+    }
+
+    // Activar modo edición
+    fun activarModoEdicion() {
+        _isEditMode.value = true
+    }
+
+    // Cancelar edición
+    fun cancelarEdicion() {
+        _isEditMode.value = false
+        cargarPerfil()  // Recargar datos originales
+    }
+
+    // Guardar cambios
+    fun guardarCambios(
+        nombre: String,
+        telefono: String,
+        direccion: String
+    ) {
+        val user = _currentUser.value ?: return
+
+        viewModelScope.launch {
+            val updatedUser = user.copy(
+                nombre = nombre,
+                telefono = telefono,
+                direccion = direccion
+            )
+
+            val result = repository.updateUser(updatedUser)
+
+            if (result.isSuccess) {
+                _currentUser.value = updatedUser
+                sessionManager.updateSession(updatedUser)
+                _isEditMode.value = false
+                _updateResultado.value = "Perfil actualizado exitosamente"
+            } else {
+                _updateResultado.value = "Error al actualizar: ${result.exceptionOrNull()?.message}"
+            }
+        }
+    }
+
+    // Cerrar sesión
+    fun cerrarSesion() {
+        sessionManager.clearSession()
+        _currentUser.value = null
+    }
+}</code></pre>
+        </div>
+
+        <h4>🏗️ AndroidViewModel vs ViewModel:</h4>
+        <ul>
+            <li><strong>ViewModel:</strong> Clase base estándar, sin dependencias de Android</li>
+            <li><strong>AndroidViewModel:</strong> Extiende ViewModel, recibe Application en constructor</li>
+            <li><strong>Uso:</strong> Cuando necesitas Context para acceder a recursos o BD</li>
+            <li><strong>Precaución:</strong> No guardar referencias a Activity/Fragment (memory leak)</li>
+        </ul>
+
+        <h3>4️⃣ ViewModelFactory - Inyección de Dependencias</h3>
+        <p>
+            Los ViewModels con parámetros en el constructor requieren un Factory personalizado.
+        </p>
+
+        <div class="box box-warning">
+            <pre><code>class AuthViewModelFactory(
+    private val repository: UserRepository,
+    private val sessionManager: SessionManager
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun &lt;T : ViewModel&gt; create(modelClass: Class&lt;T&gt;): T {
+        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+            return AuthViewModel(repository, sessionManager) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
+// Uso en Composable
+@Composable
+fun LoginScreen(navController: NavController) {
+    val context = LocalContext.current
+    val database = AppDatabase.getInstance(context)
+    val repository = UserRepository(database.userDao())
+    val sessionManager = SessionManager(context)
+
+    val viewModel: AuthViewModel = viewModel(
+        factory = AuthViewModelFactory(repository, sessionManager)
+    )
+
+    // ... resto de la UI
+}</code></pre>
+        </div>
+
+        <h4>🔑 Alternativas Modernas:</h4>
+        <ul>
+            <li><strong>Hilt/Dagger:</strong> Inyección de dependencias automática</li>
+            <li><strong>Koin:</strong> Framework de DI más simple para Kotlin</li>
+            <li><strong>Manual Factory:</strong> Suficiente para apps pequeñas/educativas</li>
+        </ul>
+
+        <h2>🔄 Flujo Completo: UI ↔ ViewModel ↔ Repository</h2>
+
+        <h3>🎬 Caso de Uso: Agregar Producto al Carrito</h3>
+        <div class="diagram">
+            <div class="flow-step">1. UI: onClick</div>
+            <span class="arrow">→</span>
+            <div class="flow-step">2. ViewModel: agregarProducto()</div>
+            <span class="arrow">→</span>
+            <div class="flow-step">3. Update StateFlow</div>
+            <span class="arrow">→</span>
+            <div class="flow-step">4. Recomposición UI</div>
+        </div>
+
+        <div class="box box-success">
+            <h4>📝 Código Completo del Flujo:</h4>
+            <pre><code>// 1. UI - DetalleProductoScreen.kt
+@Composable
+fun DetalleProductoScreen(
+    producto: Producto,
+    carritoViewModel: CarritoViewModel
+) {
+    var tallaSeleccionada by remember { mutableStateOf&lt;Talla?&gt;(null) }
+    var colorSeleccionado by remember { mutableStateOf&lt;ColorInfo?&gt;(null) }
+
+    Button(
+        onClick = {
+            carritoViewModel.agregarProducto(
+                producto = producto,
+                talla = tallaSeleccionada,
+                color = colorSeleccionado,
+                cantidad = 1
+            )
+        },
+        enabled = tallaSeleccionada != null && colorSeleccionado != null
+    ) {
+        Text("Agregar al Carrito")
+    }
+}
+
+// 2. ViewModel - CarritoViewModel.kt
+fun agregarProducto(
+    producto: Producto,
+    talla: Talla?,
+    color: ColorInfo?,
+    cantidad: Int = 1
+) {
+    _items.update { currentList ->
+        val existente = currentList.find { /* ... */ }
+
+        if (existente != null) {
+            // Incrementar cantidad
+            currentList.map { item ->
+                if (item == existente) {
+                    item.copy(cantidad = item.cantidad + cantidad)
+                } else {
+                    item
+                }
+            }
+        } else {
+            // Agregar nuevo
+            currentList + ProductoCarrito(/* ... */)
+        }
+    }
+}
+
+// 3. UI - Observar cambios (CartScreen.kt)
+@Composable
+fun CartScreen(carritoViewModel: CarritoViewModel) {
+    val items by carritoViewModel.items.collectAsState()
+    val cantidadTotal by carritoViewModel.cantidadTotal.collectAsState()
+
+    // Se recompone automáticamente cuando cambian items/cantidadTotal
+    Text("Carrito ($cantidadTotal)")
+
+    LazyColumn {
+        items(items) { producto ->
+            ProductoEnCarrito(producto)
+        }
+    }
+}</code></pre>
+        </div>
+
+        <h2>⚡ Manejo de Corrutinas en ViewModels</h2>
+
+        <h3>1️⃣ viewModelScope</h3>
+        <p>
+            Scope de corrutina vinculado al ciclo de vida del ViewModel. Se cancela automáticamente cuando el ViewModel se destruye.
+        </p>
+
+        <div class="box box-info">
+            <pre><code>fun cargarDatos() {
+    viewModelScope.launch {
+        _isLoading.value = true
+
+        try {
+            // Operación suspendida (BD, red)
+            val datos = repository.obtenerDatos()
+            _datos.value = datos
+            _error.value = null
+        } catch (e: Exception) {
+            _error.value = e.message
+        } finally {
+            _isLoading.value = false
+        }
+    }
+}
+
+// Cancelación automática
+override fun onCleared() {
+    super.onCleared()
+    // viewModelScope se cancela automáticamente aquí
+}</code></pre>
+        </div>
+
+        <h3>2️⃣ Dispatchers</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Dispatcher</th>
+                    <th>Uso</th>
+                    <th>Ejemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>Dispatchers.Main</code></td>
+                    <td>Hilo principal (UI)</td>
+                    <td>Actualizar StateFlow</td>
+                </tr>
+                <tr>
+                    <td><code>Dispatchers.IO</code></td>
+                    <td>Operaciones I/O (BD, red)</td>
+                    <td>Consultas Room, API calls</td>
+                </tr>
+                <tr>
+                    <td><code>Dispatchers.Default</code></td>
+                    <td>Cálculos pesados</td>
+                    <td>Procesar listas grandes</td>
+                </tr>
+                <tr>
+                    <td><code>Dispatchers.Unconfined</code></td>
+                    <td>No confinado (avanzado)</td>
+                    <td>Tests, casos especiales</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3️⃣ Operadores de Flow</h3>
+        <div class="box box-success">
+            <pre><code>// map: Transformar valores
+val precioFormateado = precio.map { "$$it" }
+
+// filter: Filtrar valores
+val pedidosActivos = pedidos.map {
+    it.filter { pedido -> pedido.estado != EstadoPedido.ENTREGADO }
+}
+
+// combine: Combinar múltiples flows
+val resumen = combine(items, metodoPago, direccion) { items, metodo, dir ->
+    ResumenCompra(items, metodo, dir)
+}
+
+// stateIn: Convertir Flow a StateFlow con caché
+val cantidadTotal = items.map { it.sumOf { prod -> prod.cantidad } }
+    .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Lazily,  // Inicia cuando se observa
+        initialValue = 0
+    )</code></pre>
+        </div>
+
+        <h2>🎓 Mejores Prácticas</h2>
+
+        <div class="box box-success">
+            <h3>✅ DO - Hacer</h3>
+            <ul>
+                <li>✔️ Exponer StateFlow/LiveData inmutables a la UI</li>
+                <li>✔️ Usar viewModelScope para corrutinas</li>
+                <li>✔️ Mantener estados de UI en data classes</li>
+                <li>✔️ Validar datos antes de enviar al Repository</li>
+                <li>✔️ Manejar errores con try-catch y estados de error</li>
+                <li>✔️ Usar Factory para inyectar dependencias</li>
+            </ul>
+        </div>
+
+        <div class="box box-warning">
+            <h3>❌ DON'T - Evitar</h3>
+            <ul>
+                <li>❌ No guardar referencias a Activity/Fragment/View</li>
+                <li>❌ No acceder directamente a Context (usar Application si es necesario)</li>
+                <li>❌ No hacer operaciones de UI en el ViewModel</li>
+                <li>❌ No exponer MutableStateFlow directamente a la UI</li>
+                <li>❌ No hacer llamadas de red sin manejo de errores</li>
+                <li>❌ No crear corrutinas sin scope (memory leaks)</li>
+            </ul>
+        </div>
+
+        <h2>📚 Resumen</h2>
+        <p>
+            La capa ViewModel de App AjiColor demuestra una implementación profesional con:
+        </p>
+
+        <div class="box box-success">
+            <ul>
+                <li>✅ <strong>Separación clara</strong> entre lógica de presentación y UI</li>
+                <li>✅ <strong>Estados inmutables</strong> con StateFlow para reactividad</li>
+                <li>✅ <strong>Manejo robusto</strong> de corrutinas con viewModelScope</li>
+                <li>✅ <strong>Validación reactiva</strong> de formularios</li>
+                <li>✅ <strong>Gestión de ciclo de vida</strong> automática</li>
+                <li>✅ <strong>Inyección de dependencias</strong> con Factory pattern</li>
+                <li>✅ <strong>Cálculos derivados</strong> con operadores de Flow</li>
+            </ul>
+        </div>
+
+        <p style="text-align: center; margin-top: 40px; font-size: 1.1em; color: #667eea;">
+            <strong>🧠 ViewModel = Cerebro de la UI + Puente hacia los Datos</strong>
+        </p>
+    </div>
+</body>
+</html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de la Capa ViewModel - App AjiColor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #764ba2;
+            padding-bottom: 15px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #764ba2;
+            font-size: 2em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        h3 {
+            color: #5a67d8;
+            font-size: 1.5em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #f0f4ff, transparent);
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        h4 {
+            color: #4c51bf;
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+            color: #444;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        code {
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e53e3e;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        pre code {
+            background: transparent;
+            color: #e2e8f0;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #ffd60a 0%, #ffd60a 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 30%;
+            background-position: 0 90%;
+            padding: 2px 0;
+        }
+
+        .box {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .box-info {
+            background: #ebf8ff;
+            border-color: #3182ce;
+        }
+
+        .box-warning {
+            background: #fffaf0;
+            border-color: #ed8936;
+        }
+
+        .box-success {
+            background: #f0fff4;
+            border-color: #38a169;
+        }
+
+        .diagram {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .flow-step {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .arrow {
+            display: inline-block;
+            color: #667eea;
+            font-size: 2em;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px 15px;
+

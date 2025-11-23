@@ -21,8 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.EstadoPedido
-import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.data.model.EstadoPedido
+import com.example.appajicolorgrupo4.data.model.PedidoCompleto
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
@@ -32,8 +32,8 @@ import com.example.appajicolorgrupo4.ui.components.DetallePedidoDialogContent
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import com.example.appajicolorgrupo4.ui.theme.MoradoAji
-import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
-import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import com.example.appajicolorgrupo4.viewmodel.pedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.usuarioViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.BorderStroke
 import java.text.NumberFormat
@@ -44,10 +44,10 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderHistoryScreen(
-    navController: NavController,
-    pedidosViewModel: PedidosViewModel = viewModel(),
-    usuarioViewModel: UsuarioViewModel = viewModel()
+    navController: NavController
 ) {
+    val pedidosViewModel = pedidosViewModel()
+    val usuarioViewModel = usuarioViewModel()
     val todosPedidos by pedidosViewModel.pedidos.collectAsState()
     val currentUser by usuarioViewModel.currentUser.collectAsState()
     var estadoFiltro by remember { mutableStateOf<EstadoPedido?>(null) }
@@ -73,7 +73,7 @@ fun OrderHistoryScreen(
     }
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }

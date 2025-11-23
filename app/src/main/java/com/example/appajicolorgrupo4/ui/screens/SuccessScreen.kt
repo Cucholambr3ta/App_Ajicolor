@@ -14,12 +14,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.R
-import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.data.model.PedidoCompleto
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.CustomDialog
 import com.example.appajicolorgrupo4.ui.components.DetallePedidoDialogContent
-import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.pedidosViewModel
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -28,9 +28,9 @@ import java.util.*
 @Composable
 fun SuccessScreen(
     navController: NavController,
-    numeroPedido: String?,
-    pedidosViewModel: PedidosViewModel = viewModel()
+    numeroPedido: String?
 ) {
+    val pedidosViewModel = pedidosViewModel()
     var pedido by remember { mutableStateOf<PedidoCompleto?>(null) }
     var mostrarDialogo by remember { mutableStateOf(false) }
 
@@ -43,7 +43,7 @@ fun SuccessScreen(
     }
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }

@@ -1,4 +1,13 @@
-package com.example.appajicolorgrupo4.data
+package com.example.appajicolorgrupo4.data.model
+
+/**
+ * Enumeración que representa los tipos de producto según la edad del usuario
+ */
+enum class TipoProducto(val displayName: String) {
+    ADULTO("Adulto"),
+    INFANTIL("Infantil")
+}
+package com.example.appajicolorgrupo4.data.model
 
 /**
  * Representa un producto completo en el catálogo

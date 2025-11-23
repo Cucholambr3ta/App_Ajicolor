@@ -2,6 +2,10 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+<<<<<<< HEAD
     <mapping directory="$PROJECT_DIR$/App_Ajicolor" vcs="Git" />
+=======
+    <mapping directory="$PROJECT_DIR$/Polera_ecommerce" vcs="Git" />
+>>>>>>> Jose_2
   </component>
 </project>

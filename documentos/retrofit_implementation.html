@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Completa de Retrofit - App Ajicolor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        code {
+            background-color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        pre code {
+            background-color: transparent;
+            color: #ecf0f1;
+            padding: 0;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #856404;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        .success-box {
+            background-color: #d4edda;
+            border-left: 4px solid #155724;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        .error-box {
+            background-color: #f8d7da;
+            border-left: 4px solid #721c24;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        ul {
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        .step {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .step-number {
+            background-color: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Guía Completa: Implementación de Retrofit en App Ajicolor</h1>
+
+    <div class="info-box">
+        <strong>📋 Resumen Ejecutivo:</strong> Esta guía documenta la implementación completa de Retrofit en el proyecto App_Ajicolor,
+        proporcionando un sistema robusto para consumir APIs REST con Android.
+    </div>
+
+    <h2>📖 Tabla de Contenidos</h2>
+    <ul>
+        <li><a href="#que-es">¿Qué es Retrofit?</a></li>
+        <li><a href="#arquitectura">Arquitectura Implementada</a></li>
+        <li><a href="#paso-a-paso">Paso a Paso: Configuración</a></li>
+        <li><a href="#uso">Cómo Usar Retrofit</a></li>
+        <li><a href="#backend">Configuración del Backend</a></li>
+        <li><a href="#problemas">Solución de Problemas</a></li>
+    </ul>
+
+    <h2 id="que-es">🤔 ¿Qué es Retrofit?</h2>
+    <p>
+        <strong>Retrofit</strong> es una biblioteca de cliente HTTP type-safe para Android y Java desarrollada por Square.
+        Convierte tu API HTTP en una interfaz Java/Kotlin, facilitando enormemente las llamadas a servicios web REST.
+    </p>
+
+    <h3>Ventajas de Retrofit</h3>
+    <ul>
+        <li>✅ <strong>Type-Safe:</strong> Convierte automáticamente JSON a objetos Kotlin</li>
+        <li>✅ <strong>Coroutines:</strong> Soporte nativo para suspend functions</li>
+        <li>✅ <strong>Interceptores:</strong> Permite logging, autenticación, headers personalizados</li>
+        <li>✅ <strong>Fácil de usar:</strong> Anotaciones simples para definir endpoints</li>
+        <li>✅ <strong>Manejo de errores:</strong> Response wrapper para manejar éxitos y errores</li>
+        <li>✅ <strong>Eficiente:</strong> Usa OkHttp internamente, una de las librerías más optimizadas</li>
+    </ul>
+
+    <h3>Bibliotecas Utilizadas</h3>
+    <table>
+        <tr>
+            <th>Biblioteca</th>
+            <th>Versión</th>
+            <th>Propósito</th>
+        </tr>
+        <tr>
+            <td>Retrofit</td>
+            <td>2.11.0</td>
+            <td>Cliente HTTP principal</td>
+        </tr>
+        <tr>
+            <td>Gson Converter</td>
+            <td>2.11.0</td>
+            <td>Conversión JSON ↔ Objetos Kotlin</td>
+        </tr>
+        <tr>
+            <td>OkHttp</td>
+            <td>4.12.0</td>
+            <td>Cliente HTTP de bajo nivel</td>
+        </tr>
+        <tr>
+            <td>Logging Interceptor</td>
+            <td>4.12.0</td>
+            <td>Debug de peticiones HTTP</td>
+        </tr>
+        <tr>
+            <td>Gson</td>
+            <td>2.11.0</td>
+            <td>Serialización/Deserialización JSON</td>
+        </tr>
+    </table>
+
+    <h2 id="arquitectura">🏗️ Arquitectura Implementada</h2>
+    <p>
+        La implementación sigue el patrón de arquitectura <strong>Clean Architecture + MVVM</strong> con las siguientes capas:
+    </p>
+
+    <div class="step">
+        <h3>Capa de Red (Remote)</h3>
+        <pre><code>data/remote/
+├── api/
+│   ├── ApiService.kt           # Interfaz con endpoints
+│   └── RetrofitClient.kt       # Configuración de Retrofit
+├── dto/
+│   ├── UserDto.kt              # Data Transfer Objects de Usuario
+│   └── ProductoDto.kt          # Data Transfer Objects de Producto
+└── NetworkResult.kt            # Sealed class para estados</code></pre>
+    </div>
+
+    <div class="step">
+        <h3>Flujo de Datos</h3>
+        <pre><code>UI (Composable)
+    ↓ observa StateFlow
+ViewModel
+    ↓ llama
+Repository
+    ↓ decide fuente de datos
+    ├→ Remote (Retrofit) → API REST
+    └→ Local (Room) → SQLite Database</code></pre>
+    </div>
+
+    <h2 id="paso-a-paso">📝 Paso a Paso: Configuración Completa</h2>
+
+    <div class="step">
+        <div class="step-number">PASO 1</div>
+        <h3>Agregar Dependencias</h3>
+        <p>Se agregaron las siguientes dependencias en <code>app/build.gradle.kts</code>:</p>
+        <pre><code>// Retrofit para llamadas HTTP/API REST
+implementation("com.squareup.retrofit2:retrofit:2.11.0")
+implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+// OkHttp para interceptores y logging
+implementation("com.squareup.okhttp3:okhttp:4.12.0")
+implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+// Gson para serialización JSON
+implementation("com.google.code.gson:gson:2.11.0")</code></pre>
+    </div>
+
+    <div class="step">
+        <div class="step-number">PASO 2</div>
+        <h3>Agregar Permisos de Internet</h3>
+        <p>Se agregaron los permisos necesarios en <code>AndroidManifest.xml</code>:</p>
+        <pre><code>&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;</code></pre>
+        <div class="warning-box">
+            <strong>⚠️ Importante:</strong> Sin estos permisos, la app no podrá hacer llamadas HTTP.
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-number">PASO 3</div>
+        <h3>Crear DTOs (Data Transfer Objects)</h3>
+        <p>Los DTOs son clases que representan la estructura de los datos que se envían y reciben de la API.</p>
+
+        <h4>UserDto.kt - DTOs de Usuario</h4>
+        <pre><code>data class UserDto(
+    @SerializedName("id") val id: Long,
+    @SerializedName("nombre") val nombre: String,
+    @SerializedName("correo") val correo: String,
+    @SerializedName("telefono") val telefono: String,
+    @SerializedName("direccion") val direccion: String?
+)
+
+data class LoginRequest(
+    @SerializedName("correo") val correo: String,
+    @SerializedName("clave") val clave: String
+)
+
+data class LoginResponse(
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("message") val message: String,
+    @SerializedName("data") val data: UserDto?,
+    @SerializedName("token") val token: String?
+)</code></pre>
+
+        <div class="info-box">
+            <strong>💡 Nota:</strong> La anotación <code>@SerializedName</code> mapea los campos de Kotlin con los nombres de los campos JSON de la API.
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-number">PASO 4</div>
+        <h3>Crear ApiService (Interfaz de Endpoints)</h3>
+        <p>La interfaz <code>ApiService</code> define todos los endpoints de la API usando anotaciones de Retrofit:</p>
+
+        <pre><code>interface ApiService {
+
+    // ===== AUTENTICACIÓN =====
+
+    @POST("auth/login")
+    suspend fun login(@Body request: LoginRequest): Response&lt;LoginResponse&gt;
+
+    @POST("auth/register")
+    suspend fun register(@Body request: RegisterRequest): Response&lt;RegisterResponse&gt;
+
+    // ===== USUARIOS =====
+
+    @GET("users/me")
+    suspend fun getCurrentUser(
+        @Header("Authorization") token: String
+    ): Response&lt;ApiResponse&lt;UserDto&gt;&gt;
+
+    @PUT("users/{id}")
+    suspend fun updateUser(
+        @Path("id") userId: Long,
+        @Header("Authorization") token: String,
+        @Body user: UserDto
+    ): Response&lt;ApiResponse&lt;UserDto&gt;&gt;
+
+    // ===== PRODUCTOS =====
+
+    @GET("productos")
+    suspend fun getAllProductos(): Response&lt;ApiResponse&lt;List&lt;ProductoDto&gt;&gt;&gt;
+
+    @GET("productos/{id}")
+    suspend fun getProductoById(
+        @Path("id") productoId: String
+    ): Response&lt;ApiResponse&lt;ProductoDto&gt;&gt;
+
+    // ===== PEDIDOS =====
+
+    @POST("pedidos")
+    suspend fun crearPedido(
+        @Header("Authorization") token: String,
+        @Body request: CrearPedidoRequest
+    ): Response&lt;ApiResponse&lt;PedidoDto&gt;&gt;
+}</code></pre>
+
+        <h4>Anotaciones de Retrofit</h4>
+        <table>
+            <tr>
+                <th>Anotación</th>
+                <th>Descripción</th>
+                <th>Ejemplo</th>
+            </tr>
+            <tr>
+                <td><code>@GET</code></td>
+                <td>Petición HTTP GET</td>
+                <td><code>@GET("productos")</code></td>
+            </tr>
+            <tr>
+                <td><code>@POST</code></td>
+                <td>Petición HTTP POST</td>
+                <td><code>@POST("auth/login")</code></td>
+            </tr>
+            <tr>
+                <td><code>@PUT</code></td>
+                <td>Petición HTTP PUT (actualizar)</td>
+                <td><code>@PUT("users/{id}")</code></td>
+            </tr>
+            <tr>
+                <td><code>@DELETE</code></td>
+                <td>Petición HTTP DELETE</td>
+                <td><code>@DELETE("users/{id}")</code></td>
+            </tr>
+            <tr>
+                <td><code>@Body</code></td>
+                <td>Cuerpo de la petición (JSON)</td>
+                <td><code>@Body request: LoginRequest</code></td>
+            </tr>
+            <tr>
+                <td><code>@Path</code></td>
+                <td>Parámetro en la URL</td>
+                <td><code>@Path("id") userId: Long</code></td>
+            </tr>
+            <tr>
+                <td><code>@Query</code></td>
+                <td>Parámetro de consulta (?key=value)</td>
+                <td><code>@Query("search") query: String</code></td>
+            </tr>
+            <tr>
+                <td><code>@Header</code></td>
+                <td>Encabezado HTTP</td>
+                <td><code>@Header("Authorization") token: String</code></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="step">
+        <div class="step-number">PASO 5</div>
+        <h3>Configurar RetrofitClient</h3>
+        <p>El <code>RetrofitClient</code> es un objeto singleton que configura y proporciona la instancia de Retrofit:</p>
+
+        <pre><code>object RetrofitClient {
+
+    // URL base de tu API
+    private const val BASE_URL = "http://10.0.2.2:8080/api/"
+
+    // Logging interceptor para debug
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    // Cliente OkHttp con configuración
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    // Instancia de Retrofit
+    private val retrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    // ApiService
+    val apiService: ApiService by lazy {
+        retrofit.create(ApiService::class.java)
+    }
+}</code></pre>
+
+        <div class="warning-box">
+            <strong>⚠️ Configurar BASE_URL:</strong>
+            <ul>
+                <li><strong>Emulador:</strong> <code>http://10.0.2.2:8080/api/</code> (apunta a localhost de tu PC)</li>
+                <li><strong>Dispositivo físico:</strong> <code>http://192.168.1.XXX:8080/api/</code> (tu IP local)</li>
+                <li><strong>Producción:</strong> <code>https://api.ajicolor.com/api/</code></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="step">
+        <div class="step-number">PASO 6</div>
+        <h3>Crear NetworkResult (Manejo de Estados)</h3>
+        <p>Sealed class para manejar los diferentes estados de una llamada HTTP:</p>
+
+        <pre><code>sealed class NetworkResult&lt;T&gt; {
+    data class Success&lt;T&gt;(val data: T) : NetworkResult&lt;T&gt;()
+    data class Error&lt;T&gt;(val message: String, val code: Int? = null) : NetworkResult&lt;T&gt;()
+    class Loading&lt;T&gt; : NetworkResult&lt;T&gt;()
+    class Idle&lt;T&gt; : NetworkResult&lt;T&gt;()
+}</code></pre>
+
+        <p>Esto permite manejar estados de forma segura con <code>when</code>:</p>
+        <pre><code>when (state) {
+    is NetworkResult.Loading -&gt; { /* Mostrar loading */ }
+    is NetworkResult.Success -&gt; { /* Mostrar datos */ }
+    is NetworkResult.Error -&gt; { /* Mostrar error */ }
+    is NetworkResult.Idle -&gt; { /* Estado inicial */ }
+}</code></pre>
+    </div>
+
+    <div class="step">
+        <div class="step-number">PASO 7</div>
+        <h3>Actualizar Repository</h3>
+        <p>El Repository ahora puede usar tanto la API remota (Retrofit) como la base de datos local (Room):</p>
+
+        <pre><code>class UserRepositoryWithRetrofit(
+    private val userDao: UserDao,
+    private val apiService: ApiService
+) {
+    private val useRemoteApi = false // Cambiar a true para usar API
+
+    suspend fun login(correo: String, clave: String): NetworkResult&lt;UserEntity&gt; {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (useRemoteApi) {
+                    // Llamar a la API
+                    val request = LoginRequest(correo, clave)
+                    val response = apiService.login(request)
+
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        val userEntity = mapUserDtoToEntity(response.body()!!.data!!)
+                        NetworkResult.Success(userEntity)
+                    } else {
+                        NetworkResult.Error("Login fallido")
+                    }
+                } else {
+                    // Usar base de datos local
+                    val user = userDao.getUserByEmail(correo)
+                    if (user != null && user.clave == clave) {
+                        NetworkResult.Success(user)
+                    } else {
+                        NetworkResult.Error("Credenciales incorrectas")
+                    }
+                }
+            } catch (e: Exception) {
+                NetworkResult.Error(e.message ?: "Error desconocido")
+            }
+        }
+    }
+}</code></pre>
+
+        <div class="info-box">
+            <strong>💡 Patrón Single Source of Truth:</strong> El Repository decide de dónde obtener los datos (local o remoto) y los sincroniza.
+        </div>
+    </div>
+
+    <h2 id="uso">💻 Cómo Usar Retrofit en tu Proyecto</h2>
+
+    <div class="step">
+        <h3>Ejemplo 1: Uso Básico en ViewModel</h3>
+        <pre><code>class ProductosViewModel : ViewModel() {
+
+    private val _productos = MutableStateFlow&lt;NetworkResult&lt;List&lt;ProductoDto&gt;&gt;&gt;(NetworkResult.Idle())
+    val productos = _productos.asStateFlow()
+
+    fun cargarProductos() {
+        viewModelScope.launch {
+            _productos.value = NetworkResult.Loading()
+
+            try {
+                val response = RetrofitClient.apiService.getAllProductos()
+
+                if (response.isSuccessful && response.body() != null) {
+                    val apiResponse = response.body()!!
+
+                    if (apiResponse.success && apiResponse.data != null) {
+                        _productos.value = NetworkResult.Success(apiResponse.data)
+                    } else {
+                        _productos.value = NetworkResult.Error(apiResponse.message)
+                    }
+                } else {
+                    _productos.value = NetworkResult.Error("Error del servidor")
+                }
+            } catch (e: Exception) {
+                _productos.value = NetworkResult.Error(e.message ?: "Error de red")
+            }
+        }
+    }
+}</code></pre>
+    </div>
+
+    <div class="step">
+        <h3>Ejemplo 2: Observar Estado en Compose</h3>
+        <pre><code>@Composable
+fun ProductosScreen(viewModel: ProductosViewModel = viewModel()) {
+    val productosState by viewModel.productos.collectAsState()
+
+    Column {
+        Button(onClick = { viewModel.cargarProductos() }) {
+            Text("Cargar Productos")
+        }
+
+        when (productosState) {
+            is NetworkResult.Idle -&gt; {
+                Text("Presiona el botón para cargar")
+            }
+
+            is NetworkResult.Loading -&gt; {
+                CircularProgressIndicator()
+            }
+
+            is NetworkResult.Success -&gt; {
+                val productos = (productosState as NetworkResult.Success).data
+                LazyColumn {
+                    items(productos) { producto -&gt;
+                        Text(producto.nombre)
+                    }
+                }
+            }
+
+            is NetworkResult.Error -&gt; {
+                val error = (productosState as NetworkResult.Error).message
+                Text("Error: $error", color = Color.Red)
+            }
+        }
+    }
+}</code></pre>
+    </div>
+
+    <div class="step">
+        <h3>Ejemplo 3: Login con Autenticación</h3>
+        <pre><code>suspend fun loginConAPI(correo: String, clave: String): NetworkResult&lt;String&gt; {
+    return try {
+        val request = LoginRequest(correo, clave)
+        val response = RetrofitClient.apiService.login(request)
+
+        if (response.isSuccessful && response.body()?.success == true) {
+            val loginResponse = response.body()!!
+
+            // Guardar token
+            loginResponse.token?.let { token -&gt;
+                // Guardar en SharedPreferences o DataStore
+                saveToken(token)
+            }
+
+            NetworkResult.Success("Login exitoso")
+        } else {
+            NetworkResult.Error(response.body()?.message ?: "Error desconocido")
+        }
+    } catch (e: Exception) {
+        NetworkResult.Error("Error de conexión: ${e.message}")
+    }
+}</code></pre>
+    </div>
+
+    <h2 id="backend">🌐 Configuración del Backend</h2>
+
+    <div class="warning-box">
+        <strong>⚠️ Importante:</strong> Tu backend debe devolver respuestas en el formato esperado por los DTOs.
+    </div>
+
+    <div class="step">
+        <h3>Formato de Respuesta Esperado</h3>
+
+        <h4>1. Login Endpoint</h4>
+        <pre><code>POST /api/auth/login
+Content-Type: application/json
+
+Request:
+{
+  "correo": "usuario@ejemplo.com",
+  "clave": "password123"
+}
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Login exitoso",
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "data": {
+    "id": 1,
+    "nombre": "Juan Pérez",
+    "correo": "usuario@ejemplo.com",
+    "telefono": "123456789",
+    "direccion": "Calle Principal 123"
+  }
+}
+
+Response (401 Unauthorized):
+{
+  "success": false,
+  "message": "Credenciales incorrectas",
+  "data": null,
+  "token": null
+}</code></pre>
+
+        <h4>2. Registro Endpoint</h4>
+        <pre><code>POST /api/auth/register
+Content-Type: application/json
+
+Request:
+{
+  "nombre": "Juan Pérez",
+  "correo": "usuario@ejemplo.com",
+  "telefono": "123456789",
+  "clave": "password123",
+  "direccion": "Calle Principal 123"
+}
+
+Response (201 Created):
+{
+  "success": true,
+  "message": "Usuario registrado exitosamente",
+  "data": {
+    "id": 1,
+    "nombre": "Juan Pérez",
+    "correo": "usuario@ejemplo.com",
+    "telefono": "123456789",
+    "direccion": "Calle Principal 123",
+    "created_at": "2024-01-15T10:30:00Z"
+  }
+}</code></pre>
+
+        <h4>3. Productos Endpoint</h4>
+        <pre><code>GET /api/productos
+
+Response (200 OK):
+{
+  "success": true,
+  "message": "Productos obtenidos exitosamente",
+  "data": [
+    {
+      "id": "1",
+      "nombre": "Camiseta Básica",
+      "descripcion": "Camiseta de algodón 100%",
+      "precio": 25000,
+      "categoria": "camisetas",
+      "imagen_url": "https://ejemplo.com/imagen.jpg",
+      "stock": 50,
+      "colores": ["Rojo", "Azul", "Negro"],
+      "tallas": ["S", "M", "L", "XL"]
+    }
+  ]
+}</code></pre>
+    </div>
+
+    <h2 id="problemas">🔧 Solución de Problemas Comunes</h2>
+
+    <div class="error-box">
+        <h3>❌ Error: "Unable to resolve host"</h3>
+        <p><strong>Causa:</strong> La app no puede conectarse a la API.</p>
+        <p><strong>Soluciones:</strong></p>
+        <ul>
+            <li>Verifica que tienes permiso de INTERNET en AndroidManifest.xml</li>
+            <li>Verifica la URL en RetrofitClient.kt</li>
+            <li>Si usas emulador, usa <code>10.0.2.2</code> en lugar de <code>localhost</code></li>
+            <li>Si usas dispositivo físico, asegúrate de estar en la misma red WiFi</li>
+            <li>Verifica que el servidor backend esté corriendo</li>
+        </ul>
+    </div>
+
+    <div class="error-box">
+        <h3>❌ Error: "Failed to connect to..."</h3>
+        <p><strong>Causa:</strong> El servidor backend no está respondiendo.</p>
+        <p><strong>Soluciones:</strong></p>
+        <ul>
+            <li>Inicia tu servidor backend</li>
+            <li>Verifica que el puerto es correcto (ej: 8080)</li>
+            <li>Prueba la URL en Postman o navegador</li>
+            <li>Revisa el firewall de Windows</li>
+        </ul>
+    </div>
+
+    <div class="error-box">
+        <h3>❌ Error: "JSON syntax error" o "Expected... but was..."</h3>
+        <p><strong>Causa:</strong> La estructura del JSON no coincide con el DTO.</p>
+        <p><strong>Soluciones:</strong></p>
+        <ul>
+            <li>Revisa los logs del LoggingInterceptor</li>
+            <li>Compara el JSON real con tu DTO</li>
+            <li>Verifica las anotaciones @SerializedName</li>
+            <li>Asegúrate de que los tipos de datos coinciden (String, Int, etc.)</li>
+        </ul>
+    </div>
+
+    <div class="error-box">
+        <h3>❌ Error: "Unresolved reference: RetrofitClient"</h3>
+        <p><strong>Causa:</strong> Las dependencias no se sincronizaron correctamente.</p>
+        <p><strong>Soluciones:</strong></p>
+        <ul>
+            <li>Click en "Sync Now" en Android Studio</li>
+            <li>Ejecuta: <code>.\gradlew clean build</code></li>
+            <li>Build → Clean Project → Rebuild Project</li>
+            <li>Invalida cachés: File → Invalidate Caches / Restart</li>
+        </ul>
+    </div>
+
+    <h2>📊 Diagrama de Flujo Completo</h2>
+    <pre><code>┌─────────────────┐
+│   UI (Compose)  │
+│   LoginScreen   │
+└────────┬────────┘
+         │ collectAsState()
+         ↓
+┌─────────────────┐
+│   ViewModel     │  ← Expone StateFlow&lt;NetworkResult&gt;
+│  LoginViewModel │
+└────────┬────────┘
+         │ launch coroutine
+         ↓
+┌─────────────────┐
+│   Repository    │  ← Lógica de negocio
+│  UserRepository │
+└────────┬────────┘
+         │
+    ┌────┴────┐
+    │         │
+    ↓         ↓
+┌───────┐  ┌─────────┐
+│ Room  │  │ Retrofit│
+│  DAO  │  │ ApiServ │
+└───────┘  └────┬────┘
+   Local        │
+   SQLite       ↓
+            ┌────────┐
+            │Backend │
+            │API REST│
+            └────────┘</code></pre>
+
+    <h2>✅ Checklist de Implementación</h2>
+    <div class="success-box">
+        <h3>¿Ya completaste estos pasos?</h3>
+        <ul>
+            <li>☑ Agregaste las dependencias de Retrofit en build.gradle.kts</li>
+            <li>☑ Agregaste permisos de INTERNET en AndroidManifest.xml</li>
+            <li>☑ Creaste los DTOs (UserDto, ProductoDto, etc.)</li>
+            <li>☑ Creaste la interfaz ApiService con los endpoints</li>
+            <li>☑ Configuraste RetrofitClient con la URL correcta</li>
+            <li>☑ Creaste NetworkResult para manejar estados</li>
+            <li>☑ Actualizaste el Repository para usar Retrofit</li>
+            <li>☑ Probaste la conexión con el backend</li>
+            <li>☑ Implementaste el manejo de errores</li>
+            <li>☑ Documentaste el código</li>
+        </ul>
+    </div>
+
+    <h2>🎯 Próximos Pasos</h2>
+    <div class="info-box">
+        <h3>Para poner en producción:</h3>
+        <ol>
+            <li>Implementa manejo de tokens de autenticación (JWT)</li>
+            <li>Agrega un interceptor para agregar el token a todas las peticiones</li>
+            <li>Implementa refresh token cuando expire la sesión</li>
+            <li>Agrega manejo de errores más robusto (código 401, 403, 500, etc.)</li>
+            <li>Implementa reintentos automáticos para peticiones fallidas</li>
+            <li>Agrega caché de respuestas para mejorar performance</li>
+            <li>Implementa paginación para listas grandes</li>
+            <li>Configura Proguard para ofuscar el código en release</li>
+            <li>Implementa SSL pinning para mayor seguridad</li>
+            <li>Agrega métricas y analytics</li>
+        </ol>
+    </div>
+
+    <h2>📚 Recursos Adicionales</h2>
+    <ul>
+        <li><a href="https://square.github.io/retrofit/" target="_blank">Documentación oficial de Retrofit</a></li>
+        <li><a href="https://github.com/square/retrofit" target="_blank">Repositorio GitHub de Retrofit</a></li>
+        <li><a href="https://square.github.io/okhttp/" target="_blank">Documentación de OkHttp</a></li>
+        <li><a href="https://github.com/google/gson" target="_blank">Documentación de Gson</a></li>
+    </ul>
+
+    <div class="success-box">
+        <h2>🎉 ¡Implementación Completada!</h2>
+        <p>
+            Tu proyecto <strong>App_Ajicolor</strong> ahora tiene Retrofit completamente configurado y listo para consumir APIs REST.
+            Revisa los archivos de ejemplo creados y adapta el código a tus necesidades específicas.
+        </p>
+        <p><strong>Archivo de guía:</strong> <code>RETROFIT_GUIDE.md</code> en la raíz del proyecto.</p>
+    </div>
+
+    <footer style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #3498db; text-align: center; color: #7f8c8d;">
+        <p>Documentación generada para App_Ajicolor - Grupo 4</p>
+        <p>Última actualización: Noviembre 2025</p>
+    </footer>
+</body>
+</html>
+

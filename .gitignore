@@ -14,6 +14,7 @@
 .cxx
 local.properties
 App_Ajicolor/
+<<<<<<< HEAD
 
 # Scripts de migración temporal
 *.bat
@@ -21,3 +22,5 @@ App_Ajicolor/
 ANALISIS_RAMAS.txt
 GUIA_POWERSHELL.txt
 LEEME_PRIMERO.txt
+=======
+>>>>>>> Jose_2

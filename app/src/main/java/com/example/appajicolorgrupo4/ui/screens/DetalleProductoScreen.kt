@@ -26,7 +26,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.*
+import com.example.appajicolorgrupo4.data.model.*
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.*
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji

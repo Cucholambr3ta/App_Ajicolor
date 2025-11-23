@@ -14,15 +14,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.EstadoPedido
-import com.example.appajicolorgrupo4.data.GeneradorNumeroPedido
-import com.example.appajicolorgrupo4.data.MetodoPago
-import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.data.model.GeneradorNumeroPedido
+import com.example.appajicolorgrupo4.data.model.EstadoPedido
+import com.example.appajicolorgrupo4.data.model.MetodoPago
+import com.example.appajicolorgrupo4.data.model.PedidoCompleto
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
-import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
-import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import com.example.appajicolorgrupo4.viewmodel.pedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.usuarioViewModel
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.text.NumberFormat
@@ -35,10 +35,10 @@ fun PaymentMethodsScreen(
     direccionEnvio: String?,
     telefono: String?,
     notasAdicionales: String?,
-    carritoViewModel: CarritoViewModel = viewModel(),
-    pedidosViewModel: PedidosViewModel = viewModel(),
-    usuarioViewModel: UsuarioViewModel = viewModel()
+    carritoViewModel: CarritoViewModel = viewModel()
 ) {
+    val pedidosViewModel = pedidosViewModel()
+    val usuarioViewModel = usuarioViewModel()
     var metodoSeleccionado by remember { mutableStateOf<MetodoPago?>(null) }
     val scope = rememberCoroutineScope()
 
@@ -59,7 +59,7 @@ fun PaymentMethodsScreen(
     val metodosPago = listOf(MetodoPago.TARJETA_CREDITO, MetodoPago.TARJETA_DEBITO)
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }

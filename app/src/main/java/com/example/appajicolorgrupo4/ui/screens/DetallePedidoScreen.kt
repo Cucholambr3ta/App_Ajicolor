@@ -26,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.EstadoPedido
-import com.example.appajicolorgrupo4.data.PedidoCompleto
-import com.example.appajicolorgrupo4.data.ProductoCarrito
+import com.example.appajicolorgrupo4.data.model.EstadoPedido
+import com.example.appajicolorgrupo4.data.model.PedidoCompleto
+import com.example.appajicolorgrupo4.data.model.ProductoCarrito
 import com.example.appajicolorgrupo4.ui.components.AppBackground
-import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.pedidosViewModel
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -41,9 +41,9 @@ import java.util.Locale
 @Composable
 fun DetallePedidoScreen(
     numeroPedido: String,
-    navController: NavController,
-    pedidosViewModel: PedidosViewModel = viewModel()
+    navController: NavController
 ) {
+    val pedidosViewModel = pedidosViewModel()
     var pedido by remember { mutableStateOf<PedidoCompleto?>(null) }
 
     LaunchedEffect(numeroPedido) {
@@ -53,7 +53,7 @@ fun DetallePedidoScreen(
     }
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }

@@ -1,4 +1,4 @@
-package com.example.appajicolorgrupo4.data
+package com.example.appajicolorgrupo4.data.model
 
 /**
  * Estados posibles de un pedido

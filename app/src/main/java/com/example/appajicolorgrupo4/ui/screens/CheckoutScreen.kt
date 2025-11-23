@@ -19,12 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.* 
+import com.example.appajicolorgrupo4.data.model.*
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
 import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
-import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import com.example.appajicolorgrupo4.viewmodel.usuarioViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.text.NumberFormat
@@ -34,9 +34,9 @@ import java.util.Locale
 @Composable
 fun CheckoutScreen(
     navController: NavController,
-    carritoViewModel: CarritoViewModel = viewModel(),
-    usuarioViewModel: UsuarioViewModel = viewModel(),
+    carritoViewModel: CarritoViewModel = viewModel()
 ) {
+    val usuarioViewModel = usuarioViewModel()
     val productos by carritoViewModel.productos.collectAsState()
     val subtotal by carritoViewModel.subtotal.collectAsState()
     val impuestos by carritoViewModel.iva.collectAsState()
@@ -45,7 +45,7 @@ fun CheckoutScreen(
     val calificaEnvioGratis by carritoViewModel.calificaEnvioGratis.collectAsState()
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }

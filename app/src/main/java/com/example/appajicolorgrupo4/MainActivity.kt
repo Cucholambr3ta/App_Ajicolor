@@ -50,6 +50,19 @@ class MainActivity : ComponentActivity() {
                 // Controlador de navegación
                 val navController = rememberNavController()
 
+<<<<<<< HEAD
+=======
+                // ViewModels compartidos
+                val carritoViewModel: CarritoViewModel = viewModel()
+                val usuarioViewModel: UsuarioViewModel = viewModel(
+                    factory = object : androidx.lifecycle.ViewModelProvider.Factory {
+                        @Suppress("UNCHECKED_CAST")
+                        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+                            return UsuarioViewModel(application) as T
+                        }
+                    }
+                )
+>>>>>>> Jose_2
 
                 // Escuchar eventos de navegación desde el ViewModel
                 LaunchedEffect(Unit) {
@@ -118,10 +131,33 @@ class MainActivity : ComponentActivity() {
                             OrderHistoryScreen(navController = navController)
                         }
                         composable(Screen.Checkout.route) {
+<<<<<<< HEAD
                             CheckoutScreen(navController = navController)
                         }
                         composable(Screen.PaymentMethods.route) {
                             PaymentMethodsScreen(navController = navController)
+=======
+                            CheckoutScreen(
+                                navController = navController,
+                                carritoViewModel = carritoViewModel
+                            )
+                        }
+                        composable(
+                            route = "${Screen.PaymentMethods.route}?direccion={direccion}&telefono={telefono}&notas={notas}",
+                            arguments = listOf(
+                                navArgument("direccion") { type = NavType.StringType; nullable = true },
+                                navArgument("telefono") { type = NavType.StringType; nullable = true },
+                                navArgument("notas") { type = NavType.StringType; nullable = true }
+                            )
+                        ) { backStackEntry ->
+                            PaymentMethodsScreen(
+                                navController = navController,
+                                carritoViewModel = carritoViewModel,
+                                direccionEnvio = backStackEntry.arguments?.getString("direccion"),
+                                telefono = backStackEntry.arguments?.getString("telefono"),
+                                notasAdicionales = backStackEntry.arguments?.getString("notas")
+                            )
+>>>>>>> Jose_2
                         }
                         composable(
                             route = Screen.Success.routePattern,

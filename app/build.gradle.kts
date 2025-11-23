@@ -17,6 +17,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Configuración de Room para exportar schema
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -37,6 +42,15 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            all {
+                it.useJUnitPlatform()  // Habilita JUnit 5 para tests unitarios
+            }
+        }
     }
 }
 
@@ -62,19 +76,19 @@ dependencies {
     // Navigation Compose
     implementation(libs.androidx.navigation.compose)
 
-    // Lifecycle + ViewModel en Compose
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+    // Lifecycle + ViewModel en Compose (alineadas)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     // Responsive
-    implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
-    implementation("androidx.compose.material3.adaptive:adaptive:1.0.0-alpha06")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
+    implementation("androidx.compose.material3.adaptive:adaptive:1.0.0")
 
     // Coil para cargar imágenes
     implementation(libs.coil.compose)
 
     // Coroutines
-    implementation(libs.kotlinx.coroutines.android)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // Room Database
     implementation(libs.androidx.room.runtime)
@@ -82,16 +96,54 @@ dependencies {
     ksp(libs.androidx.room.compiler)
 
     // DataStore Preferences
-    implementation(libs.androidx.datastore.preferences)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // Coil para cargar imágenes desde URI
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
-    // Testing
+    // Retrofit para llamadas HTTP/API REST
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // OkHttp para interceptores y logging
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // Gson para serialización JSON
+    implementation("com.google.code.gson:gson:2.11.0")
+
+    // JUnit 4 (para compatibilidad con tests existentes)
     testImplementation(libs.junit)
+
+    // JUnit 5 - Framework moderno de testing
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+
+    // Kotest - Framework de testing para Kotlin
+    testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
+    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
+    testImplementation("io.kotest:kotest-property:5.8.0")  // Property-based testing
+
+    // MockK - Librería de mocking para Kotlin
+    testImplementation("io.mockk:mockk:1.13.10")
+    androidTestImplementation("io.mockk:mockk-android:1.13.10")
+
+    // Coroutines Testing - Para testear código asíncrono
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    // Turbine - Para testing de Flows
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+
+    // Android Testing - Framework de testing de Android
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // Compose UI Testing - Para testear interfaces Compose
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // Kotest para Android Tests (opcional)
+    androidTestImplementation("io.kotest:kotest-assertions-core:5.8.0")
 }

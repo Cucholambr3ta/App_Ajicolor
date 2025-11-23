@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.appajicolorgrupo4.data.PedidoCompleto
+import com.example.appajicolorgrupo4.data.model.PedidoCompleto
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date

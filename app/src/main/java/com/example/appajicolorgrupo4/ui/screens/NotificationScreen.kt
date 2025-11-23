@@ -17,9 +17,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.appajicolorgrupo4.data.AccionNotificacion
-import com.example.appajicolorgrupo4.data.Notificacion
-import com.example.appajicolorgrupo4.data.TipoNotificacion
+import com.example.appajicolorgrupo4.data.model.AccionNotificacion
+import com.example.appajicolorgrupo4.data.model.Notificacion
+import com.example.appajicolorgrupo4.data.model.TipoNotificacion
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar

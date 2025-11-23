@@ -1,4 +1,4 @@
-package com.example.appajicolorgrupo4.data.models
+package com.example.appajicolorgrupo4.data.model
 
 import androidx.annotation.DrawableRes
 
