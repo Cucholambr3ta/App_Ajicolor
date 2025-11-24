@@ -15,7 +15,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -26,11 +28,12 @@ import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.ui.components.AppNavigationDrawer
 import com.example.appajicolorgrupo4.ui.components.BottomNavigationBar
 import com.example.appajicolorgrupo4.ui.components.CustomDialog
+import com.example.appajicolorgrupo4.ui.components.DetallePedidoDialogContent
 import com.example.appajicolorgrupo4.ui.components.TopBarWithCart
 import com.example.appajicolorgrupo4.ui.theme.AmarilloAji
 import com.example.appajicolorgrupo4.ui.theme.MoradoAji
-import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
-import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import com.example.appajicolorgrupo4.viewmodel.pedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.usuarioViewModel
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.BorderStroke
 import java.text.NumberFormat
@@ -41,10 +44,10 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderHistoryScreen(
-    navController: NavController,
-    pedidosViewModel: PedidosViewModel = viewModel(),
-    usuarioViewModel: UsuarioViewModel = viewModel()
+    navController: NavController
 ) {
+    val pedidosViewModel = pedidosViewModel()
+    val usuarioViewModel = usuarioViewModel()
     val todosPedidos by pedidosViewModel.pedidos.collectAsState()
     val currentUser by usuarioViewModel.currentUser.collectAsState()
     var estadoFiltro by remember { mutableStateOf<EstadoPedido?>(null) }
@@ -70,23 +73,22 @@ fun OrderHistoryScreen(
     }
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }
 
     val formatoFecha = remember {
-        SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
     }
 
     if (pedidoSeleccionado != null) {
         CustomDialog(
             onDismissRequest = { pedidoSeleccionado = null },
-            title = "Detalle del Pedido",
-            content = {
-                DetallePedidoDialogContent(pedido = pedidoSeleccionado!!, formatoMoneda = formatoMoneda, formatoFecha = formatoFecha)
-            }
-        )
+            title = "Detalle del Pedido"
+        ) {
+            DetallePedidoDialogContent(pedido = pedidoSeleccionado!!, formatoMoneda = formatoMoneda, formatoFecha = formatoFecha)
+        }
     }
 
     AppBackground {
@@ -110,7 +112,7 @@ fun OrderHistoryScreen(
                         currentRoute = currentRoute
                     )
                 },
-                containerColor = androidx.compose.ui.graphics.Color.Transparent
+                containerColor = Color.Transparent
             ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -133,7 +135,7 @@ fun OrderHistoryScreen(
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = AmarilloAji,
                                 selectedLabelColor = MoradoAji,
-                                containerColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.75f),
+                                containerColor = Color.White.copy(alpha = 0.75f),
                                 labelColor = MoradoAji
                             ),
                             border = FilterChipDefaults.filterChipBorder(
@@ -159,7 +161,7 @@ fun OrderHistoryScreen(
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = AmarilloAji,
                                 selectedLabelColor = MoradoAji,
-                                containerColor = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.75f),
+                                containerColor = Color.White.copy(alpha = 0.75f),
                                 labelColor = MoradoAji
                             ),
                             border = FilterChipDefaults.filterChipBorder(
@@ -195,7 +197,7 @@ fun OrderHistoryScreen(
                             else
                                 "No tienes pedidos en estado ${estadoFiltro!!.displayName}",
                             style = MaterialTheme.typography.titleLarge,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                            textAlign = TextAlign.Center,
                             color = MoradoAji
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -246,21 +248,6 @@ fun OrderHistoryScreen(
 }
 
 @Composable
-private fun DetallePedidoDialogContent(
-    pedido: PedidoCompleto,
-    formatoMoneda: NumberFormat,
-    formatoFecha: SimpleDateFormat
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text("Pedido: ${pedido.numeroPedido}", fontWeight = FontWeight.Bold)
-        Text("Fecha: ${formatoFecha.format(Date(pedido.fechaCreacion))}")
-        Text("Estado: ${pedido.estado.displayName}")
-        HorizontalDivider()
-        Text("Total: ${formatoMoneda.format(pedido.total)}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-    }
-}
-
-@Composable
 private fun PedidoCard(
     pedido: PedidoCompleto,
     formatoMoneda: NumberFormat,
@@ -297,7 +284,7 @@ private fun PedidoCard(
                     Text(
                         text = formatoFecha.format(Date(pedido.fechaCreacion)),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                 }
 
@@ -315,7 +302,7 @@ private fun PedidoCard(
                     Text(
                         text = "Items",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                     Text(
                         text = "${pedido.cantidadTotalItems()} productos",
@@ -328,7 +315,7 @@ private fun PedidoCard(
                     Text(
                         text = "Total",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                     Text(
                         text = formatoMoneda.format(pedido.total),
@@ -342,7 +329,7 @@ private fun PedidoCard(
                     Text(
                         text = "Método",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        color = Color.Gray
                     )
                     Text(
                         text = pedido.metodoPago.icono,

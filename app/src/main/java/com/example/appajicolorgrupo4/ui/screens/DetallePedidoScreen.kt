@@ -1,6 +1,7 @@
 package com.example.appajicolorgrupo4.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,15 +18,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.appajicolorgrupo4.data.EstadoPedido
 import com.example.appajicolorgrupo4.data.PedidoCompleto
 import com.example.appajicolorgrupo4.data.ProductoCarrito
 import com.example.appajicolorgrupo4.ui.components.AppBackground
-import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.pedidosViewModel
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -35,15 +41,19 @@ import java.util.Locale
 @Composable
 fun DetallePedidoScreen(
     numeroPedido: String,
-    navController: NavController,
-    pedidosViewModel: PedidosViewModel = viewModel()
+    navController: NavController
 ) {
-    val pedido = remember(numeroPedido) {
-        pedidosViewModel.obtenerPedido(numeroPedido)
+    val pedidosViewModel = pedidosViewModel()
+    var pedido by remember { mutableStateOf<PedidoCompleto?>(null) }
+
+    LaunchedEffect(numeroPedido) {
+        pedidosViewModel.viewModelScope.launch {
+            pedido = pedidosViewModel.obtenerPedidoPorNumero(numeroPedido)
+        }
     }
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }
@@ -67,11 +77,11 @@ fun DetallePedidoScreen(
                             }
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = androidx.compose.ui.graphics.Color.Transparent
+                            containerColor = Color.Transparent
                         )
                     )
                 },
-                containerColor = androidx.compose.ui.graphics.Color.Transparent
+                containerColor = Color.Transparent
             ) { paddingValues ->
                 Box(
                     modifier = Modifier
@@ -90,18 +100,18 @@ fun DetallePedidoScreen(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Pedido ${pedido.numeroPedido}") },
+                    title = { Text("Pedido ${pedido!!.numeroPedido}") },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, "Volver")
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = androidx.compose.ui.graphics.Color.Transparent
+                        containerColor = Color.Transparent
                     )
                 )
             },
-            containerColor = androidx.compose.ui.graphics.Color.Transparent
+            containerColor = Color.Transparent
         ) { paddingValues ->
             LazyColumn(
                 modifier = Modifier
@@ -128,7 +138,7 @@ fun DetallePedidoScreen(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                text = pedido.numeroPedido,
+                                text = pedido!!.numeroPedido,
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
@@ -159,8 +169,8 @@ fun DetallePedidoScreen(
                             EstadoPedido.entries.forEach { estado ->
                                 EstadoItem(
                                     estado = estado,
-                                    estadoActual = pedido.estado,
-                                    fecha = obtenerFechaEstado(pedido, estado),
+                                    estadoActual = pedido!!.estado,
+                                    fecha = obtenerFechaEstado(pedido!!, estado),
                                     formatoFecha = formatoFecha,
                                     esUltimo = estado == EstadoPedido.entries.last()
                                 )
@@ -193,7 +203,7 @@ fun DetallePedidoScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "${pedido.cantidadTotalItems()} items en total",
+                                        text = "${pedido!!.cantidadTotalItems()} items en total",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                     )
@@ -213,9 +223,9 @@ fun DetallePedidoScreen(
                             AnimatedVisibility(visible = listaProductosExpandida) {
                                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                     HorizontalDivider()
-                                    pedido.productos.forEach { producto ->
+                                    pedido!!.productos.forEach { producto ->
                                         ProductoPedidoItem(producto, formatoMoneda)
-                                        if (producto != pedido.productos.last()) {
+                                        if (producto != pedido!!.productos.last()) {
                                             HorizontalDivider()
                                         }
                                     }
@@ -250,7 +260,7 @@ fun DetallePedidoScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("Subtotal:")
-                                Text(formatoMoneda.format(pedido.subtotal))
+                                Text(formatoMoneda.format(pedido!!.subtotal))
                             }
 
                             Row(
@@ -258,7 +268,7 @@ fun DetallePedidoScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("Impuestos (19%):")
-                                Text(formatoMoneda.format(pedido.impuestos))
+                                Text(formatoMoneda.format(pedido!!.impuestos))
                             }
 
                             Row(
@@ -266,14 +276,14 @@ fun DetallePedidoScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text("Envío:")
-                                if (pedido.costoEnvio == 0.0) {
+                                if (pedido!!.costoEnvio == 0.0) {
                                     Text(
                                         text = "GRATIS",
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 } else {
-                                    Text(formatoMoneda.format(pedido.costoEnvio))
+                                    Text(formatoMoneda.format(pedido!!.costoEnvio))
                                 }
                             }
 
@@ -289,7 +299,7 @@ fun DetallePedidoScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = formatoMoneda.format(pedido.total),
+                                    text = formatoMoneda.format(pedido!!.total),
                                     style = MaterialTheme.typography.titleLarge,
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.primary
@@ -325,7 +335,7 @@ fun DetallePedidoScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = pedido.direccionEnvio,
+                                text = pedido!!.direccionEnvio,
                                 style = MaterialTheme.typography.bodyMedium
                             )
 
@@ -337,11 +347,11 @@ fun DetallePedidoScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = pedido.telefono,
+                                text = pedido!!.telefono,
                                 style = MaterialTheme.typography.bodyMedium
                             )
 
-                            if (pedido.notasAdicionales.isNotBlank()) {
+                            if (pedido!!.notasAdicionales.isNotBlank()) {
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Notas:",
@@ -349,12 +359,12 @@ fun DetallePedidoScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = pedido.notasAdicionales,
+                                    text = pedido!!.notasAdicionales,
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
 
-                            if (pedido.numeroDespacho != null) {
+                            if (pedido!!.numeroDespacho != null) {
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
                                     text = "Número de Despacho:",
@@ -362,7 +372,7 @@ fun DetallePedidoScreen(
                                     fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = pedido.numeroDespacho!!,
+                                    text = pedido!!.numeroDespacho!!,
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.primary,
                                     fontWeight = FontWeight.Bold
@@ -380,34 +390,31 @@ fun DetallePedidoScreen(
                             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)
                         )
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(
-                                text = "Método de Pago",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
+                            Column {
                                 Text(
-                                    text = pedido.metodoPago.icono,
-                                    style = MaterialTheme.typography.headlineSmall
+                                    text = "Método de Pago",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
                                 )
                                 Text(
-                                    text = pedido.metodoPago.displayName,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    text = pedido!!.metodoPago.displayName,
+                                    style = MaterialTheme.typography.bodyMedium
                                 )
                             }
+                            Text(pedido!!.metodoPago.icono, style = MaterialTheme.typography.headlineMedium)
                         }
                     }
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -418,38 +425,30 @@ fun DetallePedidoScreen(
 private fun EstadoItem(
     estado: EstadoPedido,
     estadoActual: EstadoPedido,
-    fecha: Long?,
+    fecha: String?,
     formatoFecha: SimpleDateFormat,
     esUltimo: Boolean
 ) {
-    val completado = estado.getIndice() <= estadoActual.getIndice()
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Indicador visual
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(24.dp)
                     .clip(CircleShape)
                     .background(
-                        if (completado)
+                        if (estado.ordinal <= estadoActual.ordinal)
                             MaterialTheme.colorScheme.primary
                         else
-                            MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (completado) {
+                if (estado.ordinal <= estadoActual.ordinal) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = null,
+                        contentDescription = "Completado",
                         tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
@@ -458,42 +457,32 @@ private fun EstadoItem(
                 Box(
                     modifier = Modifier
                         .width(2.dp)
-                        .height(40.dp)
+                        .height(32.dp)
                         .background(
-                            if (completado)
+                            if (estado.ordinal < estadoActual.ordinal)
                                 MaterialTheme.colorScheme.primary
                             else
-                                MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                         )
                 )
             }
         }
 
-        // Información del estado
-        Column(
-            modifier = Modifier.weight(1f)
-        ) {
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column {
             Text(
                 text = estado.displayName,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = if (completado) FontWeight.Bold else FontWeight.Normal,
-                color = if (completado)
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = if (estado.ordinal <= estadoActual.ordinal)
                     MaterialTheme.colorScheme.onSurface
                 else
                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
-
-            if (completado && fecha != null) {
+            if (fecha != null) {
                 Text(
-                    text = formatoFecha.format(Date(fecha)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
-
-            if (completado) {
-                Text(
-                    text = estado.descripcion,
+                    text = fecha,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
@@ -501,6 +490,7 @@ private fun EstadoItem(
         }
     }
 }
+
 
 @Composable
 private fun ProductoPedidoItem(
@@ -508,55 +498,53 @@ private fun ProductoPedidoItem(
     formatoMoneda: NumberFormat
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Color indicator
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(producto.color.color)
-        )
-
-        // Info
-        Column(
-            modifier = Modifier.weight(1f)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = producto.nombre,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
+            Image(
+                painter = painterResource(id = producto.imagenResId),
+                contentDescription = producto.nombre,
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
             )
-            Text(
-                text = buildString {
-                    if (producto.talla != null) {
-                        append("Talla ${producto.talla.displayName} • ")
-                    }
-                    append(producto.color.nombre)
-                    append(" • Cant: ${producto.cantidad}")
-                },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-            )
+
+            Column {
+                Text(
+                    text = producto.nombre,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = "${producto.cantidad} x ${formatoMoneda.format(producto.precio)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
+            }
         }
 
-        // Precio
         Text(
             text = formatoMoneda.format(producto.subtotal()),
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold
         )
     }
 }
 
-private fun obtenerFechaEstado(pedido: PedidoCompleto, estado: EstadoPedido): Long? {
-    return when (estado) {
-        EstadoPedido.CONFIRMADO -> pedido.fechaConfirmacion ?: pedido.fechaCreacion
-        EstadoPedido.PREPARANDO -> pedido.fechaConfirmacion ?: pedido.fechaCreacion
+private fun obtenerFechaEstado(pedido: PedidoCompleto, estado: EstadoPedido): String? {
+    val fechaMillis = when (estado) {
+        EstadoPedido.CONFIRMADO -> pedido.fechaConfirmacion
+        EstadoPedido.PREPARANDO -> if (pedido.estado.ordinal >= EstadoPedido.PREPARANDO.ordinal) pedido.fechaConfirmacion else null // Asumimos que la preparación comienza después de la confirmación
         EstadoPedido.ENVIADO -> pedido.fechaEnvio
         EstadoPedido.ENTREGADO -> pedido.fechaEntrega
     }
+    return fechaMillis?.let { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(it)) }
 }
-

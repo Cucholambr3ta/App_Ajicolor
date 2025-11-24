@@ -24,7 +24,7 @@ import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
 import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
-import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import com.example.appajicolorgrupo4.viewmodel.usuarioViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.text.NumberFormat
@@ -34,18 +34,18 @@ import java.util.Locale
 @Composable
 fun CheckoutScreen(
     navController: NavController,
-    carritoViewModel: CarritoViewModel = viewModel(),
-    usuarioViewModel: UsuarioViewModel = viewModel(),
+    carritoViewModel: CarritoViewModel = viewModel()
 ) {
+    val usuarioViewModel = usuarioViewModel()
     val productos by carritoViewModel.productos.collectAsState()
-    val subtotal = carritoViewModel.calcularSubtotal()
-    val impuestos = carritoViewModel.calcularImpuestos()
-    val costoEnvio = carritoViewModel.calcularCostoEnvio()
-    val total = carritoViewModel.calcularTotal()
-    val calificaEnvioGratis = carritoViewModel.calificaEnvioGratis()
+    val subtotal by carritoViewModel.subtotal.collectAsState()
+    val impuestos by carritoViewModel.iva.collectAsState()
+    val costoEnvio by carritoViewModel.costoEnvio.collectAsState()
+    val total by carritoViewModel.total.collectAsState()
+    val calificaEnvioGratis by carritoViewModel.calificaEnvioGratis.collectAsState()
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }

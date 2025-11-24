@@ -21,8 +21,9 @@ import com.example.appajicolorgrupo4.data.PedidoCompleto
 import com.example.appajicolorgrupo4.navigation.Screen
 import com.example.appajicolorgrupo4.ui.components.AppBackground
 import com.example.appajicolorgrupo4.viewmodel.CarritoViewModel
-import com.example.appajicolorgrupo4.viewmodel.PedidosViewModel
-import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
+import com.example.appajicolorgrupo4.viewmodel.pedidosViewModel
+import com.example.appajicolorgrupo4.viewmodel.usuarioViewModel
+import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.text.NumberFormat
 import java.util.Locale
@@ -34,32 +35,31 @@ fun PaymentMethodsScreen(
     direccionEnvio: String?,
     telefono: String?,
     notasAdicionales: String?,
-    carritoViewModel: CarritoViewModel = viewModel(),
-    pedidosViewModel: PedidosViewModel = viewModel(),
-    usuarioViewModel: UsuarioViewModel = viewModel()
+    carritoViewModel: CarritoViewModel = viewModel()
 ) {
+    val pedidosViewModel = pedidosViewModel()
+    val usuarioViewModel = usuarioViewModel()
     var metodoSeleccionado by remember { mutableStateOf<MetodoPago?>(null) }
+    val scope = rememberCoroutineScope()
 
     val productos by carritoViewModel.productos.collectAsState()
-    val subtotal = carritoViewModel.calcularSubtotal()
-    val impuestos = carritoViewModel.calcularImpuestos()
-    val costoEnvio = carritoViewModel.calcularCostoEnvio()
-    val total = carritoViewModel.calcularTotal()
+    val subtotal by carritoViewModel.subtotal.collectAsState()
+    val impuestos by carritoViewModel.iva.collectAsState()
+    val costoEnvio by carritoViewModel.costoEnvio.collectAsState()
+    val total by carritoViewModel.total.collectAsState()
 
     val currentUser by usuarioViewModel.currentUser.collectAsState()
     val nombreUsuario = currentUser?.nombre ?: "Usuario"
 
     // Cargar el perfil del usuario para asegurar que currentUser no sea nulo
-    LaunchedEffect(currentUser) {
-        if (currentUser == null) {
-            usuarioViewModel.cargarPerfil()
-        }
+    LaunchedEffect(Unit) {
+        usuarioViewModel.cargarPerfil()
     }
 
     val metodosPago = listOf(MetodoPago.TARJETA_CREDITO, MetodoPago.TARJETA_DEBITO)
 
     val formatoMoneda = remember {
-        NumberFormat.getCurrencyInstance(Locale("es", "CL")).apply {
+        NumberFormat.getCurrencyInstance(Locale.forLanguageTag("es-CL")).apply {
             maximumFractionDigits = 0
         }
     }
@@ -159,36 +159,32 @@ fun PaymentMethodsScreen(
                     onClick = {
                         val user = currentUser
                         if (metodoSeleccionado != null && user != null) {
-                            // Generar número de pedido
-                            val numeroPedido = GeneradorNumeroPedido.generar(nombreUsuario)
+                            scope.launch {
+                                val numeroPedido = GeneradorNumeroPedido.generar(nombreUsuario)
+                                val pedido = PedidoCompleto(
+                                    numeroPedido = numeroPedido,
+                                    nombreUsuario = nombreUsuario,
+                                    productos = productos,
+                                    subtotal = subtotal.toDouble(),
+                                    impuestos = impuestos.toDouble(),
+                                    costoEnvio = costoEnvio.toDouble(),
+                                    total = total.toDouble(),
+                                    direccionEnvio = direccionDecodificada,
+                                    telefono = telefonoDecodificado,
+                                    notasAdicionales = notasDecodificadas,
+                                    metodoPago = metodoSeleccionado!!,
+                                    estado = EstadoPedido.CONFIRMADO,
+                                    fechaCreacion = System.currentTimeMillis(),
+                                    fechaConfirmacion = System.currentTimeMillis()
+                                )
 
-                            // Crear pedido completo
-                            val pedido = PedidoCompleto(
-                                numeroPedido = numeroPedido,
-                                nombreUsuario = nombreUsuario,
-                                productos = productos,
-                                subtotal = subtotal.toDouble(),
-                                impuestos = impuestos.toDouble(),
-                                costoEnvio = costoEnvio.toDouble(),
-                                total = total.toDouble(),
-                                direccionEnvio = direccionDecodificada,
-                                telefono = telefonoDecodificado,
-                                notasAdicionales = notasDecodificadas,
-                                metodoPago = metodoSeleccionado!!,
-                                estado = EstadoPedido.CONFIRMADO,
-                                fechaCreacion = System.currentTimeMillis(),
-                                fechaConfirmacion = System.currentTimeMillis()
-                            )
-
-                            // Guardar pedido en SQLite y en memoria
-                            pedidosViewModel.agregarPedido(pedido, user.id)
-
-                            // Limpiar carrito
-                            carritoViewModel.limpiarCarrito()
-
-                            // Navegar a success con el número de pedido
-                            navController.navigate(Screen.Success.createRoute(numeroPedido)) {
-                                popUpTo(Screen.Cart.route) { inclusive = true }
+                                val resultado = pedidosViewModel.agregarPedido(pedido, user.id)
+                                resultado.onSuccess {
+                                    carritoViewModel.limpiarCarrito()
+                                    navController.navigate(Screen.Success.createRoute(numeroPedido)) {
+                                        popUpTo(Screen.Cart.route) { inclusive = true }
+                                    }
+                                }
                             }
                         }
                     },

@@ -17,6 +17,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Configuración de Room para exportar schema
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
 
     buildTypes {
@@ -75,15 +80,15 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.5")
 
     // Lifecycle + ViewModel en Compose (alineadas)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     // Responsive
-    implementation("androidx.compose.material3:material3-window-size-class:1.3.0")
-    implementation("androidx.compose.material3.adaptive:adaptive:1.0.0-alpha06")
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
+    implementation("androidx.compose.material3.adaptive:adaptive:1.0.0")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")
@@ -91,10 +96,10 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
 
     // DataStore Preferences
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // Coil para cargar imágenes desde URI
-    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Testing
     testImplementation(libs.junit)
