@@ -48,15 +48,18 @@ android {
 dependencies {
     // Jetpack Compose y Material 3
     implementation("androidx.activity:activity-compose:1.9.0")
-    implementation("androidx.compose.material3:material3:1.7.5")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    // Lifecycle + ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
 
     // Retrofit y Gson Converter
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
 
     // Corrutinas para trabajo asincronico
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+    // Corrutinas para trabajo asincronico
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
     // Core AndroidX
     implementation(libs.androidx.core.ktx)
@@ -80,15 +83,14 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.5")
 
     // Lifecycle + ViewModel en Compose (alineadas)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+
 
     // Responsive
     implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
     implementation("androidx.compose.material3.adaptive:adaptive:1.0.0")
 
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+
 
     // Room Database
     implementation("androidx.room:room-runtime:2.6.1")

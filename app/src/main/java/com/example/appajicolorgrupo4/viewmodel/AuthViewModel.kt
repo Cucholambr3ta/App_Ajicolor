@@ -21,6 +21,7 @@ data class LoginUiState(
     val isSubmitting: Boolean = false,
     val canSubmit: Boolean = false,
     val success: Boolean = false,
+    val isAdmin: Boolean = false,
     val errorMsg: String? = null
 )
 
@@ -86,6 +87,23 @@ class AuthViewModel(
             _login.update { it.copy(isSubmitting = true, errorMsg = null, success = false) }
             delay(500)
 
+            // HARDCODED ADMIN CHECK
+            if (s.correo.trim() == "admin@ajicolor.cl" && s.clave == "ajicolor") {
+                // Create a fake admin user session
+                val adminUser = com.example.appajicolorgrupo4.data.local.user.UserEntity(
+                    id = 9999,
+                    nombre = "Administrador",
+                    correo = "admin@ajicolor.cl",
+                    clave = "ajicolor",
+                    telefono = "000000000",
+                    direccion = "Oficina Central"
+                )
+                sessionManager.saveSession(adminUser)
+                // We can use a special flag or just rely on the email in the UI to navigate
+                _login.update { it.copy(isSubmitting = false, success = true, isAdmin = true, errorMsg = null) }
+                return@launch
+            }
+
             val result = repository.login(s.correo.trim(), s.clave)
 
             _login.update {
@@ -94,9 +112,9 @@ class AuthViewModel(
                     result.getOrNull()?.let { user ->
                         sessionManager.saveSession(user)
                     }
-                    it.copy(isSubmitting = false, success = true, errorMsg = null)
+                    it.copy(isSubmitting = false, success = true, isAdmin = false, errorMsg = null)
                 } else {
-                    it.copy(isSubmitting = false, success = false,
+                    it.copy(isSubmitting = false, success = false, isAdmin = false,
                         errorMsg = result.exceptionOrNull()?.message ?: "Error de autenticación")
                 }
             }

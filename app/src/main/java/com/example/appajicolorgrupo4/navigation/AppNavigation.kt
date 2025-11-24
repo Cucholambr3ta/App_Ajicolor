@@ -4,49 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.appajicolorgrupo4.ui.screens.StartScreen
-import com.example.appajicolorgrupo4.ui.screens.InitScreen
-import com.example.appajicolorgrupo4.ui.screens.LoginScreen
-import com.example.appajicolorgrupo4.ui.screens.RegistroScreen
-import com.example.appajicolorgrupo4.ui.screens.HomeScreen
-import com.example.appajicolorgrupo4.viewmodel.MainViewModel
-import com.example.appajicolorgrupo4.viewmodel.UsuarioViewModel
-
-object Routes {
-    const val START = "start"
-    const val INIT = "init"
-    const val LOGIN = "login"
-    const val REGISTRO = "registro"
-    const val HOME = "home"
-}
-
-@Composable
-fun AppNavigation() {
     val navController = rememberNavController()
 
     // ViewModel para la pantalla de registro
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val mainViewModel: MainViewModel = viewModel()
+    val postViewModel: com.example.appajicolorgrupo4.viewmodel.PostViewModel = viewModel()
 
-    NavHost(
-        navController = navController,
-        startDestination = Routes.START
-    ) {
-        composable(Routes.START) {
-            StartScreen(navController)
-        }
-        composable(Routes.INIT) {
-            InitScreen(navController)
-        }
-        composable(Routes.LOGIN) {
-            LoginScreen(navController, usuarioViewModel)
-        }
-        composable(Routes.REGISTRO) {
-            RegistroScreen(navController, mainViewModel)
-        }
-        composable(Routes.HOME) {
-            HomeScreen(navController, mainViewModel, usuarioViewModel)
+    NavHost(navController = navController, startDestination = Screen.StartScreen.route) {
+        composable(Screen.StartScreen.route) { StartScreen(navController) }
+        composable(Screen.Init.route) { InitScreen(navController) }
+        composable(Screen.Login.route) { LoginScreen(navController, usuarioViewModel) }
+        composable(Screen.Registro.route) { RegistroScreen(navController, mainViewModel) }
+        composable(Screen.Home.route) { HomeScreen(navController, mainViewModel, usuarioViewModel) }
+        composable(Screen.Posts.route) {
+            PostScreen(postViewModel)
         }
     }
 }

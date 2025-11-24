@@ -46,9 +46,15 @@ fun LoginScreen(
     // Navegar a Home cuando login exitoso
     LaunchedEffect(estado.success) {
         if (estado.success) {
-            usuarioViewModel.cargarPerfil()
-            navController.navigate(Screen.Home.route) {
-                popUpTo(Screen.StartScreen.route) { inclusive = true }
+            if (estado.isAdmin) {
+                navController.navigate("posts_screen") {
+                    popUpTo(Screen.StartScreen.route) { inclusive = true }
+                }
+            } else {
+                usuarioViewModel.cargarPerfil()
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.StartScreen.route) { inclusive = true }
+                }
             }
             viewModel.clearLoginResult()
         }

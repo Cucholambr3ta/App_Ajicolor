@@ -29,6 +29,9 @@ sealed class Screen(val route: String) {
     // Rutas de depuración (solo desarrollo)
     data object Debug : Screen(route = "debug_page")
 
+    // Rutas de administración
+    data object Posts : Screen(route = "posts_screen")
+
     // Rutas con argumentos
     data class Success(val numeroPedido: String?) : Screen(route = "success/{numeroPedido}") {
         companion object {
@@ -44,7 +47,8 @@ sealed class Screen(val route: String) {
         }
     }
 
-    data class DetallePedido(val numeroPedido: String) : Screen(route = "detalle_pedido/{numeroPedido}") {
+    data class DetallePedido(val numeroPedido: String) :
+            Screen(route = "detalle_pedido/{numeroPedido}") {
         companion object {
             const val routePattern = "detalle_pedido/{numeroPedido}"
             fun createRoute(numeroPedido: String) = "detalle_pedido/$numeroPedido"
