@@ -41,23 +41,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.appajicolorgrupo4.navigation.AppNavigation
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.appajicolorgrupo4.ui.screens.PostScreen // <-- 1. IMPORTAMOS LA NUEVA PANTALLA
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             AppAjiColorGrupo4Theme {
-                // ViewModel principal
                 val viewModel: MainViewModel = viewModel()
-                // Controlador de navegación
                 val navController = rememberNavController()
 
-                // ViewModels compartidos
                 val carritoViewModel: CarritoViewModel = viewModel()
                 val usuarioViewModel: UsuarioViewModel = viewModel()
 
-                // Escuchar eventos de navegación desde el ViewModel
                 LaunchedEffect(Unit) {
                     viewModel.navigationEvents.collectLatest { event ->
                         when (event) {
@@ -78,15 +75,23 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // Layout básico de la aplicación con NavHost para manejar las pantallas
-                Scaffold(
+                androidx.compose.material3.Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.StartScreen.route,
+                        // <-- 2. CAMBIAMOS LA RUTA DE INICIO TEMPORALMENTE
+                        startDestination = "posts_screen", // Originalmente era Screen.StartScreen.route
                         modifier = Modifier.padding(innerPadding)
                     ) {
+                        // <-- 3. AÑADIMOS LA NUEVA RUTA Y SU COMPOSABLE
+                        composable("posts_screen") {
+                            PostScreen()
+                        }
+
+                        // --- EL RESTO DE TUS RUTAS ORIGINALES SIGUEN AQUÍ ---
+                        // --- NO SE HAN BORRADO, SIMPLEMENTE NO SE MOSTRARÁN AL INICIO ---
+
                         composable(Screen.StartScreen.route) {
                             StartScreen(navController = navController)
                         }
@@ -108,6 +113,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Home.route) {
                             HomeScreen(navController = navController, viewModel = viewModel, usuarioViewModel = usuarioViewModel)
                         }
+                        // ... y el resto de tus rutas ...
                         composable(Screen.Profile.route) {
                             ProfileScreen(navController = navController, viewModel = viewModel, usuarioViewModel = usuarioViewModel)
                         }
@@ -203,6 +209,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// La preview no necesita cambios, puede quedarse como está.
 @Preview(showBackground = true)
 @Composable
 fun AppPreview() {

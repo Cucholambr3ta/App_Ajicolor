@@ -41,6 +41,18 @@ android {
 }
 
 dependencies {
+    // Jetpack Compose y Material 3
+    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.compose.material3:material3:1.7.5")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+
+    // Retrofit y Gson Converter
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+
+    // Corrutinas para trabajo asincronico
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+
     // Core AndroidX
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -53,6 +65,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation("androidx.compose.material:material-icons-extended:1.7.5")
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     // Activity Compose
