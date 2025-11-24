@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -136,9 +137,6 @@ fun PostScreen(
     }
 }
 
-/**
- * Barra de búsqueda de posts
- */
 @Composable
 private fun SearchBar(
     viewModel: PostViewModel,
@@ -193,9 +191,6 @@ private fun SearchBar(
     }
 }
 
-/**
- * Chip que muestra la categoría seleccionada
- */
 @Composable
 private fun CategoryChip(
     categoria: CategoriaPost,
@@ -237,9 +232,6 @@ private fun CategoryChip(
     }
 }
 
-/**
- * Lista de posts
- */
 @Composable
 private fun PostsList(
     posts: List<Post>,
@@ -264,9 +256,6 @@ private fun PostsList(
     }
 }
 
-/**
- * Card de post individual
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PostCard(
@@ -370,9 +359,6 @@ private fun PostCard(
     }
 }
 
-/**
- * Item de estadística (likes, comentarios, vistas)
- */
 @Composable
 private fun StatItem(icon: androidx.compose.ui.graphics.vector.ImageVector, count: String) {
     Row(
@@ -393,9 +379,6 @@ private fun StatItem(icon: androidx.compose.ui.graphics.vector.ImageVector, coun
     }
 }
 
-/**
- * Diálogo de filtros por categoría
- */
 @Composable
 private fun FilterDialog(
     onDismiss: () -> Unit,
@@ -427,9 +410,6 @@ private fun FilterDialog(
     )
 }
 
-/**
- * Contenido de loading
- */
 @Composable
 private fun LoadingContent() {
     Box(
@@ -440,7 +420,9 @@ private fun LoadingContent() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(
+                modifier = Modifier.testTag("LoadingIndicator")
+            )
             Text(
                 text = "Cargando posts...",
                 style = MaterialTheme.typography.bodyMedium,
@@ -450,9 +432,6 @@ private fun LoadingContent() {
     }
 }
 
-/**
- * Contenido vacío
- */
 @Composable
 private fun EmptyContent() {
     Box(
@@ -485,9 +464,6 @@ private fun EmptyContent() {
     }
 }
 
-/**
- * Contenido de error
- */
 @Composable
 private fun ErrorContent(
     message: String,

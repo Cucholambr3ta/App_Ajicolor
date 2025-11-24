@@ -4,26 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.appajicolorgrupo4.ui.screens.JsonPlaceholderScreen
 import com.example.appajicolorgrupo4.ui.theme.AppAjiColorGrupo4Theme
 
 /**
- * MainActivity simplificada para demostración de JSONPlaceholder API
+ * Activity principal para demostrar la integración con JSONPlaceholder API
  *
- * Esta Activity muestra la integración funcional con JSONPlaceholder API
- * implementando todos los métodos HTTP (GET, POST, PUT, PATCH, DELETE).
+ * Esta Activity es independiente del resto del proyecto para evitar
+ * dependencias con código que tiene errores de compilación.
  *
- * Características:
- * - Integración completa con JSONPlaceholder API
- * - Tests unitarios funcionando (19/19 pasando)
- * - PostRepositoryImpl testeado y funcional
- * - Lista para producción
+ * Demuestra todos los métodos HTTP:
+ * - GET (obtener posts)
+ * - POST (crear posts)
+ * - PUT (actualizar completo)
+ * - PATCH (actualizar parcial)
+ * - DELETE (eliminar posts)
+ *
+ * @author App_Ajicolor - Grupo 4
+ * @since 23/11/2025
  */
-@OptIn(ExperimentalMaterial3Api::class)
-class MainActivity : ComponentActivity() {
+class MainActivityJsonPlaceholder : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,10 +35,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // Pantalla principal: JSONPlaceholder API Demo
                     JsonPlaceholderScreen(
                         onNavigateBack = {
-                            // Finalizar activity al presionar back
+                            // Cerrar la app al presionar back
                             finish()
                         }
                     )
@@ -44,3 +46,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

@@ -16,6 +16,8 @@ sealed class Screen(val route: String) {
     data object Profile : Screen(route = "profile_page")
     data object Settings : Screen(route = "settings_page")
     data object Notification : Screen(route = "notification_page")
+    data object Posts : Screen(route = "posts_page")
+    data object JsonPlaceholder : Screen(route = "jsonplaceholder_page")
 
     // Rutas de comercio
     data object Cart : Screen(route = "cart_page")

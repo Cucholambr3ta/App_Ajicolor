@@ -1,0 +1,410 @@
+package com.example.appajicolorgrupo4.viewmodel
+
+import app.cash.turbine.test
+import com.example.appajicolorgrupo4.data.model.CategoriaPost
+import com.example.appajicolorgrupo4.data.model.Post
+import com.example.appajicolorgrupo4.data.remote.NetworkResult
+import com.example.appajicolorgrupo4.data.repository.PostRepository
+import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.types.shouldBeInstanceOf
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+@OptIn(ExperimentalCoroutinesApi::class)
+class PostViewModelTest : DescribeSpec({
+    val testDispatcher = StandardTestDispatcher()
+
+    // beforeSpec se ejecuta UNA VEZ antes de todos los tests
+    beforeSpec {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    // afterSpec se ejecuta UNA VEZ después de todos los tests
+    afterSpec {
+        Dispatchers.resetMain()
+    }
+    val postMock = Post(
+        id = "POST001",
+        titulo = "Test Post",
+        contenido = "Contenido de prueba",
+        autor = "Test Author",
+        fechaCreacion = "2024-11-23T10:00:00Z",
+        categoria = CategoriaPost.TUTORIALES,
+        likes = 10,
+        comentarios = 5,
+        vistas = 100,
+        publicado = true,
+        destacado = false
+    )
+
+    val listaPosts = listOf(
+        postMock,
+        postMock.copy(id = "POST002", titulo = "Test Post 2"),
+        postMock.copy(id = "POST003", titulo = "Test Post 3")
+    )
+
+    //TESTS
+
+    describe("PostViewModel - Cargar Posts") {
+        context("cuando se llama a cargarPosts()") {
+            it("debería emitir Loading y luego Success con lista de posts") {
+                runTest {
+                    // Given - Preparar el mock del repositorio
+                    val mockRepository = mockk<PostRepository>()
+                    coEvery { mockRepository.getAllPosts() } returns NetworkResult.Success(listaPosts)
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When - Ejecutar la acción
+                    viewModel.postsState.test {
+                        // Estado inicial (Idle)
+                        awaitItem() shouldBe NetworkResult.Idle<List<Post>>()
+
+                        // Cargar posts
+                        viewModel.cargarPosts()
+                        testDispatcher.scheduler.advanceUntilIdle()
+
+                        // Then - Verificar Loading
+                        awaitItem().shouldBeInstanceOf<NetworkResult.Loading<List<Post>>>()
+
+                        // Then - Verificar Success con datos
+                        val successResult = awaitItem()
+                        successResult.shouldBeInstanceOf<NetworkResult.Success<List<Post>>>()
+                        (successResult as NetworkResult.Success).data shouldBe listaPosts
+
+                        // Verificar que se llamó al repositorio
+                        coVerify(exactly = 1) { mockRepository.getAllPosts() }
+                    }
+                }
+            }
+            it("debería emitir Error cuando el repositorio falla") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val errorMessage = "Error de red"
+                    coEvery { mockRepository.getAllPosts() } returns NetworkResult.Error(errorMessage)
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When & Then
+                    viewModel.postsState.test {
+                        awaitItem() // Idle
+
+                        viewModel.cargarPosts()
+                        testDispatcher.scheduler.advanceUntilIdle()
+
+                        awaitItem() // Loading
+                        val errorResult = awaitItem()
+                        errorResult.shouldBeInstanceOf<NetworkResult.Error<List<Post>>>()
+                        (errorResult as NetworkResult.Error).message shouldBe errorMessage
+                    }
+                }
+            }
+        }
+    }
+    describe("PostViewModel - Cargar Post por ID") {
+        context("cuando se llama a cargarPostPorId() con un ID válido") {
+            it("debería cargar el post correctamente") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val postId = "POST001"
+                    coEvery { mockRepository.getPostById(postId) } returns NetworkResult.Success(postMock)
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When & Then
+                    viewModel.postDetailState.test {
+                        awaitItem() // Idle
+
+                        viewModel.cargarPostPorId(postId)
+                        testDispatcher.scheduler.advanceUntilIdle()
+
+                        awaitItem() // Loading
+                        val successResult = awaitItem()
+                        successResult.shouldBeInstanceOf<NetworkResult.Success<Post>>()
+                        (successResult as NetworkResult.Success).data shouldBe postMock
+                        coVerify(exactly = 1) { mockRepository.getPostById(postId) }
+                    }
+                }
+            }
+        }
+    }
+    describe("PostViewModel - Cargar Posts por Categoría") {
+        context("cuando se filtran posts por categoría TUTORIALES") {
+            it("debería actualizar categoriaSeleccionada y cargar posts filtrados") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val categoria = CategoriaPost.TUTORIALES
+                    val postsCategoria = listaPosts.filter { it.categoria == categoria }
+                    coEvery {
+                        mockRepository.getPostsByCategoria(categoria)
+                    } returns NetworkResult.Success(postsCategoria)
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When & Then - Verificar categoriaSeleccionada
+                    viewModel.categoriaSeleccionada.test {
+                        awaitItem() shouldBe null // Estado inicial
+
+                        viewModel.cargarPostsPorCategoria(categoria)
+                        testDispatcher.scheduler.advanceUntilIdle()
+
+                        awaitItem() shouldBe categoria
+                    }
+
+                    // Verificar que se llamó al repositorio con la categoría correcta
+                    coVerify(exactly = 1) { mockRepository.getPostsByCategoria(categoria) }
+                }
+            }
+        }
+    }
+    describe("PostViewModel - Posts Destacados") {
+
+        context("cuando se cargan posts destacados") {
+
+            it("debería cargar solo posts con destacado = true") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val postDestacado = postMock.copy(destacado = true)
+                    val postsDestacados = listOf(postDestacado)
+
+                    coEvery {
+                        mockRepository.getPostsDestacados()
+                    } returns NetworkResult.Success(postsDestacados)
+
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When & Then
+                    viewModel.postsDestacadosState.test {
+                        awaitItem() // Idle
+
+                        viewModel.cargarPostsDestacados()
+                        testDispatcher.scheduler.advanceUntilIdle()
+
+                        awaitItem() // Loading
+
+                        val successResult = awaitItem()
+                        successResult.shouldBeInstanceOf<NetworkResult.Success<List<Post>>>()
+
+                        val posts = (successResult as NetworkResult.Success).data
+                        posts.size shouldBe 1
+                        posts.first().destacado shouldBe true
+                    }
+                }
+            }
+        }
+    }
+
+    describe("PostViewModel - Búsqueda") {
+
+        context("cuando se busca 'Test'") {
+
+            it("debería actualizar searchQuery y cargar resultados") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val query = "Test"
+
+                    coEvery {
+                        mockRepository.searchPosts(query)
+                    } returns NetworkResult.Success(listaPosts)
+
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When & Then - Verificar searchQuery
+                    viewModel.searchQuery.test {
+                        awaitItem() shouldBe "" // Estado inicial
+
+                        viewModel.buscarPosts(query)
+                        testDispatcher.scheduler.advanceUntilIdle()
+
+                        awaitItem() shouldBe query
+                    }
+
+                    // Verificar searchState
+                    viewModel.searchState.test {
+                        awaitItem() // Estado actual después de búsqueda
+
+                        val result = awaitItem()
+                        result.shouldBeInstanceOf<NetworkResult.Success<List<Post>>>()
+                    }
+                }
+            }
+
+            it("debería emitir Idle cuando la búsqueda está vacía") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When & Then
+                    viewModel.searchState.test {
+                        awaitItem() // Idle inicial
+
+                        viewModel.buscarPosts("")
+                        testDispatcher.scheduler.advanceUntilIdle()
+
+                        // Debería mantenerse en Idle (no buscar si query está vacío)
+                        awaitItem().shouldBeInstanceOf<NetworkResult.Idle<List<Post>>>()
+
+                        // Verificar que NO se llamó al repositorio
+                        coVerify(exactly = 0) { mockRepository.searchPosts(any()) }
+                    }
+                }
+            }
+        }
+
+        context("cuando se limpia la búsqueda") {
+
+            it("debería resetear searchQuery y searchState") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When
+                    viewModel.limpiarBusqueda()
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // Then
+                    viewModel.searchQuery.value shouldBe ""
+                    viewModel.searchState.value.shouldBeInstanceOf<NetworkResult.Idle<List<Post>>>()
+                }
+            }
+        }
+    }
+
+    describe("PostViewModel - Dar Like") {
+
+        context("cuando se da like a un post") {
+
+            it("debería actualizar el número de likes en el estado") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val token = "test-token"
+                    val postId = "POST001"
+                    val nuevosLikes = 11
+
+                    // Primero cargar posts
+                    coEvery { mockRepository.getAllPosts() } returns NetworkResult.Success(listaPosts)
+                    coEvery {
+                        mockRepository.likePost(token, postId)
+                    } returns NetworkResult.Success(nuevosLikes)
+
+                    val viewModel = PostViewModel(mockRepository)
+                    viewModel.cargarPosts()
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // When
+                    viewModel.darLikeAPost(token, postId)
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // Then
+                    viewModel.postsState.test {
+                        val result = awaitItem()
+                        result.shouldBeInstanceOf<NetworkResult.Success<List<Post>>>()
+
+                        val posts = (result as NetworkResult.Success).data
+                        val postActualizado = posts.find { it.id == postId }
+                        postActualizado?.likes shouldBe nuevosLikes
+                    }
+                }
+            }
+        }
+    }
+
+    describe("PostViewModel - Refrescar") {
+
+        context("cuando se refresca sin filtros") {
+
+            it("debería recargar todos los posts") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    coEvery { mockRepository.getAllPosts() } returns NetworkResult.Success(listaPosts)
+
+                    val viewModel = PostViewModel(mockRepository)
+
+                    // When
+                    viewModel.refrescar()
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // Then
+                    coVerify(exactly = 1) { mockRepository.getAllPosts() }
+                }
+            }
+        }
+
+        context("cuando se refresca con una categoría seleccionada") {
+
+            it("debería recargar posts de esa categoría") {
+                runTest {
+                    // Given
+                    val mockRepository = mockk<PostRepository>()
+                    val categoria = CategoriaPost.NOTICIAS
+
+                    coEvery {
+                        mockRepository.getPostsByCategoria(categoria)
+                    } returns NetworkResult.Success(listaPosts)
+
+                    val viewModel = PostViewModel(mockRepository)
+                    viewModel.cargarPostsPorCategoria(categoria)
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // When
+                    viewModel.refrescar()
+                    testDispatcher.scheduler.advanceUntilIdle()
+
+                    // Then - Debería llamar 2 veces: cargar + refrescar
+                    coVerify(exactly = 2) { mockRepository.getPostsByCategoria(categoria) }
+                }
+            }
+        }
+    }
+
+    describe("PostViewModel - Conversión a UI State") {
+
+        context("cuando se convierte NetworkResult a PostUiState") {
+
+            it("Loading debería convertirse a PostUiState.Loading") {
+                val result = NetworkResult.Loading<List<Post>>()
+                result.toUiState() shouldBe PostUiState.Loading
+            }
+
+            it("Success con datos debería convertirse a PostUiState.Success") {
+                val result = NetworkResult.Success(listaPosts)
+                val uiState = result.toUiState()
+
+                uiState.shouldBeInstanceOf<PostUiState.Success>()
+                (uiState as PostUiState.Success).posts shouldBe listaPosts
+            }
+
+            it("Success vacío debería convertirse a PostUiState.Empty") {
+                val result = NetworkResult.Success<List<Post>>(emptyList())
+                result.toUiState() shouldBe PostUiState.Empty
+            }
+
+            it("Error debería convertirse a PostUiState.Error") {
+                val errorMessage = "Error de prueba"
+                val result = NetworkResult.Error<List<Post>>(errorMessage)
+                val uiState = result.toUiState()
+
+                uiState.shouldBeInstanceOf<PostUiState.Error>()
+                (uiState as PostUiState.Error).message shouldBe errorMessage
+            }
+
+            it("Idle debería convertirse a PostUiState.Empty") {
+                val result = NetworkResult.Idle<List<Post>>()
+                result.toUiState() shouldBe PostUiState.Empty
+            }
+        }
+    }
+})
+
